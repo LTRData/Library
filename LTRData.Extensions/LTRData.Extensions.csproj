@@ -1,13 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <PackageReference Include="System.Buffers" Version="*" />
     <PackageReference Include="System.Memory" Version="*" />
+    <PackageReference Include="System.ValueTuple" Version="*" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="*" />
+    <PackageReference Include="System.Runtime.InteropServices" Version="*" />
   </ItemGroup>
 
   <ItemGroup Condition="('$(TargetFramework.CompareTo(`net5`))' &lt;= 0 And '$(TargetFramework.CompareTo(`net461`))' &gt;= 0) Or '$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.Bcl.HashCode" Version="*" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="*" />
   </ItemGroup>
 
 </Project>

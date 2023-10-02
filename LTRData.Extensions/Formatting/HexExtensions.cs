@@ -3,16 +3,18 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LTRData.Extensions.Formatting;
 
+/// <summary>
+/// </summary>
 public static class HexExtensions
 {
+    /// <summary>
+    /// </summary>
     public static string ToHexString(this ReadOnlySpan<byte> data, ReadOnlySpan<char> delimiter)
     {
         if (data.IsEmpty)
@@ -49,23 +51,13 @@ public static class HexExtensions
         return result;
     }
 
+    /// <summary>
+    /// </summary>
     public static byte[] ParseHexString(string str)
-    {
+        => ParseHexString(str.AsSpan());
 
-        var bytes = new byte[(str.Length >> 1)];
-
-        for (int i = 0, loopTo = bytes.Length - 1; i <= loopTo; i++)
-        {
-#if NETCOREAPP || NETSTANDARD2_1_OR_GREATER
-            bytes[i] = byte.Parse(str.AsSpan(i << 1, 2), NumberStyles.HexNumber);
-#else
-            bytes[i] = byte.Parse(str.Substring(i << 1, 2), NumberStyles.HexNumber);
-#endif
-        }
-
-        return bytes;
-    }
-
+    /// <summary>
+    /// </summary>
     public static byte[] ParseHexString(ReadOnlySpan<char> str)
     {
         var bytes = new byte[(str.Length >> 1)];
@@ -82,6 +74,8 @@ public static class HexExtensions
         return bytes;
     }
 
+    /// <summary>
+    /// </summary>
     public static IEnumerable<byte> ParseHexString(IEnumerable<char> str)
     {
         var buffer = ArrayPool<char>.Shared.Rent(2);
@@ -111,11 +105,17 @@ public static class HexExtensions
         }
     }
 
-    public static byte[] ParseHexString(string str, int offset, int count) =>
-        ParseHexString(str.AsSpan(offset, count));
+    /// <summary>
+    /// </summary>
+    public static byte[] ParseHexString(string str, int offset, int count)
+        => ParseHexString(str.AsSpan(offset, count));
 
+    /// <summary>
+    /// </summary>
     public static string? ToHexString(this IReadOnlyCollection<byte> data) => data.ToHexString(null);
 
+    /// <summary>
+    /// </summary>
     public static string? ToHexString(this IReadOnlyCollection<byte> data, string? delimiter)
     {
         if (data is null)
@@ -172,12 +172,18 @@ public static class HexExtensions
         return result;
     }
 
+    /// <summary>
+    /// </summary>
     public static bool TryFormatHexString(this byte[] data, ReadOnlySpan<char> delimiter, Span<char> destination, bool upperCase)
         => TryFormatHexString(data.AsSpan(), delimiter, destination, upperCase);
 
+    /// <summary>
+    /// </summary>
     public static bool TryFormatHexString(this Span<byte> data, ReadOnlySpan<char> delimiter, Span<char> destination, bool upperCase)
         => TryFormatHexString((ReadOnlySpan<byte>)data, delimiter, destination, upperCase);
 
+    /// <summary>
+    /// </summary>
     public static bool TryFormatHexString(this ReadOnlySpan<byte> data, ReadOnlySpan<char> delimiter, Span<char> destination, bool upperCase)
     {
         if (data.IsEmpty)
@@ -217,36 +223,57 @@ public static class HexExtensions
         return true;
     }
 
-    public static string ToHexString(this byte[] data) => ((ReadOnlySpan<byte>)data).ToHexString(default);
+    /// <summary>
+    /// </summary>
+    public static string ToHexString(this byte[] data)
+        => ((ReadOnlySpan<byte>)data).ToHexString(default);
 
-    public static string ToHexString(this byte[] data, string? delimiter) => ((ReadOnlySpan<byte>)data).ToHexString(delimiter.AsSpan());
+    /// <summary>
+    /// </summary>
+    public static string ToHexString(this byte[] data, string? delimiter)
+        => ((ReadOnlySpan<byte>)data).ToHexString(delimiter.AsSpan());
 
-    public static string ToHexString(this byte[] data, int offset, int count) => data.AsSpan(offset, count).ToHexString(null);
+    /// <summary>
+    /// </summary>
+    public static string ToHexString(this byte[] data, int offset, int count)
+        => data.AsSpan(offset, count).ToHexString(null);
 
-    public static string ToHexString(this byte[] data, int offset, int count, string? delimiter) => data.AsSpan(offset, count).ToHexString(delimiter);
+    /// <summary>
+    /// </summary>
+    public static string ToHexString(this byte[] data, int offset, int count, string? delimiter)
+        => data.AsSpan(offset, count).ToHexString(delimiter);
 
-    public static string ToHexString(this Span<byte> data) => ((ReadOnlySpan<byte>)data).ToHexString(null);
+    /// <summary>
+    /// </summary>
+    public static string ToHexString(this Span<byte> data)
+        => ((ReadOnlySpan<byte>)data).ToHexString(null);
 
-    public static string ToHexString(this Span<byte> data, string? delimiter) => ((ReadOnlySpan<byte>)data).ToHexString(delimiter.AsSpan());
+    /// <summary>
+    /// </summary>
+    public static string ToHexString(this Span<byte> data, string? delimiter)
+        => ((ReadOnlySpan<byte>)data).ToHexString(delimiter.AsSpan());
 
-    public static string ToHexString(this ReadOnlySpan<byte> data) => data.ToHexString(null);
+    /// <summary>
+    /// </summary>
+    public static string ToHexString(this ReadOnlySpan<byte> data)
+        => data.ToHexString(null);
 
+    /// <summary>
+    /// </summary>
     public static TextWriter WriteHex(this TextWriter writer, IEnumerable<byte> bytes)
     {
         var i = 0;
         foreach (var line in bytes.FormatHexLines())
         {
-            writer.Write(((ushort)(i >> 16)).ToString("X4"));
-            writer.Write(' ');
-            writer.Write(((ushort)i).ToString("X4"));
-            writer.Write("  ");
-            writer.WriteLine(line);
+            writer.WriteLine($"{(ushort)(i >> 16):X4} {(ushort)i:X4}  {line}");
             i += 0x10;
         }
 
         return writer;
     }
 
+    /// <summary>
+    /// </summary>
     public static IEnumerable<string> FormatHexLines(this IEnumerable<byte> bytes)
     {
         var sb = ArrayPool<char>.Shared.Rent(67);
@@ -307,9 +334,11 @@ public static class HexExtensions
         }
     }
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToHexString<T>(in T source) where T : unmanaged =>
-        ToHexString(LTRData.Extensions.Buffers.BufferExtensions.AsReadOnlyBytes(source));
+        ToHexString(Buffers.BufferExtensions.AsReadOnlyBytes(source));
 
     /// <summary>
     /// Returns a string with each byte expressed in two-character hexadecimal notation.
