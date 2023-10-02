@@ -1,6 +1,9 @@
 ﻿using System;
 #if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
 using System.Buffers;
+using ByteCollection = System.Collections.Generic.IReadOnlyCollection<byte>;
+#else
+using ByteCollection = System.Collections.Generic.ICollection<byte>;
 #endif
 using System.Collections.Generic;
 using System.Globalization;
@@ -117,68 +120,6 @@ public static class HexExtensions
 
     /// <summary>
     /// </summary>
-    public static string? ToHexString(this IReadOnlyCollection<byte> data) => data.ToHexString(null);
-
-    /// <summary>
-    /// </summary>
-    public static string? ToHexString(this IReadOnlyCollection<byte> data, string? delimiter)
-    {
-        if (data is null)
-        {
-            return null;
-        }
-
-        if (data.Count == 0)
-        {
-            return string.Empty;
-        }
-
-        var capacity = data.Count << 1;
-        if (delimiter is not null)
-        {
-            capacity += delimiter.Length * (data.Count - 1);
-        }
-
-#if NETCOREAPP
-        var result = string.Create(capacity,
-            (data, delimiter, capacity),
-            static (ptr, v) =>
-            {
-                foreach (var b in v.data)
-                {
-                    if (v.delimiter is not null && ptr.Length < v.capacity)
-                    {
-                        v.delimiter.AsSpan().CopyTo(ptr);
-                        ptr = ptr.Slice(v.delimiter.Length);
-                    }
-
-                    b.TryFormat(ptr, out _, "x2", NumberFormatInfo.InvariantInfo);
-                    ptr = ptr.Slice(2);
-                }
-            });
-#else
-        var result = new string('\0', capacity);
-
-        var ptr = MemoryMarshal.AsMemory(result.AsMemory()).Span;
-
-        foreach (var b in data)
-        {
-            if (delimiter is not null && ptr.Length < capacity)
-            {
-                delimiter.AsSpan().CopyTo(ptr);
-                ptr = ptr.Slice(delimiter.Length);
-            }
-
-            b.ToString("x2", NumberFormatInfo.InvariantInfo).AsSpan().CopyTo(ptr);
-            ptr = ptr.Slice(2);
-        }
-#endif
-
-        return result;
-    }
-
-    /// <summary>
-    /// </summary>
     public static bool TryFormatHexString(this byte[] data, ReadOnlySpan<char> delimiter, Span<char> destination, bool upperCase)
         => TryFormatHexString(data.AsSpan(), delimiter, destination, upperCase);
 
@@ -282,9 +223,11 @@ public static class HexExtensions
     public static IEnumerable<string> FormatHexLines(this IEnumerable<byte> bytes)
     {
         var sb = ArrayPool<char>.Shared.Rent(67);
+
         try
         {
             byte pos = 0;
+
             foreach (var b in bytes)
             {
                 if (pos == 0)
@@ -294,6 +237,7 @@ public static class HexExtensions
 
 #if NETCOREAPP
                 var bstr = 0;
+                
                 if ((pos & 8) == 0)
                 {
                     bstr = pos * 3;
@@ -302,9 +246,11 @@ public static class HexExtensions
                 {
                     bstr = 2 + pos * 3;
                 }
+
                 b.TryFormat(sb.AsSpan(bstr), out _, "X2");
 #else
                 var bstr = b.ToString("X2");
+                
                 if ((pos & 8) == 0)
                 {
                     sb[pos * 3] = bstr[0];
@@ -348,6 +294,86 @@ public static class HexExtensions
 #endif
 
     /// <summary>
+    /// </summary>
+    public static string? ToHexString(this ByteCollection data) => data.ToHexString(null);
+
+    /// <summary>
+    /// </summary>
+    public static string? ToHexString(this ByteCollection data, string? delimiter)
+    {
+        if (data is null)
+        {
+            return null;
+        }
+
+        if (data.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var capacity = data.Count << 1;
+        if (delimiter is not null)
+        {
+            capacity += delimiter.Length * (data.Count - 1);
+        }
+
+#if NETCOREAPP
+        var result = string.Create(capacity,
+            (data, delimiter, capacity),
+            static (ptr, v) =>
+            {
+                foreach (var b in v.data)
+                {
+                    if (v.delimiter is not null && ptr.Length < v.capacity)
+                    {
+                        v.delimiter.AsSpan().CopyTo(ptr);
+                        ptr = ptr.Slice(v.delimiter.Length);
+                    }
+
+                    b.TryFormat(ptr, out _, "x2", NumberFormatInfo.InvariantInfo);
+                    ptr = ptr.Slice(2);
+                }
+            });
+#elif NET46_OR_GREATER
+        var result = new string('\0', capacity);
+
+        var ptr = MemoryMarshal.AsMemory(result.AsMemory()).Span;
+
+        foreach (var b in data)
+        {
+            if (delimiter is not null && ptr.Length < capacity)
+            {
+                delimiter.AsSpan().CopyTo(ptr);
+                ptr = ptr.Slice(delimiter.Length);
+            }
+
+            b.ToString("x2", NumberFormatInfo.InvariantInfo).AsSpan().CopyTo(ptr);
+            ptr = ptr.Slice(2);
+        }
+#else
+        var buffer = new char[capacity];
+
+        var ptr = 0;
+
+        foreach (var b in data)
+        {
+            if (delimiter is not null && buffer.Length < capacity)
+            {
+                delimiter.CopyTo(0, buffer, ptr, delimiter.Length);
+                ptr += delimiter.Length;
+            }
+
+            b.ToString("x2", NumberFormatInfo.InvariantInfo).CopyTo(0, buffer, ptr, 2);
+            ptr += 2;
+        }
+
+        var result = new string(buffer);
+#endif
+
+        return result;
+    }
+
+    /// <summary>
     /// Returns a string with each byte expressed in two-character hexadecimal notation.
     /// </summary>
     public static string? ToHexString(this IEnumerable<byte>? bytes)
@@ -357,12 +383,13 @@ public static class HexExtensions
             return null;
         }
 
-        if (bytes is ICollection<byte> collection)
+        if (bytes is ByteCollection collection)
         {
             return collection.ToHexString();
         }
 
         var valuestr = new StringBuilder();
+
         foreach (var b in bytes)
         {
             valuestr.Append(b.ToString("x2"));
@@ -381,12 +408,13 @@ public static class HexExtensions
             return null;
         }
 
-        if (bytes is ICollection<byte> collection)
+        if (bytes is ByteCollection collection)
         {
             return collection.ToHexString(delimiter);
         }
 
         var valuestr = new StringBuilder();
+
         foreach (var b in bytes)
         {
             if (valuestr.Length > 0)
