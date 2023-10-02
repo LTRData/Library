@@ -17,7 +17,9 @@ public static class CommandLineParser
     /// </summary>
     public static Dictionary<string, string[]> ParseCommandLine(IEnumerable<string> args, StringComparer comparer)
     {
-        var dict = ParseCommandLineParameter(args).GroupBy(item => item.Key, item => item.Value, comparer).ToDictionary(item => item.Key, item => item.SelectMany(i => i).ToArray(), comparer);
+        var dict = ParseCommandLineParameter(args)
+            .GroupBy(item => item.Key, item => item.Value, comparer)
+            .ToDictionary(item => item.Key, item => item.SelectMany(i => i).ToArray(), comparer);
 
         return dict;
     }

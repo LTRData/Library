@@ -6,7 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using LTRData.Extensions.Buffers;
+#if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
 using LTRData.Extensions.Split;
+#endif
 
 namespace LTRData.Extensions.Buffers;
 
@@ -14,6 +16,8 @@ namespace LTRData.Extensions.Buffers;
 /// </summary>
 public static class BufferExtensions
 {
+#if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
+
     /// <summary>
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -289,44 +293,6 @@ public static class BufferExtensions
 
 #endif
 
-#if !NETCOREAPP && !NETSTANDARD && !NET461_OR_GREATER
-
-    /// <summary>
-    /// Appends an item to an enumeration
-    /// </summary>
-    /// <typeparam name="T">Type of items in enumeration</typeparam>
-    /// <param name="values">Source enumeration</param>
-    /// <param name="value">Item to append</param>
-    /// <returns>New enumeration with item appended</returns>
-    public static IEnumerable<T> Append<T>(this IEnumerable<T> values, T value)
-    {
-        foreach (var v in values)
-        {
-            yield return v;
-        }
-
-        yield return value;
-    }
-
-    /// <summary>
-    /// Prepends an item to an enumeration
-    /// </summary>
-    /// <typeparam name="T">Type of items in enumeration</typeparam>
-    /// <param name="values">Source enumeration</param>
-    /// <param name="value">Item to prepend</param>
-    /// <returns>New enumeration with item prepended</returns>
-    public static IEnumerable<T> Prepend<T>(this IEnumerable<T> values, T value)
-    {
-        yield return value;
-
-        foreach (var v in values)
-        {
-            yield return v;
-        }
-    }
-
-#endif
-
     /// <summary>
     /// Returns character memory block beyond given trim characters
     /// </summary>
@@ -385,46 +351,7 @@ public static class BufferExtensions
 
         return str;
     }
-
-    /// <summary>
-    /// </summary>
-    public static string[] Split(this string str, char separator, int count, StringSplitOptions options = StringSplitOptions.None)
-        => str.Split(new[] { separator }, count, options);
-
-    /// <summary>
-    /// </summary>
-    public static string[] Split(this string str, char separator, StringSplitOptions options = StringSplitOptions.None)
-        => str.Split(new[] { separator }, options);
-
-    /// <summary>
-    /// </summary>
-    public static bool Contains(this ReadOnlySpan<char> str, char chr)
-        => str.IndexOf(chr) >= 0;
-
-    /// <summary>
-    /// </summary>
-    public static bool Contains(this string str, char chr)
-        => str.IndexOf(chr) >= 0;
-
-    /// <summary>
-    /// </summary>
-    public static bool Contains(this string str, string substr)
-        => str.IndexOf(substr) >= 0;
-
-    /// <summary>
-    /// </summary>
-    public static bool Contains(this string str, string substr, StringComparison comparison)
-        => str.IndexOf(substr, comparison) >= 0;
-
-    /// <summary>
-    /// </summary>
-    public static bool StartsWith(this string str, char chr)
-        => str is not null && str.Length > 0 && str[0] == chr;
-
-    /// <summary>
-    /// </summary>
-    public static bool EndsWith(this string str, char chr)
-        => str is not null && str.Length > 0 && str[str.Length - 1] == chr;
+    
 
     /// <summary>
     /// Return a managed reference to Span, or a managed null reference
@@ -629,6 +556,90 @@ public static class BufferExtensions
     }
 
     /// <summary>
+    /// </summary>
+    public static bool Contains(this ReadOnlySpan<char> str, char chr)
+        => str.IndexOf(chr) >= 0;
+
+#endif
+
+#if !NETCOREAPP && !NETSTANDARD && !NET461_OR_GREATER
+
+    /// <summary>
+    /// Appends an item to an enumeration
+    /// </summary>
+    /// <typeparam name="T">Type of items in enumeration</typeparam>
+    /// <param name="values">Source enumeration</param>
+    /// <param name="value">Item to append</param>
+    /// <returns>New enumeration with item appended</returns>
+    public static IEnumerable<T> Append<T>(this IEnumerable<T> values, T value)
+    {
+        foreach (var v in values)
+        {
+            yield return v;
+        }
+
+        yield return value;
+    }
+
+    /// <summary>
+    /// Prepends an item to an enumeration
+    /// </summary>
+    /// <typeparam name="T">Type of items in enumeration</typeparam>
+    /// <param name="values">Source enumeration</param>
+    /// <param name="value">Item to prepend</param>
+    /// <returns>New enumeration with item prepended</returns>
+    public static IEnumerable<T> Prepend<T>(this IEnumerable<T> values, T value)
+    {
+        yield return value;
+
+        foreach (var v in values)
+        {
+            yield return v;
+        }
+    }
+
+#endif
+
+    /// <summary>
+    /// </summary>
+    public static string[] Split(this string str, char separator, int count, StringSplitOptions options = StringSplitOptions.None)
+        => str.Split(new[] { separator }, count, options);
+
+    /// <summary>
+    /// </summary>
+    public static string[] Split(this string str, char separator, StringSplitOptions options = StringSplitOptions.None)
+        => str.Split(new[] { separator }, options);
+
+#if !NETSTANDARD2_1_OR_GREATER && !NETCOREAPP
+    /// <summary>
+    /// </summary>
+    public static bool Contains(this string str, char chr)
+        => str.IndexOf(chr) >= 0;
+
+    /// <summary>
+    /// </summary>
+    public static bool Contains(this string str, string substr)
+        => str.IndexOf(substr) >= 0;
+
+    /// <summary>
+    /// </summary>
+    public static bool Contains(this string str, string substr, StringComparison comparison)
+        => str.IndexOf(substr, comparison) >= 0;
+
+    /// <summary>
+    /// </summary>
+    public static bool StartsWith(this string str, char chr)
+        => str is not null && str.Length > 0 && str[0] == chr;
+
+    /// <summary>
+    /// </summary>
+    public static bool EndsWith(this string str, char chr)
+        => str is not null && str.Length > 0 && str[str.Length - 1] == chr;
+#endif
+
+#if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
+
+    /// <summary>
     /// Return position of first empty element, or the entire span length if
     /// no empty elements are found.
     /// </summary>
@@ -666,48 +677,6 @@ public static class BufferExtensions
         var endpos = buffer.AsSpan(offset).IndexOfTerminator();
         return Encoding.ASCII.GetString(buffer, offset, endpos);
     }
-
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP
-
-    /// <summary>
-    /// Reads null terminated ASCII string from byte buffer.
-    /// </summary>
-    /// <param name="buffer">Byte buffer</param>
-    /// <returns>Managed string</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ReadNullTerminatedAsciiString(this ReadOnlySpan<byte> buffer)
-    {
-        var endpos = buffer.IndexOfTerminator();
-        return Encoding.ASCII.GetString(buffer[..endpos]);
-    }
-
-    /// <summary>
-    /// Reads null terminated ASCII string from byte buffer.
-    /// </summary>
-    /// <param name="buffer">Byte buffer</param>
-    /// <returns>Managed string</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ReadNullTerminatedAsciiString(this Span<byte> buffer)
-    {
-        var endpos = buffer.IndexOfTerminator();
-        return Encoding.ASCII.GetString(buffer[..endpos]);
-    }
-
-#else
-
-    /// <summary>
-    /// Reads null terminated ASCII string from byte buffer.
-    /// </summary>
-    /// <param name="buffer">Byte buffer</param>
-    /// <returns>Managed string</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ReadNullTerminatedAsciiString(this ReadOnlySpan<byte> buffer)
-    {
-        var endpos = buffer.IndexOfTerminator();
-        return Encoding.ASCII.GetString(buffer.Slice(0, endpos).ToArray());
-    }
-
-#endif
 
     /// <summary>
     /// Reads null terminated Unicode string from byte buffer.
@@ -837,6 +806,86 @@ public static class BufferExtensions
         return chars.Slice(0, endpos);
     }
 
+    /// <summary>
+    /// Converts first character of each word to uppercase
+    /// </summary>
+    /// <param name="str">Source sring</param>
+    /// <param name="minWordLength">Minimum length of words to apply uppercase initial</param>
+    /// <returns>Converted string</returns>
+    public static string InitialCapital(this ReadOnlyMemory<char> str, int minWordLength)
+    {
+        if (str.IsEmpty)
+        {
+            return string.Empty;
+        }
+
+        if (minWordLength < 2)
+        {
+            minWordLength = 2;
+        }
+
+        var words = str.Split(' ').Select(word =>
+        {
+            if (MemoryMarshal.ToEnumerable(word).Any(char.IsLower))
+            {
+                return word;
+            }
+
+            if (word.Length >= minWordLength)
+            {
+                return $"{char.ToUpper(word.Span[0])}{word.Slice(1).ToString().ToLower()}".AsMemory();
+            }
+
+            return word;
+        });
+
+        return string.Join(" ", words);
+    }
+
+#endif
+
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP
+
+    /// <summary>
+    /// Reads null terminated ASCII string from byte buffer.
+    /// </summary>
+    /// <param name="buffer">Byte buffer</param>
+    /// <returns>Managed string</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ReadNullTerminatedAsciiString(this ReadOnlySpan<byte> buffer)
+    {
+        var endpos = buffer.IndexOfTerminator();
+        return Encoding.ASCII.GetString(buffer[..endpos]);
+    }
+
+    /// <summary>
+    /// Reads null terminated ASCII string from byte buffer.
+    /// </summary>
+    /// <param name="buffer">Byte buffer</param>
+    /// <returns>Managed string</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ReadNullTerminatedAsciiString(this Span<byte> buffer)
+    {
+        var endpos = buffer.IndexOfTerminator();
+        return Encoding.ASCII.GetString(buffer[..endpos]);
+    }
+
+#elif NET45_OR_GREATER || NETSTANDARD
+
+    /// <summary>
+    /// Reads null terminated ASCII string from byte buffer.
+    /// </summary>
+    /// <param name="buffer">Byte buffer</param>
+    /// <returns>Managed string</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ReadNullTerminatedAsciiString(this ReadOnlySpan<byte> buffer)
+    {
+        var endpos = buffer.IndexOfTerminator();
+        return Encoding.ASCII.GetString(buffer.Slice(0, endpos).ToArray());
+    }
+
+#endif
+
 #if !NET6_0_OR_GREATER
     /// <summary>Returns the maximum value in a generic sequence according to a specified key selector function.</summary>
     /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
@@ -887,42 +936,6 @@ public static class BufferExtensions
     public static TSource? MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey>? comparer)
         => source.OrderBy(keySelector, comparer).FirstOrDefault();
 #endif
-
-    /// <summary>
-    /// Converts first character of each word to uppercase
-    /// </summary>
-    /// <param name="str">Source sring</param>
-    /// <param name="minWordLength">Minimum length of words to apply uppercase initial</param>
-    /// <returns>Converted string</returns>
-    public static string InitialCapital(this ReadOnlyMemory<char> str, int minWordLength)
-    {
-        if (str.IsEmpty)
-        {
-            return string.Empty;
-        }
-
-        if (minWordLength < 2)
-        {
-            minWordLength = 2;
-        }
-
-        var words = str.Split(' ').Select(word =>
-        {
-            if (MemoryMarshal.ToEnumerable(word).Any(char.IsLower))
-            {
-                return word;
-            }
-
-            if (word.Length >= minWordLength)
-            {
-                return $"{char.ToUpper(word.Span[0])}{word.Slice(1).ToString().ToLower()}".AsMemory();
-            }
-
-            return word;
-        });
-
-        return string.Join(" ", words);
-    }
 
 #if NET6_0_OR_GREATER
     /// <summary>

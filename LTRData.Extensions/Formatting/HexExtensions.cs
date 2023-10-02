@@ -1,5 +1,7 @@
 ﻿using System;
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
 using System.Buffers;
+#endif
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -13,6 +15,9 @@ namespace LTRData.Extensions.Formatting;
 /// </summary>
 public static class HexExtensions
 {
+
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
+
     /// <summary>
     /// </summary>
     public static string ToHexString(this ReadOnlySpan<byte> data, ReadOnlySpan<char> delimiter)
@@ -339,6 +344,8 @@ public static class HexExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToHexString<T>(in T source) where T : unmanaged =>
         ToHexString(Buffers.BufferExtensions.AsReadOnlyBytes(source));
+
+#endif
 
     /// <summary>
     /// Returns a string with each byte expressed in two-character hexadecimal notation.

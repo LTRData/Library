@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
@@ -294,3 +296,5 @@ public static class SpanSplitExtensions
         }
     }
 }
+
+#endif

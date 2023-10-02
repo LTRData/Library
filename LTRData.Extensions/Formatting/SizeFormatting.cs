@@ -1,10 +1,13 @@
-﻿using System;
+﻿#if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 
 namespace LTRData.Extensions.Formatting;
 
+#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0056 // Use index operator
 
 /// <summary>
@@ -224,3 +227,5 @@ public static class SizeFormatting
         }
     }
 }
+
+#endif

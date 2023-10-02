@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
+
+using System;
 using System.Threading.Tasks;
 
 namespace LTRData.Extensions.Async;
@@ -57,6 +59,8 @@ public static class AsyncExtensions
 
 #endif
 
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
+
     /// <summary>
     /// </summary>
     public static IAsyncResult AsAsyncResult<T>(this Task<T> task, AsyncCallback? callback, object? state)
@@ -84,4 +88,9 @@ public static class AsyncExtensions
 
         return returntask;
     }
+
+#endif
+
 }
+
+#endif

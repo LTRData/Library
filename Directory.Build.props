@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 
-    <TargetFrameworks>net46;net48;netstandard2.0;netstandard2.1;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net46;net48;netstandard2.0;netstandard2.1;net6.0;net7.0</TargetFrameworks>
     <LangVersion>Latest</LangVersion>
 
     <PackageProjectUrl>https://github.com/LTRData/Library</PackageProjectUrl>

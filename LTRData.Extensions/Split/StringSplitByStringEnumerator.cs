@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
+
+using System;
 
 namespace LTRData.Extensions.Split;
 
@@ -224,3 +226,5 @@ public ref struct StringSplitByStringEnumerator
         this.reverse = reverse;
     }
 }
+
+#endif

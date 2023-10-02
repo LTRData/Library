@@ -25,6 +25,7 @@ public static partial class NativeCompareExtensions
     private static extern int memcmp(in byte ptr1, in byte ptr2, nint count);
 #endif
 
+#if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
     /// <summary>
     /// Compares two byte spans using C runtime memcmp function.
     /// </summary>
@@ -101,6 +102,7 @@ public static partial class NativeCompareExtensions
     /// <returns>Result of memcmp comparison.</returns>
     public static int BinaryCompare<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second) where T : unmanaged
         => BinaryCompare(MemoryMarshal.AsBytes(first), MemoryMarshal.AsBytes(second));
+#endif
 
     [return: MarshalAs(UnmanagedType.I1)]
     private delegate bool RtlIsZeroMemoryFunc(in byte buffer, nint length);
@@ -139,6 +141,7 @@ public static partial class NativeCompareExtensions
         };
     }
 
+#if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
     /// <summary>
     /// Determines whether all bytes in a buffer are zero. If ntdll.RtlIsZeroMemory is available it is used,
     /// otherwise it falls back to a native method that compares groups of bytes is an optimized way.
@@ -167,6 +170,7 @@ public static partial class NativeCompareExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsBufferZero(this ReadOnlySpan<byte> buffer) =>
         FuncRtlIsZeroMemory(MemoryMarshal.GetReference(buffer), buffer.Length);
+#endif
 
     private static unsafe bool InternalIsZeroMemory(in byte buffer, nint length)
     {
@@ -227,6 +231,7 @@ public static partial class NativeCompareExtensions
         return true;
     }
 
+#if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
     /// <summary>
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -238,4 +243,5 @@ public static partial class NativeCompareExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool BinaryEqual<T>(in T s1, in T s2) where T : unmanaged =>
         BinaryEqual(BufferExtensions.CreateReadOnlySpan(s1, 1), BufferExtensions.CreateReadOnlySpan(s2, 1));
+#endif
 }

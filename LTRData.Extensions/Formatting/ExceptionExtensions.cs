@@ -21,6 +21,7 @@ public static class ExceptionExtensions
             {
                 ex = ex.InnerException;
             }
+#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
             else if (ex is AggregateException aex)
             {
                 foreach (var iex in aex.InnerExceptions.SelectMany(Enumerate))
@@ -30,6 +31,7 @@ public static class ExceptionExtensions
 
                 yield break;
             }
+#endif
             else if (ex is ReflectionTypeLoadException rtlex)
             {
                 yield return ex;
@@ -60,6 +62,7 @@ public static class ExceptionExtensions
             {
                 ex = ex.InnerException;
             }
+#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
             else if (ex is AggregateException agex)
             {
                 foreach (var msg in agex.InnerExceptions.SelectMany(EnumerateMessages))
@@ -69,6 +72,7 @@ public static class ExceptionExtensions
 
                 yield break;
             }
+#endif
             else if (ex is ReflectionTypeLoadException tlex)
             {
                 yield return ex.Message;
@@ -97,14 +101,16 @@ public static class ExceptionExtensions
 
     /// <summary>
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string JoinMessages(this Exception exception) =>
         exception.JoinMessages(Environment.NewLine + Environment.NewLine);
 
     /// <summary>
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string JoinMessages(this Exception exception, string separator) =>
+#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
         string.Join(separator, exception.EnumerateMessages());
+#else
+        string.Join(separator, exception.EnumerateMessages().ToArray());
+#endif
 
 }
