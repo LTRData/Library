@@ -10,7 +10,7 @@
     <RepositoryType>git</RepositoryType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>..\LTRLib40.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <DebugType>portable</DebugType>
@@ -18,7 +18,7 @@
     <Company>LTR Data</Company>
     <Authors>Olof Lagerkvist</Authors>
     <OutputPath>..\$(Configuration)</OutputPath>
-    <FileVersion>1.0.0</FileVersion>
+    <FileVersion>1.0.1</FileVersion>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <PackageOutputPath>$(LocalNuGetPath)</PackageOutputPath>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -29,7 +29,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <!--<NoWarn>1591</NoWarn>-->
 
   </PropertyGroup>
 
