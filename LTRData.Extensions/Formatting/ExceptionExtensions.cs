@@ -4,13 +4,15 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LTRData.Extensions.Formatting;
 
+/// <summary>
+/// </summary>
 public static class ExceptionExtensions
 {
+    /// <summary>
+    /// </summary>
     public static IEnumerable<Exception> Enumerate(this Exception? ex)
     {
         while (ex is not null)
@@ -48,6 +50,8 @@ public static class ExceptionExtensions
         }
     }
 
+    /// <summary>
+    /// </summary>
     public static IEnumerable<string> EnumerateMessages(this Exception? ex)
     {
         while (ex is not null)
@@ -91,10 +95,14 @@ public static class ExceptionExtensions
         }
     }
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string JoinMessages(this Exception exception) =>
         exception.JoinMessages(Environment.NewLine + Environment.NewLine);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string JoinMessages(this Exception exception, string separator) =>
         string.Join(separator, exception.EnumerateMessages());

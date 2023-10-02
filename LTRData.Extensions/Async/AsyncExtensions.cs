@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LTRData.Extensions.Async;
 
+/// <summary>
+/// </summary>
 public static class AsyncExtensions
 {
 #if NET462_OR_GREATER || NETSTANDARD || NETCOREAPP
@@ -58,6 +57,8 @@ public static class AsyncExtensions
 
 #endif
 
+    /// <summary>
+    /// </summary>
     public static IAsyncResult AsAsyncResult<T>(this Task<T> task, AsyncCallback? callback, object? state)
     {
         var returntask = task.ContinueWith((t, _) => t.Result, state, TaskScheduler.Default);
@@ -70,6 +71,8 @@ public static class AsyncExtensions
         return returntask;
     }
 
+    /// <summary>
+    /// </summary>
     public static IAsyncResult AsAsyncResult(this Task task, AsyncCallback? callback, object? state)
     {
         var returntask = task.ContinueWith((t, _) => { }, state, TaskScheduler.Default);

@@ -12,13 +12,16 @@ using LTRData.Extensions.Buffers;
 using System;
 using System.ComponentModel;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace LTRData.Extensions.Native;
 
+/// <summary>
+/// </summary>
 public static class NativeLib
 {
+    /// <summary>
+    /// </summary>
 #if NET5_0_OR_GREATER
     public static bool IsWindows { get; } = OperatingSystem.IsWindows();
 #elif NET471_OR_GREATER || NETSTANDARD || NETCOREAPP                                               
@@ -40,6 +43,8 @@ public static class NativeLib
 
 #if NETCOREAPP
 
+    /// <summary>
+    /// </summary>
     public static nint CrtDllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath) => !IsWindows &&
         (libraryName.StartsWith("msvcr", StringComparison.OrdinalIgnoreCase) ||
         libraryName.StartsWith("msvcp", StringComparison.OrdinalIgnoreCase) ||
@@ -50,14 +55,20 @@ public static class NativeLib
         ? NativeLibrary.Load("c", assembly, searchPath)
         : 0;
 
+    /// <summary>
+    /// </summary>
     public static TDelegate GetProcAddress<TDelegate>(nint hModule, string procedureName) where TDelegate : Delegate
         => Marshal.GetDelegateForFunctionPointer<TDelegate>(NativeLibrary.GetExport(hModule, procedureName));
 
+    /// <summary>
+    /// </summary>
     public static TDelegate? GetProcAddressNoThrow<TDelegate>(nint hModule, string procedureName) where TDelegate : Delegate
         => NativeLibrary.TryGetExport(hModule, procedureName, out var fptr)
             ? Marshal.GetDelegateForFunctionPointer<TDelegate>(fptr)
             : null;
 
+    /// <summary>
+    /// </summary>
     public static TDelegate GetProcAddress<TDelegate>(string moduleName, string procedureName)
     {
         var hModule = NativeLibrary.Load(moduleName);
@@ -65,6 +76,8 @@ public static class NativeLib
         return Marshal.GetDelegateForFunctionPointer<TDelegate>(NativeLibrary.GetExport(hModule, procedureName));
     }
 
+    /// <summary>
+    /// </summary>
     public static nint GetProcAddressNoThrow(string moduleName, string procedureName)
     {
         if (!NativeLibrary.TryLoad(moduleName, out var hModule))
@@ -75,6 +88,8 @@ public static class NativeLib
         return !NativeLibrary.TryGetExport(hModule, procedureName, out var address) ? default : address;
     }
 
+    /// <summary>
+    /// </summary>
     public static TDelegate? GetProcAddressNoThrow<TDelegate>(string moduleName, string procedureName) where TDelegate : Delegate
     {
         var fptr = GetProcAddressNoThrow(moduleName, procedureName);
@@ -84,9 +99,13 @@ public static class NativeLib
 
 #elif NET471_OR_GREATER
 
+    /// <summary>
+    /// </summary>
     public static TDelegate GetProcAddress<TDelegate>(nint hModule, string procedureName) where TDelegate : Delegate
         => Marshal.GetDelegateForFunctionPointer<TDelegate>(Win32Try(UnsafeNativeMethods.GetProcAddress(hModule, procedureName)));
 
+    /// <summary>
+    /// </summary>
     public static TDelegate? GetProcAddressNoThrow<TDelegate>(nint hModule, string procedureName) where TDelegate : Delegate
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -99,6 +118,8 @@ public static class NativeLib
         return fptr == default ? null : Marshal.GetDelegateForFunctionPointer<TDelegate>(fptr);
     }
 
+    /// <summary>
+    /// </summary>
     public static TDelegate GetProcAddress<TDelegate>(string moduleName, string procedureName) where TDelegate : Delegate
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -111,6 +132,8 @@ public static class NativeLib
         return Marshal.GetDelegateForFunctionPointer<TDelegate>(Win32Try(UnsafeNativeMethods.GetProcAddress(hModule, procedureName)));
     }
 
+    /// <summary>
+    /// </summary>
     public static nint GetProcAddressNoThrow(string moduleName, string procedureName)
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -123,6 +146,8 @@ public static class NativeLib
         return hModule == default ? default : UnsafeNativeMethods.GetProcAddress(hModule, procedureName);
     }
 
+    /// <summary>
+    /// </summary>
     public static TDelegate? GetProcAddressNoThrow<TDelegate>(string moduleName, string procedureName) where TDelegate : Delegate
     {
         var fptr = GetProcAddressNoThrow(moduleName, procedureName);

@@ -1,15 +1,12 @@
 ﻿using LTRData.Extensions.Buffers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LTRData.Extensions.Native;
 
+/// <summary>
+/// </summary>
 public static partial class NativeCompareExtensions
 {
 #if NETCOREAPP
@@ -230,10 +227,14 @@ public static partial class NativeCompareExtensions
         return true;
     }
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int BinaryCompare<T>(in T s1, in T s2) where T : unmanaged =>
         BinaryCompare(BufferExtensions.CreateReadOnlySpan(s1, 1), BufferExtensions.CreateReadOnlySpan(s2, 1));
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool BinaryEqual<T>(in T s1, in T s2) where T : unmanaged =>
         BinaryEqual(BufferExtensions.CreateReadOnlySpan(s1, 1), BufferExtensions.CreateReadOnlySpan(s2, 1));

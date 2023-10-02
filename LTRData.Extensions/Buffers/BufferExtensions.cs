@@ -1,69 +1,99 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using LTRData.Extensions.Buffers;
 using LTRData.Extensions.Split;
 
 namespace LTRData.Extensions.Buffers;
 
+/// <summary>
+/// </summary>
 public static class BufferExtensions
 {
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<T> ToEnumerable<T>(this Memory<T> span) => MemoryMarshal.ToEnumerable((ReadOnlyMemory<T>)span);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<T> ToEnumerable<T>(this ReadOnlyMemory<T> span) => MemoryMarshal.ToEnumerable(span);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<char> AsChars(this byte[] bytes) => MemoryMarshal.Cast<byte, char>(bytes);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<char> AsChars(this Memory<byte> bytes) => MemoryMarshal.Cast<byte, char>(bytes.Span);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<char> AsChars(this ReadOnlyMemory<byte> bytes) => MemoryMarshal.Cast<byte, char>(bytes.Span);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<char> AsChars(this Span<byte> bytes) => MemoryMarshal.Cast<byte, char>(bytes);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<char> AsChars(this ReadOnlySpan<byte> bytes) => MemoryMarshal.Cast<byte, char>(bytes);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Span<byte> AsSpan(this SafeBuffer ptr) =>
         new(ptr.DangerousGetHandle().ToPointer(), (int)ptr.ByteLength);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<byte> AsSpan(this MemoryStream memoryStream) =>
         memoryStream.GetBuffer().AsSpan(0, checked((int)memoryStream.Length));
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Span<byte> AsSpan(this UnmanagedMemoryStream memoryStream) =>
         new(memoryStream.PositionPointer - memoryStream.Position, (int)memoryStream.Length);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Memory<byte> AsMemory(this MemoryStream memoryStream) =>
         memoryStream.GetBuffer().AsMemory(0, checked((int)memoryStream.Length));
 
 #if !NETCOREAPP
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly T CastRef<T>(this ReadOnlySpan<byte> bytes) where T : unmanaged =>
         ref MemoryMarshal.Cast<byte, T>(bytes)[0];
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref T CastRef<T>(this Span<byte> bytes) where T : unmanaged =>
         ref MemoryMarshal.Cast<byte, T>(bytes)[0];
 #else
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly T CastRef<T>(this ReadOnlySpan<byte> bytes) where T : unmanaged =>
         ref MemoryMarshal.AsRef<T>(bytes);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref T CastRef<T>(this Span<byte> bytes) where T : unmanaged =>
         ref MemoryMarshal.AsRef<T>(bytes);
@@ -98,41 +128,59 @@ public static class BufferExtensions
         (data[bitnumber >> 3] & 1 << (~bitnumber & 7)) != 0;
 
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<T> CreateReadOnlySpan<T>(in T source, int length) =>
         MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(source), length);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<T> CreateSpan<T>(ref T source, int length) =>
         MemoryMarshal.CreateSpan(ref source, length);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(in T source) where T : unmanaged =>
         MemoryMarshal.AsBytes(CreateReadOnlySpan(source, 1));
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<byte> AsBytes<T>(ref T source) where T : unmanaged =>
         MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref source, 1));
 
+    /// <summary>
+    /// </summary>
     public static int GetHashCode<T>(in T source) where T : unmanaged =>
         GetHashCode(AsReadOnlyBytes(source));
 
 #else
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(in T source) where T : unmanaged =>
         MemoryMarshal.AsBytes(CreateReadOnlySpan(source, 1));
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe ReadOnlySpan<T> CreateReadOnlySpan<T>(in T source, int length) =>
         new(Unsafe.AsPointer(ref Unsafe.AsRef(source)), length);
 
+    /// <summary>
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Span<T> CreateSpan<T>(ref T source, int length) =>
         new(Unsafe.AsPointer(ref source), length);
 
 #endif
 
+    /// <summary>
+    /// </summary>
     public static int GetHashCode(ReadOnlySpan<byte> ptr)
     {
         var result = 0;
@@ -145,37 +193,90 @@ public static class BufferExtensions
     }
 
 #if !NET6_0_OR_GREATER
+    /// <summary>
+    /// Returns character memory block beyond whitespace characters
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <returns>Character memory block beyond whitespace characters</returns>
     public static ReadOnlyMemory<char> TrimStart(this ReadOnlyMemory<char> str)
         => str.Slice(str.Length - str.Span.TrimStart().Length);
 
+    /// <summary>
+    /// Returns character memory block before whitespace characters
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <returns>Character memory block before whitespace characters</returns>
     public static ReadOnlyMemory<char> TrimEnd(this ReadOnlyMemory<char> str)
         => str.Slice(0, str.Span.TrimEnd().Length);
 
+    /// <summary>
+    /// Returns character memory block beyond and before whitespace characters
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <returns>Character memory block beyond and before whitespace characters</returns>
     public static ReadOnlyMemory<char> Trim(this ReadOnlyMemory<char> str)
         => str.TrimStart().TrimEnd();
 
+    /// <summary>
+    /// Returns character memory block beyond given trim character
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <param name="chr">Character to trim</param>
+    /// <returns>Character memory block beyond given trim character</returns>
     public static ReadOnlyMemory<char> TrimStart(this ReadOnlyMemory<char> str, char chr)
         => str.Slice(str.Length - str.Span.TrimStart(chr).Length);
 
+    /// <summary>
+    /// Returns character memory block before given trim character
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <param name="chr">Character to trim</param>
+    /// <returns>Character memory block before given trim string</returns>
     public static ReadOnlyMemory<char> TrimEnd(this ReadOnlyMemory<char> str, char chr)
         => str.Slice(0, str.Span.TrimEnd(chr).Length);
 
+    /// <summary>
+    /// Returns character memory block beyond and before given trim character
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <param name="chr">Character to trim</param>
+    /// <returns>Character memory block beyond given trim character</returns>
     public static ReadOnlyMemory<char> Trim(this ReadOnlyMemory<char> str, char chr)
         => str.TrimStart(chr).TrimEnd(chr);
 
-    public static ReadOnlyMemory<char> TrimStart(this ReadOnlyMemory<char> str, ReadOnlySpan<char> chr)
-        => str.Slice(str.Span.TrimStart(chr).Length - str.Length);
+    /// <summary>
+    /// Returns character memory block beyond given trim haracter
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <param name="chrs">String to trim</param>
+    /// <returns>Character memory block beyond given trim string</returns>
+    public static ReadOnlyMemory<char> TrimStart(this ReadOnlyMemory<char> str, ReadOnlySpan<char> chrs)
+        => str.Slice(str.Span.TrimStart(chrs).Length - str.Length);
 
-    public static ReadOnlyMemory<char> TrimEnd(this ReadOnlyMemory<char> str, ReadOnlySpan<char> chr)
-        => str.Slice(0, str.Span.TrimEnd(chr).Length);
+    /// <summary>
+    /// Returns character memory block before given trim string
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <param name="chrs">String to trim</param>
+    /// <returns>Character memory block before given trim string</returns>
+    public static ReadOnlyMemory<char> TrimEnd(this ReadOnlyMemory<char> str, ReadOnlySpan<char> chrs)
+        => str.Slice(0, str.Span.TrimEnd(chrs).Length);
 
-    public static ReadOnlyMemory<char> Trim(this ReadOnlyMemory<char> str, ReadOnlySpan<char> chr)
-        => str.TrimStart(chr).TrimEnd(chr);
+    /// <summary>
+    /// Returns character memory block beyond and before given trim string
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <param name="chrs">String to trim</param>
+    /// <returns>Character memory block beyond and before given trim string</returns>
+    public static ReadOnlyMemory<char> Trim(this ReadOnlyMemory<char> str, ReadOnlySpan<char> chrs)
+        => str.TrimStart(chrs).TrimEnd(chrs);
 
 #endif
 
 #if !NETCOREAPP
 
+    /// <summary>
+    /// </summary>
     public static StringBuilder Append(this StringBuilder sb, ReadOnlyMemory<char> value)
     {
         if (MemoryMarshal.TryGetString(value, out var text, out var start, out var length))
@@ -190,18 +291,34 @@ public static class BufferExtensions
 
 #if !NETCOREAPP && !NETSTANDARD && !NET461_OR_GREATER
 
+    /// <summary>
+    /// Appends an item to an enumeration
+    /// </summary>
+    /// <typeparam name="T">Type of items in enumeration</typeparam>
+    /// <param name="values">Source enumeration</param>
+    /// <param name="value">Item to append</param>
+    /// <returns>New enumeration with item appended</returns>
     public static IEnumerable<T> Append<T>(this IEnumerable<T> values, T value)
     {
         foreach (var v in values)
         {
             yield return v;
         }
+
         yield return value;
     }
 
+    /// <summary>
+    /// Prepends an item to an enumeration
+    /// </summary>
+    /// <typeparam name="T">Type of items in enumeration</typeparam>
+    /// <param name="values">Source enumeration</param>
+    /// <param name="value">Item to prepend</param>
+    /// <returns>New enumeration with item prepended</returns>
     public static IEnumerable<T> Prepend<T>(this IEnumerable<T> values, T value)
     {
         yield return value;
+
         foreach (var v in values)
         {
             yield return v;
@@ -210,18 +327,42 @@ public static class BufferExtensions
 
 #endif
 
+    /// <summary>
+    /// Returns character memory block beyond given trim characters
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <param name="chrs">Characters to trim</param>
+    /// <returns>Character memory block beyond given trim characters</returns>
     public static ReadOnlyMemory<char> TrimStartAny(this ReadOnlyMemory<char> str, char[] chrs)
         => str.Slice(str.Span.TrimStartAny(chrs).Length - str.Length);
 
+    /// <summary>
+    /// Returns character memory block before given trim characters
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <param name="chrs">Characters to trim</param>
+    /// <returns>Character memory block before given trim characters</returns>
     public static ReadOnlyMemory<char> TrimEndAny(this ReadOnlyMemory<char> str, char[] chrs)
         => str.Slice(0, str.Span.TrimEndAny(chrs).Length);
 
+    /// <summary>
+    /// Returns character memory block beyond and before given trim characters
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <param name="chrs">Characters to trim</param>
+    /// <returns>Character memory block beyond and before given trim characters</returns>
     public static ReadOnlyMemory<char> Trim(this ReadOnlyMemory<char> str, char[] chrs)
         => str.TrimStartAny(chrs).TrimEndAny(chrs);
 
-    public static ReadOnlySpan<char> TrimStartAny(this ReadOnlySpan<char> str, char[] characters)
+    /// <summary>
+    /// Returns character memory block beyond given trim characters
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <param name="chrs">Characters to trim</param>
+    /// <returns>Character memory block beyond given trim characters</returns>
+    public static ReadOnlySpan<char> TrimStartAny(this ReadOnlySpan<char> str, char[] chrs)
     {
-        foreach (var chr in characters)
+        foreach (var chr in chrs)
         {
             str = str.TrimStart(chr);
         }
@@ -229,9 +370,15 @@ public static class BufferExtensions
         return str;
     }
 
-    public static ReadOnlySpan<char> TrimEndAny(this ReadOnlySpan<char> str, char[] characters)
+    /// <summary>
+    /// Returns character memory block before given trim characters
+    /// </summary>
+    /// <param name="str">Character memory block</param>
+    /// <param name="chrs">Characters to trim</param>
+    /// <returns>Character memory block before given trim characters</returns>
+    public static ReadOnlySpan<char> TrimEndAny(this ReadOnlySpan<char> str, char[] chrs)
     {
-        foreach (var chr in characters)
+        foreach (var chr in chrs)
         {
             str = str.TrimEnd(chr);
         }
@@ -239,27 +386,43 @@ public static class BufferExtensions
         return str;
     }
 
+    /// <summary>
+    /// </summary>
     public static string[] Split(this string str, char separator, int count, StringSplitOptions options = StringSplitOptions.None)
         => str.Split(new[] { separator }, count, options);
 
+    /// <summary>
+    /// </summary>
     public static string[] Split(this string str, char separator, StringSplitOptions options = StringSplitOptions.None)
         => str.Split(new[] { separator }, options);
 
+    /// <summary>
+    /// </summary>
     public static bool Contains(this ReadOnlySpan<char> str, char chr)
         => str.IndexOf(chr) >= 0;
 
+    /// <summary>
+    /// </summary>
     public static bool Contains(this string str, char chr)
         => str.IndexOf(chr) >= 0;
 
+    /// <summary>
+    /// </summary>
     public static bool Contains(this string str, string substr)
         => str.IndexOf(substr) >= 0;
 
+    /// <summary>
+    /// </summary>
     public static bool Contains(this string str, string substr, StringComparison comparison)
         => str.IndexOf(substr, comparison) >= 0;
 
+    /// <summary>
+    /// </summary>
     public static bool StartsWith(this string str, char chr)
         => str is not null && str.Length > 0 && str[0] == chr;
 
+    /// <summary>
+    /// </summary>
     public static bool EndsWith(this string str, char chr)
         => str is not null && str.Length > 0 && str[str.Length - 1] == chr;
 
@@ -704,23 +867,43 @@ public static class BufferExtensions
     public static TSource? MaxBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey>? comparer)
         => source.OrderByDescending(keySelector, comparer).FirstOrDefault();
 
+    /// <summary>
+    /// </summary>
     public static TSource? MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         => source.OrderBy(keySelector).FirstOrDefault();
 
+    /// <summary>Returns the maximum value in a generic sequence according to a specified key selector function.</summary>
+    /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+    /// <typeparam name="TKey">The type of key to compare elements by.</typeparam>
+    /// <param name="source">A sequence of values to determine the maximum value of.</param>
+    /// <param name="keySelector">A function to extract the key for each element.</param>
+    /// <param name="comparer">The <see cref="IComparer{TKey}" /> to compare keys.</param>
+    /// <returns>The value with the maximum key in the sequence.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="source" /> is <see langword="null" />.</exception>
+    /// <exception cref="ArgumentException">No key extracted from <paramref name="source" /> implements the <see cref="IComparable" /> or <see cref="IComparable{TKey}" /> interface.</exception>
+    /// <remarks>
+    /// <para>If <typeparamref name="TKey" /> is a reference type and the source sequence is empty or contains only values that are <see langword="null" />, this method returns <see langword="null" />.</para>
+    /// </remarks>
     public static TSource? MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey>? comparer)
         => source.OrderBy(keySelector, comparer).FirstOrDefault();
 #endif
 
-    public static string InitialCapital(this ReadOnlyMemory<char> str, int MinWordLength)
+    /// <summary>
+    /// Converts first character of each word to uppercase
+    /// </summary>
+    /// <param name="str">Source sring</param>
+    /// <param name="minWordLength">Minimum length of words to apply uppercase initial</param>
+    /// <returns>Converted string</returns>
+    public static string InitialCapital(this ReadOnlyMemory<char> str, int minWordLength)
     {
         if (str.IsEmpty)
         {
             return string.Empty;
         }
 
-        if (MinWordLength < 2)
+        if (minWordLength < 2)
         {
-            MinWordLength = 2;
+            minWordLength = 2;
         }
 
         var words = str.Split(' ').Select(word =>
@@ -730,7 +913,7 @@ public static class BufferExtensions
                 return word;
             }
 
-            if (word.Length >= MinWordLength)
+            if (word.Length >= minWordLength)
             {
                 return $"{char.ToUpper(word.Span[0])}{word.Slice(1).ToString().ToLower()}".AsMemory();
             }
@@ -742,6 +925,8 @@ public static class BufferExtensions
     }
 
 #if NET6_0_OR_GREATER
+    /// <summary>
+    /// </summary>
     public static int GetSequenceHash(this ReadOnlySpan<byte> str)
     {
         var hash = new HashCode();
@@ -751,6 +936,8 @@ public static class BufferExtensions
 #endif
 
 #if NET461_OR_GREATER || NETSTANDARD || NETCOREAPP
+    /// <summary>
+    /// </summary>
     public static int GetSequenceHash<T>(this ReadOnlySpan<T> str)
     {
         var hash = new HashCode();
@@ -762,6 +949,8 @@ public static class BufferExtensions
         return hash.ToHashCode();
     }
 
+    /// <summary>
+    /// </summary>
     public static int GetSequenceHash<T>(this Span<T> str)
     {
         var hash = new HashCode();
@@ -773,6 +962,8 @@ public static class BufferExtensions
         return hash.ToHashCode();
     }
 
+    /// <summary>
+    /// </summary>
     public static int GetSequenceHash<T>(this IEnumerable<T> str)
     {
         var hash = new HashCode();
@@ -786,12 +977,20 @@ public static class BufferExtensions
 #endif
 
 #if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
+    /// <summary>
+    /// </summary>
     public static T[] RentArray<T>(int size) => System.Buffers.ArrayPool<T>.Shared.Rent(size);
 
+    /// <summary>
+    /// </summary>
     public static void ReturnArray<T>(T[] array) => System.Buffers.ArrayPool<T>.Shared.Return(array);
 #else
+    /// <summary>
+    /// </summary>
     public static T[] RentArray<T>(int size) => new T[size];
 
+    /// <summary>
+    /// </summary>
     public static void ReturnArray<T>(T[] _) { }
 #endif
 }
