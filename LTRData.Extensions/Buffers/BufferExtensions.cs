@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -16,6 +17,127 @@ namespace LTRData.Extensions.Buffers;
 /// </summary>
 public static class BufferExtensions
 {
+
+#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
+
+    /// <summary>
+    /// Encapsulation of <see cref="string.Join(string?, IEnumerable{string?})"/> as an extension method
+    /// </summary>
+    /// <param name="strings">String to join</param>
+    /// <param name="separator">Separator to insert between each joined element</param>
+    /// <returns>Joined string</returns>
+    public static string Join(this IEnumerable<string> strings, string separator) => string.Join(separator, strings);
+
+    /// <summary>
+    /// Encapsulation of <see cref="string.Join(string?, string?[])"/> as an extension method
+    /// </summary>
+    /// <param name="strings">String to join</param>
+    /// <param name="separator">Separator to insert between each joined element</param>
+    /// <returns>Joined string</returns>
+    public static string Join(this string[] strings, string separator) => string.Join(separator, strings);
+
+#else
+
+    /// <summary>
+    /// Encapsulation of <see cref="string.Join(string, string[])"/> as an extension method
+    /// </summary>
+    /// <param name="strings">String to join</param>
+    /// <param name="separator">Separator to insert between each joined element</param>
+    /// <returns>Joined string</returns>
+    public static string Join(this IEnumerable<string> strings, string separator) => string.Join(separator, strings.ToArray());
+
+    /// <summary>
+    /// Encapsulation of <see cref="string.Join(string?, string?[])"/> as an extension method
+    /// </summary>
+    /// <param name="strings">String to join</param>
+    /// <param name="separator">Separator to insert between each joined element</param>
+    /// <returns>Joined string</returns>
+    public static string Join(this string[] strings, string separator) => string.Join(separator, strings);
+
+#endif
+
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP
+
+    /// <summary>
+    /// Encapsulation of <see cref="string.Join{T}(char, IEnumerable{T})"/> as an extension method
+    /// </summary>
+    /// <param name="strings">String to join</param>
+    /// <param name="separator">Separator to insert between each joined element</param>
+    /// <returns>Joined string</returns>
+    public static string Join(this IEnumerable<string> strings, char separator) => string.Join(separator, strings);
+
+    /// <summary>
+    /// Encapsulation of <see cref="string.Join(char, string?[])"/> as an extension method
+    /// </summary>
+    /// <param name="strings">String to join</param>
+    /// <param name="separator">Separator to insert between each joined element</param>
+    /// <returns>Joined string</returns>
+    public static string Join(this string[] strings, char separator) => string.Join(separator, strings);
+
+#elif NETSTANDARD || NET40_OR_GREATER
+
+    /// <summary>
+    /// Encapsulation of <see cref="string.Join{T}(string, IEnumerable{T})"/> as an extension method
+    /// </summary>
+    /// <param name="strings">String to join</param>
+    /// <param name="separator">Separator to insert between each joined element</param>
+    /// <returns>Joined string</returns>
+    public static string Join(this IEnumerable<string> strings, char separator) => string.Join(separator.ToString(), strings);
+
+    /// <summary>
+    /// Encapsulation of <see cref="string.Join(string, string?[])"/> as an extension method
+    /// </summary>
+    /// <param name="strings">String to join</param>
+    /// <param name="separator">Separator to insert between each joined element</param>
+    /// <returns>Joined string</returns>
+    public static string Join(this string[] strings, char separator) => string.Join(separator.ToString(), strings);
+
+#else
+
+    /// <summary>
+    /// Encapsulation of <see cref="string.Join(string, string?[])"/> as an extension method
+    /// </summary>
+    /// <param name="strings">String to join</param>
+    /// <param name="separator">Separator to insert between each joined element</param>
+    /// <returns>Joined string</returns>
+    public static string Join(this IEnumerable<string> strings, char separator) => string.Join(separator.ToString(), strings.ToArray());
+
+    /// <summary>
+    /// Encapsulation of <see cref="string.Join(string, string?[])"/> as an extension method
+    /// </summary>
+    /// <param name="strings">String to join</param>
+    /// <param name="separator">Separator to insert between each joined element</param>
+    /// <returns>Joined string</returns>
+    public static string Join(this string[] strings, char separator) => string.Join(separator.ToString(), strings);
+
+#endif
+
+    /// <summary>
+    /// Encapsulation of <see cref="string.Concat(string?[])"/> as an extension method
+    /// </summary>
+    /// <param name="strings">String to join</param>
+    /// <returns>Joined string</returns>
+    public static string Concat(this IEnumerable<string> strings) => string.Concat(strings);
+
+    /// <summary>
+    /// Encapsulation of <see cref="string.Concat(string?[])"/> as an extension method
+    /// </summary>
+    /// <param name="strings">String to join</param>
+    /// <returns>Joined string</returns>
+    public static string Concat(this string[] strings) => string.Concat(strings);
+
+#if NET45_OR_GREATER
+    /// <summary>
+    /// Returns a read-only wrapper for a dictionary
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <returns></returns>
+    public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dictionary) where TKey : notnull
+        => new(dictionary);
+#endif
+
 #if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
 
     /// <summary>

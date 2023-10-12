@@ -1,6 +1,9 @@
 ﻿#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
 
 using System;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LTRData.Extensions.Async;
@@ -9,6 +12,24 @@ namespace LTRData.Extensions.Async;
 /// </summary>
 public static class AsyncExtensions
 {
+
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
+    /// <summary>
+    /// A task that has completed with the integer result of 0.
+    /// </summary>
+    public static Task<int> ZeroCompletedTask { get; } = Task.FromResult(0);
+
+    /// <summary>
+    /// A task that has completed with the boolean result of false.
+    /// </summary>
+    public static Task<bool> FalseResult { get; } = Task.FromResult(false);
+
+    /// <summary>
+    /// A task that has completed with the boolean result of true.
+    /// </summary>
+    public static Task<bool> TrueResult { get; } = Task.FromResult(true);
+#endif
+
 #if NET462_OR_GREATER || NETSTANDARD || NETCOREAPP
 
     /// <summary>
