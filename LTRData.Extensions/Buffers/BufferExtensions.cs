@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -18,115 +19,7 @@ namespace LTRData.Extensions.Buffers;
 public static class BufferExtensions
 {
 
-#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
-
-    /// <summary>
-    /// Encapsulation of <see cref="string.Join(string?, IEnumerable{string?})"/> as an extension method
-    /// </summary>
-    /// <param name="strings">String to join</param>
-    /// <param name="separator">Separator to insert between each joined element</param>
-    /// <returns>Joined string</returns>
-    public static string Join(this IEnumerable<string> strings, string separator) => string.Join(separator, strings);
-
-    /// <summary>
-    /// Encapsulation of <see cref="string.Join(string?, string?[])"/> as an extension method
-    /// </summary>
-    /// <param name="strings">String to join</param>
-    /// <param name="separator">Separator to insert between each joined element</param>
-    /// <returns>Joined string</returns>
-    public static string Join(this string[] strings, string separator) => string.Join(separator, strings);
-
-#else
-
-    /// <summary>
-    /// Encapsulation of <see cref="string.Join(string, string[])"/> as an extension method
-    /// </summary>
-    /// <param name="strings">String to join</param>
-    /// <param name="separator">Separator to insert between each joined element</param>
-    /// <returns>Joined string</returns>
-    public static string Join(this IEnumerable<string> strings, string separator) => string.Join(separator, strings.ToArray());
-
-    /// <summary>
-    /// Encapsulation of <see cref="string.Join(string?, string?[])"/> as an extension method
-    /// </summary>
-    /// <param name="strings">String to join</param>
-    /// <param name="separator">Separator to insert between each joined element</param>
-    /// <returns>Joined string</returns>
-    public static string Join(this string[] strings, string separator) => string.Join(separator, strings);
-
-#endif
-
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP
-
-    /// <summary>
-    /// Encapsulation of <see cref="string.Join{T}(char, IEnumerable{T})"/> as an extension method
-    /// </summary>
-    /// <param name="strings">String to join</param>
-    /// <param name="separator">Separator to insert between each joined element</param>
-    /// <returns>Joined string</returns>
-    public static string Join(this IEnumerable<string> strings, char separator) => string.Join(separator, strings);
-
-    /// <summary>
-    /// Encapsulation of <see cref="string.Join(char, string?[])"/> as an extension method
-    /// </summary>
-    /// <param name="strings">String to join</param>
-    /// <param name="separator">Separator to insert between each joined element</param>
-    /// <returns>Joined string</returns>
-    public static string Join(this string[] strings, char separator) => string.Join(separator, strings);
-
-#elif NETSTANDARD || NET40_OR_GREATER
-
-    /// <summary>
-    /// Encapsulation of <see cref="string.Join{T}(string, IEnumerable{T})"/> as an extension method
-    /// </summary>
-    /// <param name="strings">String to join</param>
-    /// <param name="separator">Separator to insert between each joined element</param>
-    /// <returns>Joined string</returns>
-    public static string Join(this IEnumerable<string> strings, char separator) => string.Join(separator.ToString(), strings);
-
-    /// <summary>
-    /// Encapsulation of <see cref="string.Join(string, string?[])"/> as an extension method
-    /// </summary>
-    /// <param name="strings">String to join</param>
-    /// <param name="separator">Separator to insert between each joined element</param>
-    /// <returns>Joined string</returns>
-    public static string Join(this string[] strings, char separator) => string.Join(separator.ToString(), strings);
-
-#else
-
-    /// <summary>
-    /// Encapsulation of <see cref="string.Join(string, string?[])"/> as an extension method
-    /// </summary>
-    /// <param name="strings">String to join</param>
-    /// <param name="separator">Separator to insert between each joined element</param>
-    /// <returns>Joined string</returns>
-    public static string Join(this IEnumerable<string> strings, char separator) => string.Join(separator.ToString(), strings.ToArray());
-
-    /// <summary>
-    /// Encapsulation of <see cref="string.Join(string, string?[])"/> as an extension method
-    /// </summary>
-    /// <param name="strings">String to join</param>
-    /// <param name="separator">Separator to insert between each joined element</param>
-    /// <returns>Joined string</returns>
-    public static string Join(this string[] strings, char separator) => string.Join(separator.ToString(), strings);
-
-#endif
-
-    /// <summary>
-    /// Encapsulation of <see cref="string.Concat(string?[])"/> as an extension method
-    /// </summary>
-    /// <param name="strings">String to join</param>
-    /// <returns>Joined string</returns>
-    public static string Concat(this IEnumerable<string> strings) => string.Concat(strings);
-
-    /// <summary>
-    /// Encapsulation of <see cref="string.Concat(string?[])"/> as an extension method
-    /// </summary>
-    /// <param name="strings">String to join</param>
-    /// <returns>Joined string</returns>
-    public static string Concat(this string[] strings) => string.Concat(strings);
-
-#if NET45_OR_GREATER
+#if NET45_OR_GREATER || NETSTANDARD || (NETCOREAPP && !NET7_0_OR_GREATER)
     /// <summary>
     /// Returns a read-only wrapper for a dictionary
     /// </summary>
@@ -732,6 +625,16 @@ public static class BufferExtensions
     public static string[] Split(this string str, char separator, StringSplitOptions options = StringSplitOptions.None)
         => str.Split(new[] { separator }, options);
 
+    /// <summary>
+    /// </summary>
+    public static string[] Split(this string str, string separator, int count, StringSplitOptions options = StringSplitOptions.None)
+        => str.Split(new[] { separator }, count, options);
+
+    /// <summary>
+    /// </summary>
+    public static string[] Split(this string str, string separator, StringSplitOptions options = StringSplitOptions.None)
+        => str.Split(new[] { separator }, options);
+
 #if !NETSTANDARD2_1_OR_GREATER && !NETCOREAPP
     /// <summary>
     /// </summary>
@@ -1127,5 +1030,15 @@ public static class BufferExtensions
     /// <summary>
     /// </summary>
     public static void ReturnArray<T>(T[] _) { }
+#endif
+
+#if NET45_OR_GREATER || (NETSTANDARD && !NETSTANDARD2_1_OR_GREATER)
+    /// <summary>
+    /// </summary>
+    /// <param name="sb"></param>
+    /// <param name="span"></param>
+    /// <returns></returns>
+    public static StringBuilder Append(this StringBuilder sb, ReadOnlySpan<char> span)
+        => sb.Append(span.ToString());
 #endif
 }
