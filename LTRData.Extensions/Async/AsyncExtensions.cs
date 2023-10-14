@@ -1,7 +1,9 @@
 ﻿#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +30,82 @@ public static class AsyncExtensions
     /// A task that has completed with the boolean result of true.
     /// </summary>
     public static Task<bool> TrueResult { get; } = Task.FromResult(true);
+
+    private static class Immuatables<T>
+    {
+        public static readonly Task<T?> DefaultCompletedTask = Task.FromResult<T?>(default);
+
+        public static readonly Task<T[]> EmptyArrayCompletedTask = Task.FromResult(Array.Empty<T>());
+
+        public static readonly Task<IEnumerable<T>> EmptyEnumerationCompletedTask = Task.FromResult(Enumerable.Empty<T>());
+    }
+
+    /// <summary>
+    /// A task that has completed with the default value of type <typeparamref name="T"/>
+    /// </summary>
+    public static Task<T?> DefaultCompletedTask<T>() => Immuatables<T>.DefaultCompletedTask;
+
+    /// <summary>
+    /// A task that has completed with an empty array of type <typeparamref name="T"/>
+    /// </summary>
+    public static Task<T[]> EmptyArrayCompletedTask<T>() => Immuatables<T>.EmptyArrayCompletedTask;
+
+    /// <summary>
+    /// A task that has completed with an empty enumeration of type <typeparamref name="T"/>
+    /// </summary>
+    public static Task<IEnumerable<T>> EmptyEnumerationCompletedTask<T>() => Immuatables<T>.EmptyEnumerationCompletedTask;
+#endif
+
+#if NET45_OR_GREATER || NETSTANDARD || (NETCOREAPP && !NET6_0_OR_GREATER)
+    /// <summary>
+    /// </summary>
+    /// <param name="task"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task WaitAsync(this Task task, CancellationToken cancellationToken)
+        => task.WaitAsync(Timeout.InfiniteTimeSpan, cancellationToken);
+
+    /// <summary>
+    /// </summary>
+    /// <param name="task"></param>
+    /// <param name="timeout"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async static Task WaitAsync(this Task task, TimeSpan timeout, CancellationToken cancellationToken)
+    {
+        var timeoutTask = Task.Delay(timeout, cancellationToken);
+        var result = await Task.WhenAny(task, timeoutTask).ConfigureAwait(false);
+        if (result == timeoutTask)
+        {
+            throw new TimeoutException();
+        }
+    }
+
+    /// <summary>
+    /// </summary>
+    /// <param name="task"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task<T> WaitAsync<T>(this Task<T> task, CancellationToken cancellationToken)
+        => task.WaitAsync(TimeSpan.FromMilliseconds(-1), cancellationToken);
+
+    /// <summary>
+    /// </summary>
+    /// <param name="task"></param>
+    /// <param name="timeout"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async static Task<T> WaitAsync<T>(this Task<T> task, TimeSpan timeout, CancellationToken cancellationToken)
+    {
+        var timeoutTask = Task.Delay(timeout, cancellationToken);
+        var result = await Task.WhenAny(task, timeoutTask).ConfigureAwait(false);
+        if (result == timeoutTask)
+        {
+            throw new TimeoutException();
+        }
+
+        return task.Result;
+    }
 #endif
 
 #if NET462_OR_GREATER || NETSTANDARD || NETCOREAPP
