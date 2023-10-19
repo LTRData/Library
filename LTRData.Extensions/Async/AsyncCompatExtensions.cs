@@ -12,7 +12,7 @@ namespace LTRData.Extensions.Async;
 
 /// <summary>
 /// </summary>
-public static class AsyncExtensions
+public static class AsyncCompatExtensions
 {
 
 #if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
