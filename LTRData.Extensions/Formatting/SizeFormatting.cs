@@ -1,7 +1,11 @@
-﻿#if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
-
+﻿using LTRData.Extensions.Buffers;
 using System;
+#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
 using System.Collections.Concurrent;
+#endif
+#if NET6_0_OR_GREATER
+using System.Collections.Immutable;
+#endif
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -15,15 +19,20 @@ namespace LTRData.Extensions.Formatting;
 /// </summary>
 public static class SizeFormatting
 {
-    private static readonly IReadOnlyList<(ulong Size, string Suffix)> Multipliers = new List<(ulong Size, string Suffix)>
+    private static readonly ICollection<KeyValuePair<ulong, string>> Multipliers = new List<KeyValuePair<ulong, string>>
     {
-        (1UL << 60, " EB"),
-        (1UL << 50, " PB"),
-        (1UL << 40, " TB"),
-        (1UL << 30, " GB"),
-        (1UL << 20, " MB"),
-        (1UL << 10, " KB")
-    };
+        new(1UL << 60, " EB"),
+        new(1UL << 50, " PB"),
+        new(1UL << 40, " TB"),
+        new(1UL << 30, " GB"),
+        new(1UL << 20, " MB"),
+        new(1UL << 10, " KB")
+    }
+#if NET6_0_OR_GREATER
+    .ToImmutableList();
+#else
+    .AsReadOnly();
+#endif
 
     /// <summary>
     /// Formats byte sizes with MB, GB etc suffixes
@@ -32,17 +41,18 @@ public static class SizeFormatting
     /// <returns>Number of bytes formatted as string</returns>
     public static string FormatBytes(ulong size)
     {
-        foreach (var (Size, Suffix) in Multipliers)
+        foreach (var multiplier in Multipliers)
         {
-            if (size >= Size)
+            if (size >= multiplier.Key)
             {
-                return $"{size / (double)Size:0.0}{Suffix}";
+                return $"{size / (double)multiplier.Key:0.0}{multiplier.Value}";
             }
         }
 
         return $"{size} byte";
     }
 
+#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
     private static readonly ConcurrentDictionary<int, string> PrecisionFormatStrings = new();
 
     /// <summary>
@@ -53,37 +63,19 @@ public static class SizeFormatting
     /// <returns>Number of bytes formatted as string</returns>
     public static string FormatBytes(ulong size, int precision)
     {
-        foreach (var (Size, Suffix) in Multipliers)
+        foreach (var multiplier in Multipliers)
         {
-            if (size >= Size)
+            if (size >= multiplier.Key)
             {
                 var precisionFormatString =
                     PrecisionFormatStrings.GetOrAdd(precision,
                                                     precision => $"0.{new string('0', precision - 1)}");
 
-                return $"{(size / (double)Size).ToString(precisionFormatString)}{Suffix}";
+                return $"{(size / (double)multiplier.Key).ToString(precisionFormatString)}{multiplier.Value}";
             }
         }
 
         return $"{size} byte";
-    }
-
-    /// <summary>
-    /// Formats byte sizes with MB, GB etc suffixes
-    /// </summary>
-    /// <param name="size">Number of bytes</param>
-    /// <returns>Number of bytes formatted as string</returns>
-    public static string FormatBytes(long size)
-    {
-        foreach (var (Size, Suffix) in Multipliers)
-        {
-            if (Math.Abs(size) >= (long)Size)
-            {
-                return $"{size / (double)Size:0.0}{Suffix}";
-            }
-        }
-
-        return size == 1L ? $"{size} byte" : $"{size} bytes";
     }
 
     /// <summary>
@@ -94,19 +86,94 @@ public static class SizeFormatting
     /// <returns>Number of bytes formatted as string</returns>
     public static string FormatBytes(long size, int precision)
     {
-        foreach (var (Size, Suffix) in Multipliers)
+        foreach (var multiplier in Multipliers)
         {
-            if (size >= (long)Size)
+            if (size >= (long)multiplier.Key)
             {
                 var precisionFormatString =
                     PrecisionFormatStrings.GetOrAdd(precision,
                                                     precision => $"0.{new string('0', precision - 1)}");
 
-                return $"{(size / (double)Size).ToString(precisionFormatString)}{Suffix}";
+                return $"{(size / (double)multiplier.Key).ToString(precisionFormatString)}{multiplier.Value}";
             }
         }
 
         return $"{size} byte";
+    }
+#else
+    private static readonly Dictionary<int, string> PrecisionFormatStrings = new();
+
+    /// <summary>
+    /// Formats byte sizes with MB, GB etc suffixes
+    /// </summary>
+    /// <param name="size">Number of bytes</param>
+    /// <param name="precision">Number of decimals in formatted string</param>
+    /// <returns>Number of bytes formatted as string</returns>
+    public static string FormatBytes(ulong size, int precision)
+    {
+        foreach (var multiplier in Multipliers)
+        {
+            if (size >= multiplier.Key)
+            {
+                lock (PrecisionFormatStrings)
+                {
+                    if (!PrecisionFormatStrings.TryGetValue(precision, out var precisionFormatString))
+                    {
+                        PrecisionFormatStrings.Add(precision, $"0.{new string('0', precision - 1)}");
+                    }
+
+                    return $"{(size / (double)multiplier.Key).ToString(precisionFormatString)}{multiplier.Value}";
+                }
+            }
+        }
+
+        return $"{size} byte";
+    }
+
+    /// <summary>
+    /// Formats byte sizes with MB, GB etc suffixes
+    /// </summary>
+    /// <param name="size">Number of bytes</param>
+    /// <param name="precision">Number of decimals in formatted string</param>
+    /// <returns>Number of bytes formatted as string</returns>
+    public static string FormatBytes(long size, int precision)
+    {
+        foreach (var multiplier in Multipliers)
+        {
+            if (size >= (long)multiplier.Key)
+            {
+                lock (PrecisionFormatStrings)
+                {
+                    if (!PrecisionFormatStrings.TryGetValue(precision, out var precisionFormatString))
+                    {
+                        PrecisionFormatStrings.Add(precision, $"0.{new string('0', precision - 1)}");
+                    }
+
+                    return $"{(size / (double)multiplier.Key).ToString(precisionFormatString)}{multiplier.Value}";
+                }
+            }
+        }
+
+        return $"{size} byte";
+    }
+#endif
+
+    /// <summary>
+    /// Formats byte sizes with MB, GB etc suffixes
+    /// </summary>
+    /// <param name="size">Number of bytes</param>
+    /// <returns>Number of bytes formatted as string</returns>
+    public static string FormatBytes(long size)
+    {
+        foreach (var multiplier in Multipliers)
+        {
+            if (Math.Abs(size) >= (long)multiplier.Key)
+            {
+                return $"{size / (double)multiplier.Key:0.0}{multiplier.Value}";
+            }
+        }
+
+        return size == 1L ? $"{size} byte" : $"{size} bytes";
     }
 
     /// <summary>
@@ -178,5 +245,3 @@ public static class SizeFormatting
         }
     }
 }
-
-#endif

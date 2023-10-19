@@ -11,6 +11,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using LTRData.Extensions.Buffers;
 
 namespace LTRData.Extensions.Formatting;
 
@@ -82,11 +83,13 @@ public static class HexExtensions
         return bytes;
     }
 
+#endif
+
     /// <summary>
     /// </summary>
     public static IEnumerable<byte> ParseHexString(IEnumerable<char> str)
     {
-        var buffer = ArrayPool<char>.Shared.Rent(2);
+        var buffer = BufferExtensions.RentArray<char>(2);
         try
         {
             foreach (var c in str)
@@ -109,10 +112,11 @@ public static class HexExtensions
         }
         finally
         {
-            ArrayPool<char>.Shared.Return(buffer);
+            BufferExtensions.ReturnArray(buffer);
         }
     }
 
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
     /// <summary>
     /// </summary>
     public static byte[] ParseHexString(string str, int offset, int count)
@@ -203,6 +207,7 @@ public static class HexExtensions
     /// </summary>
     public static string ToHexString(this ReadOnlySpan<byte> data)
         => data.ToHexString(null);
+#endif
 
     /// <summary>
     /// </summary>
@@ -222,7 +227,7 @@ public static class HexExtensions
     /// </summary>
     public static IEnumerable<string> FormatHexLines(this IEnumerable<byte> bytes)
     {
-        var sb = ArrayPool<char>.Shared.Rent(67);
+        var sb = BufferExtensions.RentArray<char>(67);
 
         try
         {
@@ -281,16 +286,15 @@ public static class HexExtensions
         }
         finally
         {
-            ArrayPool<char>.Shared.Return(sb);
+            BufferExtensions.ReturnArray(sb);
         }
     }
 
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
     /// <summary>
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToHexString<T>(in T source) where T : unmanaged =>
         ToHexString(Buffers.BufferExtensions.AsReadOnlyBytes(source));
-
 #endif
 
     /// <summary>
