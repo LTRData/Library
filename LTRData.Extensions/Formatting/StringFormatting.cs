@@ -381,7 +381,7 @@ public static class StringFormatting
     /// <param name="width"></param>
     /// <param name="fillChar"></param>
     /// <returns></returns>
-    public static string Center(string? msg, int width, char fillChar)
+    public static string Center(this string? msg, int width, char fillChar)
     {
         if (msg is null || string.IsNullOrEmpty(msg))
         {
@@ -417,7 +417,7 @@ public static class StringFormatting
     /// <param name="msg"></param>
     /// <param name="width"></param>
     /// <param name="fillChar"></param>
-    public static string LeftAdjust(string? msg, int width, char fillChar)
+    public static string LeftAdjust(this string? msg, int width, char fillChar)
         => (msg ?? "").PadRight(width, fillChar).Substring(0, width);
 
     /// <summary>
@@ -426,7 +426,7 @@ public static class StringFormatting
     /// </summary>
     /// <param name="msg"></param>
     /// <param name="width"></param>
-    public static string LeftAdjust(string? msg, int width)
+    public static string LeftAdjust(this string? msg, int width)
         => (msg ?? "").PadRight(width).Substring(0, width);
 
     /// <summary>
@@ -436,7 +436,7 @@ public static class StringFormatting
     /// <param name="msg"></param>
     /// <param name="width"></param>
     /// <param name="fillChar"></param>
-    public static string RightAdjust(string? msg, int width, char fillChar)
+    public static string RightAdjust(this string? msg, int width, char fillChar)
     {
         var padded = (msg ?? "").PadLeft(width, fillChar);
         return padded.Substring(padded.Length - width);
@@ -448,7 +448,7 @@ public static class StringFormatting
     /// </summary>
     /// <param name="msg"></param>
     /// <param name="width"></param>
-    public static string RightAdjust(string? msg, int width)
+    public static string RightAdjust(this string? msg, int width)
     {
         var padded = (msg ?? "").PadLeft(width);
         return padded.Substring(padded.Length - width);
