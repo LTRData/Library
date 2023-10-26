@@ -19,6 +19,35 @@ namespace LTRData.Extensions.Buffers;
 public static class BufferExtensions
 {
 
+    /// <summary>
+    /// Sets a bit to 1 in a bit field.
+    /// </summary>
+    /// <param name="data">Bit field</param>
+    /// <param name="bitnumber">Bit number to set to 1</param>
+    public static void SetBit(this IList<byte> data, int bitnumber) =>
+        data[bitnumber >> 3] |= (byte)(1 << (~bitnumber & 7));
+
+    /// <summary>
+    /// Sets a bit to 0 in a bit field.
+    /// </summary>
+    /// <param name="data">Bit field</param>
+    /// <param name="bitnumber">Bit number to set to 0</param>
+    public static void ClearBit(this IList<byte> data, int bitnumber) =>
+        data[bitnumber >> 3] &= unchecked((byte)~(1 << (~bitnumber & 7)));
+
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
+
+    /// <summary>
+    /// Gets a bit from a bit field.
+    /// </summary>
+    /// <param name="data">Bit field</param>
+    /// <param name="bitnumber">Bit number to get</param>
+    /// <returns>True if value of specified bit is 1, false if 0.</returns>
+    public static bool GetBit(this IReadOnlyList<byte> data, int bitnumber) =>
+        (data[bitnumber >> 3] & 1 << (~bitnumber & 7)) != 0;
+
+#endif
+
 #if NET45_OR_GREATER || NETSTANDARD || (NETCOREAPP && !NET7_0_OR_GREATER)
     /// <summary>
     /// Returns a read-only wrapper for a dictionary
@@ -135,6 +164,16 @@ public static class BufferExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void ClearBit(this Span<byte> data, int bitnumber) =>
         data[bitnumber >> 3] &= unchecked((byte)~(1 << (~bitnumber & 7)));
+
+    /// <summary>
+    /// Gets a bit from a bit field.
+    /// </summary>
+    /// <param name="data">Bit field</param>
+    /// <param name="bitnumber">Bit number to get</param>
+    /// <returns>True if value of specified bit is 1, false if 0.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool GetBit(this Span<byte> data, int bitnumber) =>
+        (data[bitnumber >> 3] & 1 << (~bitnumber & 7)) != 0;
 
     /// <summary>
     /// Gets a bit from a bit field.
