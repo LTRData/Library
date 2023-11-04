@@ -18,7 +18,7 @@
     <Company>LTR Data</Company>
     <Authors>Olof Lagerkvist</Authors>
     <OutputPath>..\$(Configuration)</OutputPath>
-    <FileVersion>1.0.3</FileVersion>
+    <FileVersion>1.0.4</FileVersion>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <PackageOutputPath>$(LocalNuGetPath)</PackageOutputPath>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
