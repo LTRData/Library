@@ -18,7 +18,6 @@ namespace LTRData.Extensions.Buffers;
 /// </summary>
 public static class BufferExtensions
 {
-
     /// <summary>
     /// Sets a bit to 1 in a bit field.
     /// </summary>
@@ -28,12 +27,28 @@ public static class BufferExtensions
         data[bitnumber >> 3] |= (byte)(1 << (~bitnumber & 7));
 
     /// <summary>
+    /// Sets a bit to 1 in a bit field.
+    /// </summary>
+    /// <param name="data">Bit field</param>
+    /// <param name="bitnumber">Bit number to set to 1</param>
+    public static void SetBit(this IList<byte> data, long bitnumber) =>
+        data[(int)(bitnumber >> 3)] |= (byte)(1 << (int)(~bitnumber & 7));
+
+    /// <summary>
     /// Sets a bit to 0 in a bit field.
     /// </summary>
     /// <param name="data">Bit field</param>
     /// <param name="bitnumber">Bit number to set to 0</param>
     public static void ClearBit(this IList<byte> data, int bitnumber) =>
         data[bitnumber >> 3] &= unchecked((byte)~(1 << (~bitnumber & 7)));
+
+    /// <summary>
+    /// Sets a bit to 0 in a bit field.
+    /// </summary>
+    /// <param name="data">Bit field</param>
+    /// <param name="bitnumber">Bit number to set to 0</param>
+    public static void ClearBit(this IList<byte> data, long bitnumber) =>
+        data[(int)(bitnumber >> 3)] &= unchecked((byte)~(1 << (int)(~bitnumber & 7)));
 
 #if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
 
@@ -45,6 +60,15 @@ public static class BufferExtensions
     /// <returns>True if value of specified bit is 1, false if 0.</returns>
     public static bool GetBit(this IReadOnlyList<byte> data, int bitnumber) =>
         (data[bitnumber >> 3] & 1 << (~bitnumber & 7)) != 0;
+
+    /// <summary>
+    /// Gets a bit from a bit field.
+    /// </summary>
+    /// <param name="data">Bit field</param>
+    /// <param name="bitnumber">Bit number to get</param>
+    /// <returns>True if value of specified bit is 1, false if 0.</returns>
+    public static bool GetBit(this IReadOnlyList<byte> data, long bitnumber) =>
+        (data[(int)(bitnumber >> 3)] & 1 << (int)(~bitnumber & 7)) != 0;
 
 #endif
 
