@@ -120,7 +120,7 @@ public static class AsyncCompatExtensions
     {
         if (!task.IsCompletedSuccessfully)
         {
-            task.AsTask().Wait();
+            task.AsTask().GetAwaiter().GetResult();
         }
     }
 
@@ -134,7 +134,7 @@ public static class AsyncCompatExtensions
     {
         if (!task.IsCompletedSuccessfully)
         {
-            task.AsTask().Wait();
+            task.AsTask().GetAwaiter().GetResult();
         }
     }
 
@@ -152,7 +152,7 @@ public static class AsyncCompatExtensions
         }
         else
         {
-            return task.AsTask().Result;
+            return task.AsTask().GetAwaiter().GetResult();
         }
     }
 

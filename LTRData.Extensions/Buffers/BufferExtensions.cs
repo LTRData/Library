@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -210,11 +211,12 @@ public static class BufferExtensions
         (data[bitnumber >> 3] & 1 << (~bitnumber & 7)) != 0;
 
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP
+
     /// <summary>
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<T> CreateReadOnlySpan<T>(in T source, int length) =>
-        MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(source), length);
+        MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in source), length);
 
     /// <summary>
     /// </summary>

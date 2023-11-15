@@ -304,10 +304,16 @@ public static class StringFormatting
     /// Adjusts a string to a display with specified width by wrapping complete words.
     /// </summary>
     /// <param name="msg"></param>
+    /// <param name="indentWidth"></param>
     /// <param name="lineWidth">Display width. If omitted, defaults to console window width.</param>
     /// <param name="wordDelimiter">Word separator character.</param>
+    /// <param name="fillChar"></param>
     [SecuritySafeCritical]
-    public static string LineFormat(ReadOnlySpan<char> msg, int? lineWidth = default, char wordDelimiter = ' ')
+    public static string LineFormat(ReadOnlySpan<char> msg,
+                                    int indentWidth = 0,
+                                    int? lineWidth = default,
+                                    char wordDelimiter = ' ',
+                                    char fillChar = ' ')
     {
         if (msg.IsWhiteSpace())
         {
@@ -354,6 +360,7 @@ public static class StringFormatting
                 {
                     result.AppendLine(line.ToString());
                     line.Length = 0;
+                    line.Append(fillChar, indentWidth);
                 }
 
                 if (line.Length > 0)
