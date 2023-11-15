@@ -14,6 +14,16 @@ namespace LTRData.Extensions.IO;
 /// </summary>
 public static class IOExtensions
 {
+    /// <summary>
+    /// </summary>
+#if NET5_0_OR_GREATER
+    public static bool IsWindows { get; } = OperatingSystem.IsWindows();
+#elif NET471_OR_GREATER || NETSTANDARD || NETCOREAPP
+    public static bool IsWindows { get; } = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+#else
+    public static bool IsWindows { get; } = true;
+#endif
+
 #if (NET45_OR_GREATER || NETSTANDARD || NETCOREAPP) && !NET7_0_OR_GREATER
     /// <summary>
     /// </summary>

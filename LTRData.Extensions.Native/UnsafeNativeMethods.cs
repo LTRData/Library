@@ -1,7 +1,11 @@
 ﻿using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace LTRData.Extensions.Native;
 
+#if NET5_0_OR_GREATER
+[SupportedOSPlatform("windows")]
+#endif
 internal static class UnsafeNativeMethods
 {
     [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]

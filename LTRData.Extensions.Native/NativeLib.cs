@@ -9,6 +9,7 @@
 // 
 
 using LTRData.Extensions.Buffers;
+using LTRData.Extensions.IO;
 using System;
 using System.ComponentModel;
 using System.Reflection;
@@ -20,16 +21,6 @@ namespace LTRData.Extensions.Native;
 /// </summary>
 public static class NativeLib
 {
-    /// <summary>
-    /// </summary>
-#if NET5_0_OR_GREATER
-    public static bool IsWindows { get; } = OperatingSystem.IsWindows();
-#elif NET471_OR_GREATER || NETSTANDARD || NETCOREAPP                                               
-    public static bool IsWindows { get; } = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-#else
-    public static bool IsWindows { get; } = true;
-#endif
-
     /// <summary>
     /// Encapsulates call to a Win32 API function that returns a value where failure
     /// is indicated as a NULL return and GetLastError() returns an error code. If
@@ -45,7 +36,7 @@ public static class NativeLib
 
     /// <summary>
     /// </summary>
-    public static nint CrtDllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath) => !IsWindows &&
+    public static nint CrtDllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath) => !IOExtensions.IsWindows &&
         (libraryName.StartsWith("msvcr", StringComparison.OrdinalIgnoreCase) ||
         libraryName.StartsWith("msvcp", StringComparison.OrdinalIgnoreCase) ||
         libraryName.Equals("ntdll", StringComparison.OrdinalIgnoreCase) ||
@@ -94,7 +85,7 @@ public static class NativeLib
     {
         var fptr = GetProcAddressNoThrow(moduleName, procedureName);
 
-        return fptr == default ? null : Marshal.GetDelegateForFunctionPointer<TDelegate>(fptr);
+        return fptr == 0 ? null : Marshal.GetDelegateForFunctionPointer<TDelegate>(fptr);
     }
 
 #elif NET471_OR_GREATER
@@ -115,7 +106,7 @@ public static class NativeLib
 
         var fptr = UnsafeNativeMethods.GetProcAddress(hModule, procedureName);
 
-        return fptr == default ? null : Marshal.GetDelegateForFunctionPointer<TDelegate>(fptr);
+        return fptr == 0 ? null : Marshal.GetDelegateForFunctionPointer<TDelegate>(fptr);
     }
 
     /// <summary>
@@ -143,7 +134,7 @@ public static class NativeLib
 
         var hModule = UnsafeNativeMethods.LoadLibraryW(moduleName.AsRef());
 
-        return hModule == default ? default : UnsafeNativeMethods.GetProcAddress(hModule, procedureName);
+        return hModule == 0 ? default : UnsafeNativeMethods.GetProcAddress(hModule, procedureName);
     }
 
     /// <summary>
@@ -152,7 +143,7 @@ public static class NativeLib
     {
         var fptr = GetProcAddressNoThrow(moduleName, procedureName);
 
-        return fptr == default ? null : Marshal.GetDelegateForFunctionPointer<TDelegate>(fptr);
+        return fptr == 0 ? null : Marshal.GetDelegateForFunctionPointer<TDelegate>(fptr);
     }
 
 #endif

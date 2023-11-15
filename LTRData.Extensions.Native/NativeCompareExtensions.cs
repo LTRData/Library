@@ -2,11 +2,15 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace LTRData.Extensions.Native;
 
 /// <summary>
 /// </summary>
+#if NET5_0_OR_GREATER
+[UnsupportedOSPlatform("browser")]
+#endif
 public static partial class NativeCompareExtensions
 {
 #if NETCOREAPP

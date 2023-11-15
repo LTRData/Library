@@ -1,5 +1,5 @@
 ﻿using LTRData.Extensions.Buffers;
-using LTRData.Extensions.Native;
+using LTRData.Extensions.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +44,7 @@ public static class CommandLineParser
                 switches_finished = true;
                 continue;
             }
-            else if (arg.StartsWith("--", StringComparison.Ordinal) || NativeLib.IsWindows && arg.StartsWith("/", StringComparison.Ordinal))
+            else if (arg.StartsWith("--", StringComparison.Ordinal) || IOExtensions.IsWindows && arg.StartsWith("/", StringComparison.Ordinal))
             {
                 var namestart = 1;
                 if (arg[0] == '-')
