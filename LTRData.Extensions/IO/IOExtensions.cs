@@ -55,6 +55,20 @@ public static class IOExtensions
     }
 #endif
 
+#if (NET45_OR_GREATER || NETSTANDARD || NETCOREAPP) && !NET8_0_OR_GREATER
+    /// <summary>
+    /// </summary>
+    /// <param name="writer"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task FlushAsync(this TextWriter writer, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return writer.FlushAsync();
+    }
+#endif
+
     /// <summary>
     /// Reads lines from a <see cref="TextReader"/> as an <see cref="IEnumerable{String}"/>.
     /// </summary>
