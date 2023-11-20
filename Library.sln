@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LTRData.Extensions", "LTRData.Extensions\LTRData.Extensions.csproj", "{7375C8D5-D7F0-40B5-9DD1-8B9BF877E389}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LTRData.Extensions.Native", "LTRData.Extensions.Native\LTRData.Extensions.Native.csproj", "{A1817419-F14E-4EC3-8288-1447A7E6E49D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LTRData.Extensions.Native", "LTRData.Extensions.Native\LTRData.Extensions.Native.csproj", "{A1817419-F14E-4EC3-8288-1447A7E6E49D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
