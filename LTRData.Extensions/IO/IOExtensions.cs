@@ -39,6 +39,21 @@ public static class IOExtensions
 
     /// <summary>
     /// </summary>
+    /// <param name="reader"></param>
+    /// <param name="buffer"></param>
+    /// <param name="index"></param>
+    /// <param name="count"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task<int> ReadAsync(this TextReader reader, char[] buffer, int index, int count, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return reader.ReadAsync(buffer, index, count);
+    }
+
+    /// <summary>
+    /// </summary>
     /// <param name="writer"></param>
     /// <param name="str"></param>
     /// <param name="cancellationToken"></param>
@@ -52,6 +67,23 @@ public static class IOExtensions
             : MemoryMarshal.TryGetArray(str, out var segment)
             ? writer.WriteLineAsync(segment.Array!, segment.Offset, segment.Count)
             : writer.WriteLineAsync(str.ToString());
+    }
+
+    /// <summary>
+    /// </summary>
+    /// <param name="writer"></param>
+    /// <param name="str"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task WriteAsync(this TextWriter writer, ReadOnlyMemory<char> str, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return MemoryMarshal.TryGetString(str, out var text, out int start, out int length) && start == 0 && length == text.Length
+            ? writer.WriteAsync(text)
+            : MemoryMarshal.TryGetArray(str, out var segment)
+            ? writer.WriteAsync(segment.Array!, segment.Offset, segment.Count)
+            : writer.WriteAsync(str.ToString());
     }
 #endif
 

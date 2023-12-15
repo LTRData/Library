@@ -208,6 +208,15 @@ public static class AsyncCompatExtensions
 
 #endif
 
+#if NET45_OR_GREATER || NETSTANDARD || (NETCOREAPP && !NET8_0_OR_GREATER)
+    /// <summary>
+    /// </summary>
+    /// <param name="cancellationTokenSource"></param>
+    /// <returns></returns>
+    public static Task CancelAsync(this CancellationTokenSource cancellationTokenSource)
+        => Task.Run(cancellationTokenSource.Cancel);
+#endif
+
 }
 
 #endif
