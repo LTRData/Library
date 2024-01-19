@@ -65,8 +65,7 @@ public static class SpanSplitExtensions
     /// <returns>Iterator</returns>
     public static IEnumerable<ReadOnlyMemory<char>> Split(this ReadOnlyMemory<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None)
     {
-        while (!chars.IsEmpty)
-        {
+        do {
             var i = chars.Span.IndexOf(delimiter);
             if (i < 0)
             {
@@ -82,8 +81,7 @@ public static class SpanSplitExtensions
             }
 #endif
 
-            if (!value.IsEmpty ||
-                !options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+            if (!options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return value;
             }
@@ -94,7 +92,7 @@ public static class SpanSplitExtensions
             }
 
             chars = chars.Slice(i + 1);
-        }
+        } while (!chars.IsEmpty);
     }
 
     /// <summary>
@@ -107,8 +105,7 @@ public static class SpanSplitExtensions
     /// <returns>Iterator</returns>
     public static IEnumerable<ReadOnlyMemory<char>> Split(this ReadOnlyMemory<char> chars, char delimiter1, char delimiter2, StringSplitOptions options = StringSplitOptions.None)
     {
-        while (!chars.IsEmpty)
-        {
+        do {
             var i = chars.Span.IndexOfAny(delimiter1, delimiter2);
             if (i < 0)
             {
@@ -124,8 +121,7 @@ public static class SpanSplitExtensions
             }
 #endif
 
-            if (!value.IsEmpty ||
-                !options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+            if (!options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return value;
             }
@@ -136,7 +132,7 @@ public static class SpanSplitExtensions
             }
 
             chars = chars.Slice(i + 1);
-        }
+        } while (!chars.IsEmpty);
     }
 
     /// <summary>
@@ -148,8 +144,7 @@ public static class SpanSplitExtensions
     /// <returns>Iterator</returns>
     public static IEnumerable<ReadOnlyMemory<char>> SplitReverse(this ReadOnlyMemory<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None)
     {
-        while (!chars.IsEmpty)
-        {
+        do {
             var i = chars.Span.LastIndexOf(delimiter);
 
             var value = chars.Slice(i + 1);
@@ -161,8 +156,7 @@ public static class SpanSplitExtensions
             }
 #endif
 
-            if (!value.IsEmpty ||
-                !options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+            if (!options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return value;
             }
@@ -173,7 +167,7 @@ public static class SpanSplitExtensions
             }
 
             chars = chars.Slice(0, i);
-        }
+        } while (!chars.IsEmpty);
     }
 
     /// <summary>
@@ -185,8 +179,7 @@ public static class SpanSplitExtensions
     /// <returns>Iterator</returns>
     public static IEnumerable<ReadOnlyMemory<char>> Split(this ReadOnlyMemory<char> chars, ReadOnlyMemory<char> delimiter, StringSplitOptions options = StringSplitOptions.None)
     {
-        while (!chars.IsEmpty)
-        {
+        do {
             var i = chars.Span.IndexOf(delimiter.Span);
             if (i < 0)
             {
@@ -202,8 +195,7 @@ public static class SpanSplitExtensions
             }
 #endif
 
-            if (!value.IsEmpty ||
-                !options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+            if (!options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return value;
             }
@@ -214,7 +206,7 @@ public static class SpanSplitExtensions
             }
 
             chars = chars.Slice(i + delimiter.Length);
-        }
+        } while (!chars.IsEmpty);
     }
 
     /// <summary>
@@ -226,8 +218,7 @@ public static class SpanSplitExtensions
     /// <returns>Iterator</returns>
     public static IEnumerable<ReadOnlyMemory<char>> SplitReverse(this ReadOnlyMemory<char> chars, ReadOnlyMemory<char> delimiter, StringSplitOptions options = StringSplitOptions.None)
     {
-        while (!chars.IsEmpty)
-        {
+        do {
             var i = chars.Span.LastIndexOf(delimiter.Span);
 
             var value = i >= 0 ? chars.Slice(i + delimiter.Length) : chars;
@@ -239,8 +230,7 @@ public static class SpanSplitExtensions
             }
 #endif
 
-            if (!value.IsEmpty ||
-                !options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+            if (!options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return value;
             }
@@ -251,7 +241,7 @@ public static class SpanSplitExtensions
             }
 
             chars = chars.Slice(0, i);
-        }
+        } while (!chars.IsEmpty);
     }
 
     /// <summary>
@@ -264,8 +254,7 @@ public static class SpanSplitExtensions
     /// <returns>Iterator</returns>
     public static IEnumerable<ReadOnlyMemory<char>> Split(this ReadOnlyMemory<char> chars, ReadOnlyMemory<char> delimiter, StringSplitOptions options, StringComparison comparison)
     {
-        while (!chars.IsEmpty)
-        {
+        do {
             var i = chars.Span.IndexOf(delimiter.Span, comparison);
             if (i < 0)
             {
@@ -281,8 +270,7 @@ public static class SpanSplitExtensions
             }
 #endif
 
-            if (!value.IsEmpty ||
-                !options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+            if (!options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return value;
             }
@@ -293,7 +281,7 @@ public static class SpanSplitExtensions
             }
 
             chars = chars.Slice(i + delimiter.Length);
-        }
+        } while (!chars.IsEmpty);
     }
 }
 
