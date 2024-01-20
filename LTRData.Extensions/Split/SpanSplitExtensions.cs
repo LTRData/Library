@@ -81,7 +81,8 @@ public static class SpanSplitExtensions
             }
 #endif
 
-            if (!options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+            if (!value.IsEmpty ||
+                !options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return value;
             }
@@ -121,7 +122,8 @@ public static class SpanSplitExtensions
             }
 #endif
 
-            if (!options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+            if (!value.IsEmpty ||
+                !options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return value;
             }
@@ -156,7 +158,8 @@ public static class SpanSplitExtensions
             }
 #endif
 
-            if (!options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+            if (!value.IsEmpty ||
+                !options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return value;
             }
@@ -195,7 +198,8 @@ public static class SpanSplitExtensions
             }
 #endif
 
-            if (!options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+            if (!value.IsEmpty ||
+                !options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return value;
             }
@@ -230,7 +234,8 @@ public static class SpanSplitExtensions
             }
 #endif
 
-            if (!options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+            if (!value.IsEmpty ||
+                !options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return value;
             }
@@ -270,7 +275,8 @@ public static class SpanSplitExtensions
             }
 #endif
 
-            if (!options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+            if (!value.IsEmpty ||
+                !options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return value;
             }
