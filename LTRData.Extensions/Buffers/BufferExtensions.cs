@@ -1106,4 +1106,30 @@ public static class BufferExtensions
     public static StringBuilder Append(this StringBuilder sb, ReadOnlySpan<char> span)
         => sb.Append(span.ToString());
 #endif
+
+#if (NET46_OR_GREATER || NETSTANDARD) && !NET6_0_OR_GREATER
+    /// <summary>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="safeBuffer"></param>
+    /// <param name="byteOffset"></param>
+    /// <param name="buffer"></param>
+    public static void ReadSpan<T>(this SafeBuffer safeBuffer, ulong byteOffset, Span<T> buffer) where T : struct
+        => ReadBytesSpan(safeBuffer, byteOffset, MemoryMarshal.AsBytes(buffer));
+
+    private static void ReadBytesSpan(SafeBuffer safeBuffer, ulong byteOffset, Span<byte> targetBytes)
+        => AsSpan(safeBuffer).Slice((int)byteOffset, targetBytes.Length).CopyTo(targetBytes);
+
+    /// <summary>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="safeBuffer"></param>
+    /// <param name="byteOffset"></param>
+    /// <param name="buffer"></param>
+    public static void WriteSpan<T>(this SafeBuffer safeBuffer, ulong byteOffset, ReadOnlySpan<T> buffer) where T : struct
+        => WriteBytesSpan(safeBuffer, byteOffset, MemoryMarshal.AsBytes(buffer));
+
+    private static void WriteBytesSpan(SafeBuffer safeBuffer, ulong byteOffset, ReadOnlySpan<byte> sourceBytes)
+        => sourceBytes.CopyTo(AsSpan(safeBuffer).Slice((int)byteOffset));
+#endif
 }
