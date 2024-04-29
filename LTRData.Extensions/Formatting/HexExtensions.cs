@@ -121,7 +121,52 @@ public static class HexExtensions
     /// </summary>
     public static byte[] ParseHexString(string str, int offset, int count)
         => ParseHexString(str.AsSpan(offset, count));
+#endif
 
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
+
+    /// <summary>
+    /// </summary>
+    public static bool TryParseHexString(string str, byte[] output, int offset)
+        => TryParseHexString(str.AsSpan(offset), output);
+
+    /// <summary>
+    /// </summary>
+    public static bool TryParseHexString(ReadOnlySpan<char> str, Span<byte> output)
+    {
+        if (output.Length < (str.Length >> 1))
+        {
+            return false;
+        }
+
+        for (int i = 0, loopTo = str.Length >> 1; i < loopTo; i++)
+        {
+#if NETCOREAPP || NETSTANDARD2_1_OR_GREATER
+            if (!byte.TryParse(str.Slice(i << 1, 2), NumberStyles.HexNumber, provider: null, out output[i]))
+            {
+                return false;
+            }
+#else
+            if (!byte.TryParse(str.Slice(i << 1, 2).ToString(), NumberStyles.HexNumber, provider: null, out output[i]))
+            {
+                return false;
+            }
+#endif
+        }
+
+        return true;
+    }
+
+#endif
+
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
+    /// <summary>
+    /// </summary>
+    public static bool TryParseHexString(string str, int offset, int count, byte[] output, int outputOffset)
+        => TryParseHexString(str.AsSpan(offset, count), output.AsSpan(outputOffset));
+#endif
+
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
     /// <summary>
     /// </summary>
     public static bool TryFormatHexString(this byte[] data, ReadOnlySpan<char> delimiter, Span<char> destination, bool upperCase)
