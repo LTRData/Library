@@ -431,7 +431,6 @@ public static class BufferExtensions
 
         return str;
     }
-    
 
     /// <summary>
     /// Return a managed reference to Span, or a managed null reference
@@ -914,7 +913,7 @@ public static class BufferExtensions
             minWordLength = 2;
         }
 
-        var words = str.Split(' ').Select(word =>
+        var words = str.TokenEnum(' ').Select(word =>
         {
             if (MemoryMarshal.ToEnumerable(word).Any(char.IsLower))
             {

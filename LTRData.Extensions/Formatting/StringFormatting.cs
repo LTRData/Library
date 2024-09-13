@@ -339,7 +339,7 @@ public static class StringFormatting
 
         var resultLines = new List<string>();
 
-        foreach (var origLinePtr in msg.Split('\n'))
+        foreach (var origLinePtr in msg.TokenEnum('\n'))
         {
             var origLine = origLinePtr.TrimEnd('\r');
 
@@ -347,7 +347,7 @@ public static class StringFormatting
 
             var line = new StringBuilder(width);
 
-            foreach (var word in origLine.Split(wordDelimiter))
+            foreach (var word in origLine.TokenEnum(wordDelimiter))
             {
                 if (word.Length >= width)
                 {
@@ -476,7 +476,7 @@ public static class StringFormatting
         var result = new StringBuilder(height * width);
         var line = new StringBuilder(width);
 
-        foreach (var wordPtr in msg.Split(wordDelimiter))
+        foreach (var wordPtr in msg.TokenEnum(wordDelimiter))
         {
             var word = wordPtr;
 

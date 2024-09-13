@@ -117,7 +117,7 @@ public static class NativeLib
         {
             throw new PlatformNotSupportedException();
         }
-        
+
         var hModule = Win32Try(UnsafeNativeMethods.LoadLibraryW(moduleName.AsRef()));
 
         return Marshal.GetDelegateForFunctionPointer<TDelegate>(Win32Try(UnsafeNativeMethods.GetProcAddress(hModule, procedureName)));

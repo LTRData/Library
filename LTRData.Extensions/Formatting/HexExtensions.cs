@@ -287,7 +287,7 @@ public static class HexExtensions
 
 #if NETCOREAPP
                 var bstr = 0;
-                
+
                 if ((pos & 8) == 0)
                 {
                     bstr = pos * 3;
@@ -300,7 +300,7 @@ public static class HexExtensions
                 b.TryFormat(sb.AsSpan(bstr), out _, "X2");
 #else
                 var bstr = b.ToString("X2");
-                
+
                 if ((pos & 8) == 0)
                 {
                     sb[pos * 3] = bstr[0];

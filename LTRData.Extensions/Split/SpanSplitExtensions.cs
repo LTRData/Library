@@ -20,7 +20,7 @@ public static class SpanSplitExtensions
     /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
     /// <returns>Reference enumerator</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringSplitByCharEnumerator Split(this ReadOnlySpan<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None) =>
+    public static StringSplitByCharEnumerator TokenEnum(this ReadOnlySpan<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None) =>
         new(chars, delimiter, options, reverse: false);
 
     /// <summary>
@@ -31,7 +31,7 @@ public static class SpanSplitExtensions
     /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
     /// <returns>Reference enumerator</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringSplitByStringEnumerator Split(this ReadOnlySpan<char> chars, ReadOnlySpan<char> delimiter, StringSplitOptions options = StringSplitOptions.None) =>
+    public static StringSplitByStringEnumerator TokenEnum(this ReadOnlySpan<char> chars, ReadOnlySpan<char> delimiter, StringSplitOptions options = StringSplitOptions.None) =>
         new(chars, delimiter, options, reverse: false);
 
     /// <summary>
@@ -42,7 +42,7 @@ public static class SpanSplitExtensions
     /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
     /// <returns>Reference enumerator</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringSplitByCharEnumerator SplitReverse(this ReadOnlySpan<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None) =>
+    public static StringSplitByCharEnumerator TokenEnumReverse(this ReadOnlySpan<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None) =>
         new(chars, delimiter, options, reverse: true);
 
     /// <summary>
@@ -53,7 +53,7 @@ public static class SpanSplitExtensions
     /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
     /// <returns>Reference enumerator</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringSplitByStringEnumerator SplitReverse(this ReadOnlySpan<char> chars, ReadOnlySpan<char> delimiter, StringSplitOptions options = StringSplitOptions.None) =>
+    public static StringSplitByStringEnumerator TokenEnumReverse(this ReadOnlySpan<char> chars, ReadOnlySpan<char> delimiter, StringSplitOptions options = StringSplitOptions.None) =>
         new(chars, delimiter, options, reverse: true);
 
     /// <summary>
@@ -63,9 +63,10 @@ public static class SpanSplitExtensions
     /// <param name="delimiter">Delimiter between each token</param>
     /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
     /// <returns>Iterator</returns>
-    public static IEnumerable<ReadOnlyMemory<char>> Split(this ReadOnlyMemory<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None)
+    public static IEnumerable<ReadOnlyMemory<char>> TokenEnum(this ReadOnlyMemory<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None)
     {
-        do {
+        do
+        {
             var i = chars.Span.IndexOf(delimiter);
             if (i < 0)
             {
@@ -104,9 +105,10 @@ public static class SpanSplitExtensions
     /// <param name="delimiter2">Second of two possible delimiters between each token</param>
     /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
     /// <returns>Iterator</returns>
-    public static IEnumerable<ReadOnlyMemory<char>> Split(this ReadOnlyMemory<char> chars, char delimiter1, char delimiter2, StringSplitOptions options = StringSplitOptions.None)
+    public static IEnumerable<ReadOnlyMemory<char>> TokenEnum(this ReadOnlyMemory<char> chars, char delimiter1, char delimiter2, StringSplitOptions options = StringSplitOptions.None)
     {
-        do {
+        do
+        {
             var i = chars.Span.IndexOfAny(delimiter1, delimiter2);
             if (i < 0)
             {
@@ -144,9 +146,10 @@ public static class SpanSplitExtensions
     /// <param name="delimiter">Delimiter between each token</param>
     /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
     /// <returns>Iterator</returns>
-    public static IEnumerable<ReadOnlyMemory<char>> SplitReverse(this ReadOnlyMemory<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None)
+    public static IEnumerable<ReadOnlyMemory<char>> TokenEnumReverse(this ReadOnlyMemory<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None)
     {
-        do {
+        do
+        {
             var i = chars.Span.LastIndexOf(delimiter);
 
             var value = chars.Slice(i + 1);
@@ -180,9 +183,10 @@ public static class SpanSplitExtensions
     /// <param name="delimiter">Delimiter between each token</param>
     /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
     /// <returns>Iterator</returns>
-    public static IEnumerable<ReadOnlyMemory<char>> Split(this ReadOnlyMemory<char> chars, ReadOnlyMemory<char> delimiter, StringSplitOptions options = StringSplitOptions.None)
+    public static IEnumerable<ReadOnlyMemory<char>> TokenEnum(this ReadOnlyMemory<char> chars, ReadOnlyMemory<char> delimiter, StringSplitOptions options = StringSplitOptions.None)
     {
-        do {
+        do
+        {
             var i = chars.Span.IndexOf(delimiter.Span);
             if (i < 0)
             {
@@ -220,9 +224,10 @@ public static class SpanSplitExtensions
     /// <param name="delimiter">Delimiter between each token</param>
     /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
     /// <returns>Iterator</returns>
-    public static IEnumerable<ReadOnlyMemory<char>> SplitReverse(this ReadOnlyMemory<char> chars, ReadOnlyMemory<char> delimiter, StringSplitOptions options = StringSplitOptions.None)
+    public static IEnumerable<ReadOnlyMemory<char>> TokenEnumReverse(this ReadOnlyMemory<char> chars, ReadOnlyMemory<char> delimiter, StringSplitOptions options = StringSplitOptions.None)
     {
-        do {
+        do
+        {
             var i = chars.Span.LastIndexOf(delimiter.Span);
 
             var value = i >= 0 ? chars.Slice(i + delimiter.Length) : chars;
@@ -257,9 +262,10 @@ public static class SpanSplitExtensions
     /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
     /// <param name="comparison">Comparison used when searching for delimiters</param>
     /// <returns>Iterator</returns>
-    public static IEnumerable<ReadOnlyMemory<char>> Split(this ReadOnlyMemory<char> chars, ReadOnlyMemory<char> delimiter, StringSplitOptions options, StringComparison comparison)
+    public static IEnumerable<ReadOnlyMemory<char>> TokenEnum(this ReadOnlyMemory<char> chars, ReadOnlyMemory<char> delimiter, StringSplitOptions options, StringComparison comparison)
     {
-        do {
+        do
+        {
             var i = chars.Span.IndexOf(delimiter.Span, comparison);
             if (i < 0)
             {
@@ -289,6 +295,124 @@ public static class SpanSplitExtensions
             chars = chars.Slice(i + delimiter.Length);
         } while (!chars.IsEmpty);
     }
+
+#if !NET9_0_OR_GREATER
+    /// <summary>
+    /// Returns an enumerator for each delimited token in a span of characters
+    /// </summary>
+    /// <param name="chars">Character span to search</param>
+    /// <param name="delimiter">Delimiter between each token</param>
+    /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
+    /// <returns>Reference enumerator</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete("This extension method will be renamed to TokenEnum. Use the new name instead to avoid collision with new .NET 9+ extension methods with the same name.")]
+    public static StringSplitByCharEnumerator Split(this ReadOnlySpan<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None)
+        => chars.TokenEnum(delimiter, options);
+
+    /// <summary>
+    /// Returns an enumerator for each delimited token in a span of characters
+    /// </summary>
+    /// <param name="chars">Character span to search</param>
+    /// <param name="delimiter">Delimiter between each token</param>
+    /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
+    /// <returns>Reference enumerator</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete("This extension method will be renamed to TokenEnum. Use the new name instead to avoid collision with new .NET 9+ extension methods with the same name.")]
+    public static StringSplitByStringEnumerator Split(this ReadOnlySpan<char> chars, ReadOnlySpan<char> delimiter, StringSplitOptions options = StringSplitOptions.None)
+        => chars.TokenEnum(delimiter, options);
+
+    /// <summary>
+    /// Returns a reverse enumerator for each delimited token in a span of characters
+    /// </summary>
+    /// <param name="chars">Character span to search</param>
+    /// <param name="delimiter">Delimiter between each token</param>
+    /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
+    /// <returns>Reference enumerator</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete("This extension method will be renamed to TokenEnumReverse. Use the new name instead to avoid collision with new .NET 9+ extension methods with the same name.")]
+    public static StringSplitByCharEnumerator SplitReverse(this ReadOnlySpan<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None)
+        => chars.TokenEnumReverse(delimiter, options);
+
+    /// <summary>
+    /// Returns a reverse enumerator for each delimited token in a span of characters
+    /// </summary>
+    /// <param name="chars">Character span to search</param>
+    /// <param name="delimiter">Delimiter between each token</param>
+    /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
+    /// <returns>Reference enumerator</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete("This extension method will be renamed to TokenEnumReverse. Use the new name instead to avoid collision with new .NET 9+ extension methods with the same name.")]
+    public static StringSplitByStringEnumerator SplitReverse(this ReadOnlySpan<char> chars, ReadOnlySpan<char> delimiter, StringSplitOptions options = StringSplitOptions.None)
+        => chars.TokenEnumReverse(delimiter, options);
+
+    /// <summary>
+    /// Returns an enumerator for each delimited token in a block of memory
+    /// </summary>
+    /// <param name="chars">Character memory block to search</param>
+    /// <param name="delimiter">Delimiter between each token</param>
+    /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
+    /// <returns>Iterator</returns>
+    [Obsolete("This extension method will be renamed to TokenEnum. Use the new name instead to avoid collision with new .NET 9+ extension methods with the same name.")]
+    public static IEnumerable<ReadOnlyMemory<char>> Split(this ReadOnlyMemory<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None)
+        => chars.TokenEnum(delimiter, options);
+
+    /// <summary>
+    /// Returns an enumerator for each delimited token in a block of memory
+    /// </summary>
+    /// <param name="chars">Character memory block to search</param>
+    /// <param name="delimiter1">First of two possible delimiters between each token</param>
+    /// <param name="delimiter2">Second of two possible delimiters between each token</param>
+    /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
+    /// <returns>Iterator</returns>
+    [Obsolete("This extension method will be renamed to TokenEnum. Use the new name instead to avoid collision with new .NET 9+ extension methods with the same name.")]
+    public static IEnumerable<ReadOnlyMemory<char>> Split(this ReadOnlyMemory<char> chars, char delimiter1, char delimiter2, StringSplitOptions options = StringSplitOptions.None)
+        => chars.TokenEnum(delimiter1, delimiter2, options);
+
+    /// <summary>
+    /// Returns a reverse enumerator for each delimited token in a block of memory
+    /// </summary>
+    /// <param name="chars">Character memory block to search</param>
+    /// <param name="delimiter">Delimiter between each token</param>
+    /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
+    /// <returns>Iterator</returns>
+    [Obsolete("This extension method will be renamed to TokenEnumReverse. Use the new name instead to avoid collision with new .NET 9+ extension methods with the same name.")]
+    public static IEnumerable<ReadOnlyMemory<char>> SplitReverse(this ReadOnlyMemory<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None)
+        => chars.TokenEnumReverse(delimiter, options);
+
+    /// <summary>
+    /// Returns an enumerator for each delimited token in a block of memory
+    /// </summary>
+    /// <param name="chars">Character memory block to search</param>
+    /// <param name="delimiter">Delimiter between each token</param>
+    /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
+    /// <returns>Iterator</returns>
+    [Obsolete("This extension method will be renamed to TokenEnum. Use the new name instead to avoid collision with new .NET 9+ extension methods with the same name.")]
+    public static IEnumerable<ReadOnlyMemory<char>> Split(this ReadOnlyMemory<char> chars, ReadOnlyMemory<char> delimiter, StringSplitOptions options = StringSplitOptions.None)
+        => chars.TokenEnum(delimiter, options);
+
+    /// <summary>
+    /// Returns a reverse enumerator for each delimited token in a block of memory
+    /// </summary>
+    /// <param name="chars">Character memory block to search</param>
+    /// <param name="delimiter">Delimiter between each token</param>
+    /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
+    /// <returns>Iterator</returns>
+    [Obsolete("This extension method will be renamed to TokenEnumReverse. Use the new name instead to avoid collision with new .NET 9+ extension methods with the same name.")]
+    public static IEnumerable<ReadOnlyMemory<char>> SplitReverse(this ReadOnlyMemory<char> chars, ReadOnlyMemory<char> delimiter, StringSplitOptions options = StringSplitOptions.None)
+        => chars.TokenEnumReverse(delimiter, options);
+
+    /// <summary>
+    /// Returns an enumerator for each delimited token in a block of memory
+    /// </summary>
+    /// <param name="chars">Character memory block to search</param>
+    /// <param name="delimiter">Delimiter between each token</param>
+    /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
+    /// <param name="comparison">Comparison used when searching for delimiters</param>
+    /// <returns>Iterator</returns>
+    [Obsolete("This extension method will be renamed to TokenEnum. Use the new name instead to avoid collision with new .NET 9+ extension methods with the same name.")]
+    public static IEnumerable<ReadOnlyMemory<char>> Split(this ReadOnlyMemory<char> chars, ReadOnlyMemory<char> delimiter, StringSplitOptions options, StringComparison comparison)
+        => chars.TokenEnum(delimiter, options, comparison);
+#endif
 }
 
 #endif

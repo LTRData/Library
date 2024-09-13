@@ -14,11 +14,11 @@ public class BuffersUnit
 
         var i = 0;
 
-        foreach (var result in str.AsSpan().Split(',', StringSplitOptions.TrimEntries))
+        foreach (var result in str.AsSpan().TokenEnum(',', StringSplitOptions.TrimEntries))
         {
             Trace.WriteLine($"'{result}'");
 
-            foreach (var inner in result.Split(';', StringSplitOptions.TrimEntries))
+            foreach (var inner in result.TokenEnum(';', StringSplitOptions.TrimEntries))
             {
                 i++;
 
@@ -38,11 +38,11 @@ public class BuffersUnit
 
         var i = 0;
 
-        foreach (var result in str.AsSpan().Split("yyyy", StringSplitOptions.TrimEntries))
+        foreach (var result in str.AsSpan().TokenEnum("yyyy", StringSplitOptions.TrimEntries))
         {
             Trace.WriteLine($"'{result}'");
 
-            foreach (var inner in result.Split("xx", StringSplitOptions.TrimEntries))
+            foreach (var inner in result.TokenEnum("xx", StringSplitOptions.TrimEntries))
             {
                 i++;
 
@@ -62,11 +62,11 @@ public class BuffersUnit
 
         var i = 0;
 
-        foreach (var outer in str.AsSpan().SplitReverse(',', StringSplitOptions.TrimEntries))
+        foreach (var outer in str.AsSpan().TokenEnumReverse(',', StringSplitOptions.TrimEntries))
         {
             Trace.WriteLine($"'{outer}'");
 
-            foreach (var inner in outer.SplitReverse(';', StringSplitOptions.TrimEntries))
+            foreach (var inner in outer.TokenEnumReverse(';', StringSplitOptions.TrimEntries))
             {
                 i++;
 
@@ -78,7 +78,7 @@ public class BuffersUnit
 
         Assert.Equal(4, i);
 
-        var result = str.AsSpan().SplitReverse(',', StringSplitOptions.TrimEntries).Last().SplitReverse(';', StringSplitOptions.TrimEntries).First();
+        var result = str.AsSpan().TokenEnumReverse(',', StringSplitOptions.TrimEntries).Last().TokenEnumReverse(';', StringSplitOptions.TrimEntries).First();
 
         Assert.Equal("456", result.ToString());
     }
@@ -90,11 +90,11 @@ public class BuffersUnit
 
         var i = 0;
 
-        foreach (var outer in str.AsSpan().SplitReverse("yyyy", StringSplitOptions.TrimEntries))
+        foreach (var outer in str.AsSpan().TokenEnumReverse("yyyy", StringSplitOptions.TrimEntries))
         {
             Trace.WriteLine($"'{outer}'");
 
-            foreach (var inner in outer.SplitReverse("xx", StringSplitOptions.TrimEntries))
+            foreach (var inner in outer.TokenEnumReverse("xx", StringSplitOptions.TrimEntries))
             {
                 i++;
 
@@ -106,7 +106,7 @@ public class BuffersUnit
 
         Assert.Equal(4, i);
 
-        var result = str.AsSpan().Split("yyyy", StringSplitOptions.TrimEntries).Last().Split("xx", StringSplitOptions.TrimEntries).First();
+        var result = str.AsSpan().TokenEnum("yyyy", StringSplitOptions.TrimEntries).Last().TokenEnum("xx", StringSplitOptions.TrimEntries).First();
 
         Assert.Equal("789", result.ToString());
     }
@@ -116,7 +116,7 @@ public class BuffersUnit
     {
         var str = "123;456 789;012";
 
-        var result = str.AsMemory().Split(' ', StringSplitOptions.TrimEntries).Last().Split(';', StringSplitOptions.TrimEntries).First();
+        var result = str.AsMemory().TokenEnum(' ', StringSplitOptions.TrimEntries).Last().TokenEnum(';', StringSplitOptions.TrimEntries).First();
 
         Assert.Equal("789", result.ToString());
     }
@@ -126,7 +126,7 @@ public class BuffersUnit
     {
         var str = "123;456 789;012";
 
-        var result = str.AsMemory().SplitReverse(' ', StringSplitOptions.TrimEntries).Last().SplitReverse(';', StringSplitOptions.TrimEntries).First();
+        var result = str.AsMemory().TokenEnumReverse(' ', StringSplitOptions.TrimEntries).Last().TokenEnumReverse(';', StringSplitOptions.TrimEntries).First();
 
         Assert.Equal("456", result.ToString());
     }
@@ -136,7 +136,7 @@ public class BuffersUnit
     {
         var str = "123xxx456---789xxx012";
 
-        var result = str.AsMemory().Split("---".AsMemory(), StringSplitOptions.TrimEntries).Last().Split("xxx".AsMemory(), StringSplitOptions.TrimEntries).First();
+        var result = str.AsMemory().TokenEnum("---".AsMemory(), StringSplitOptions.TrimEntries).Last().TokenEnum("xxx".AsMemory(), StringSplitOptions.TrimEntries).First();
 
         Assert.Equal("789", result.ToString());
     }
@@ -146,7 +146,7 @@ public class BuffersUnit
     {
         var str = "123xxx456---789xxx012";
 
-        var result = str.AsMemory().SplitReverse("---".AsMemory(), StringSplitOptions.TrimEntries).First().SplitReverse("xxx".AsMemory(), StringSplitOptions.TrimEntries).Last();
+        var result = str.AsMemory().TokenEnumReverse("---".AsMemory(), StringSplitOptions.TrimEntries).First().TokenEnumReverse("xxx".AsMemory(), StringSplitOptions.TrimEntries).Last();
 
         Assert.Equal("789", result.ToString());
     }
