@@ -18,18 +18,17 @@
     <Company>LTR Data</Company>
     <Authors>Olof Lagerkvist</Authors>
     <OutputPath>..\$(Configuration)</OutputPath>
-    <FileVersion>1.0.10</FileVersion>
+    <FileVersion>1.0.11</FileVersion>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <PackageOutputPath>$(LocalNuGetPath)</PackageOutputPath>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Copyright>2011 - 2023, Olof Lagerkvist, LTR Data</Copyright>
+    <Copyright>2011 - 2024, Olof Lagerkvist, LTR Data</Copyright>
     <PackageVersion>$(FileVersion)</PackageVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <!--<NoWarn>1591</NoWarn>-->
 
   </PropertyGroup>
 
