@@ -682,22 +682,22 @@ public static class BufferExtensions
     /// <summary>
     /// </summary>
     public static string[] Split(this string str, char separator, int count, StringSplitOptions options = StringSplitOptions.None)
-        => str.Split(new[] { separator }, count, options);
+        => str.Split([separator], count, options);
 
     /// <summary>
     /// </summary>
     public static string[] Split(this string str, char separator, StringSplitOptions options = StringSplitOptions.None)
-        => str.Split(new[] { separator }, options);
+        => str.Split([separator], options);
 
     /// <summary>
     /// </summary>
     public static string[] Split(this string str, string separator, int count, StringSplitOptions options = StringSplitOptions.None)
-        => str.Split(new[] { separator }, count, options);
+        => str.Split([separator], count, options);
 
     /// <summary>
     /// </summary>
     public static string[] Split(this string str, string separator, StringSplitOptions options = StringSplitOptions.None)
-        => str.Split(new[] { separator }, options);
+        => str.Split([separator], options);
 
 #if !NETSTANDARD2_1_OR_GREATER && !NETCOREAPP
     /// <summary>
