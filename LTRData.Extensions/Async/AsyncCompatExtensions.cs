@@ -174,6 +174,27 @@ public static class AsyncCompatExtensions
     public static ValueTask<TResult> AsValueTask<TResult>(this Task<TResult>? task)
         => task is not null ? new(task) : default;
 
+    /// <summary>
+    /// Like AsTask() for <see cref="ValueTask{Boolean}"/>, but use cached <see cref="Task{Boolean}"/> for true and false values
+    /// if the task has already completed successfully.
+    /// </summary>
+    public static Task<bool> AsTaskBool(this in ValueTask<bool> valueTask)
+    {
+        if (valueTask.IsCompletedSuccessfully)
+        {
+            if (valueTask.Result)
+            {
+                return TrueResult;
+            }
+            else
+            {
+                return FalseResult;
+            }
+        }
+
+        return valueTask.AsTask();
+    }
+
 #endif
 
 #if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
