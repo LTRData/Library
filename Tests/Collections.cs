@@ -1,5 +1,7 @@
 ﻿using LTRData.Extensions.Buffers;
 using LTRData.Extensions.Formatting;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Xunit;
 
 namespace LTRData.Extensions.Tests;
@@ -45,5 +47,21 @@ public class Collections
         Span<char> tooSmallSpanHex = stackalloc char[1];
         result = span.TryFormatHexString(default, tooSmallSpanHex, upperCase: false);
         Assert.False(result);
+    }
+
+    [Fact]
+    public unsafe void StringRefTest()
+    {
+        var test = "ABC\0DEF\0";
+
+        var span1 = test.AsMemory(0, 3);
+
+        ref readonly var strref = ref MemoryMarshal.GetReference(test.AsSpan());
+        ref readonly var spanref = ref span1.MakeNullTerminated();
+
+        fixed (void* ptr1 = &strref, ptr2 = &spanref)
+        {
+            Assert.Equal((nint)ptr1, (nint)ptr2);
+        }
     }
 }

@@ -503,18 +503,17 @@ public static class BufferExtensions
             return ref *(char*)null;
         }
 
-        if (MemoryMarshal.TryGetString(strMemory, out var text, out var start, out var length) &&
-            start + length == text.Length)
+        if (MemoryMarshal.TryGetString(strMemory, out var str, out var start, out var length)
+            && (start + length == str.Length || str[start + length] == '\0'))
         {
             return ref MemoryMarshal.GetReference(strMemory.Span);
         }
-
-        if (MemoryMarshal.TryGetArray(strMemory, out var chars) &&
-            chars.Array is not null &&
-            chars.Offset + chars.Count < chars.Array.Length &&
-            chars.Array[chars.Offset + chars.Count] == '\0')
+        else if (MemoryMarshal.TryGetArray(strMemory, out var array) &&
+            array.Array is not null &&
+            array.Offset + array.Count < array.Array.Length &&
+            array.Array[array.Offset + array.Count] == '\0')
         {
-            return ref chars.Array[chars.Offset];
+            return ref array.Array[array.Offset];
         }
 
         var buffer = new char[strMemory.Length + 1];
