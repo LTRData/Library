@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -754,6 +752,22 @@ public static class BufferExtensions
     }
 
     /// <summary>
+    /// Reads null terminated string from byte buffer using a single- or multi-byte encoding
+    /// that terminates strings with a single null byte.
+    /// </summary>
+    /// <param name="buffer">Byte buffer</param>
+    /// <param name="offset">Offset in byte buffer where the string starts</param>
+    /// <param name="encoding">Single- or multi-byte encoding
+    /// that terminates strings with a single null byte</param>
+    /// <returns>Managed string</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ReadNullTerminatedMultiByteString(byte[] buffer, int offset, Encoding encoding)
+    {
+        var endpos = buffer.AsSpan(offset).IndexOfTerminator();
+        return encoding.GetString(buffer, offset, endpos);
+    }
+
+    /// <summary>
     /// Reads null terminated ASCII string from byte buffer.
     /// </summary>
     /// <param name="buffer">Byte buffer</param>
@@ -761,10 +775,7 @@ public static class BufferExtensions
     /// <returns>Managed string</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ReadNullTerminatedAsciiString(byte[] buffer, int offset)
-    {
-        var endpos = buffer.AsSpan(offset).IndexOfTerminator();
-        return Encoding.ASCII.GetString(buffer, offset, endpos);
-    }
+        => ReadNullTerminatedMultiByteString(buffer, offset, Encoding.ASCII);
 
     /// <summary>
     /// Reads null terminated Unicode string from byte buffer.
@@ -932,7 +943,7 @@ public static class BufferExtensions
 
 #endif
 
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP
+#if NET45_OR_GREATER || NETCOREAPP || NETSTANDARD
 
     /// <summary>
     /// Reads null terminated ASCII string from byte buffer.
@@ -941,10 +952,7 @@ public static class BufferExtensions
     /// <returns>Managed string</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ReadNullTerminatedAsciiString(this ReadOnlySpan<byte> buffer)
-    {
-        var endpos = buffer.IndexOfTerminator();
-        return Encoding.ASCII.GetString(buffer[..endpos]);
-    }
+        => ReadNullTerminatedMultiByteString(buffer, Encoding.ASCII);
 
     /// <summary>
     /// Reads null terminated ASCII string from byte buffer.
@@ -953,23 +961,57 @@ public static class BufferExtensions
     /// <returns>Managed string</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ReadNullTerminatedAsciiString(this Span<byte> buffer)
+        => ReadNullTerminatedMultiByteString(buffer, Encoding.ASCII);
+
+#endif
+
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP
+
+    /// <summary>
+    /// Reads null terminated string from byte buffer using a single- or multi-byte encoding
+    /// that terminates strings with a single null byte.
+    /// </summary>
+    /// <param name="buffer">Byte buffer</param>
+    /// <param name="encoding">Single- or multi-byte encoding
+    /// that terminates strings with a single null byte</param>
+    /// <returns>Managed string</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ReadNullTerminatedMultiByteString(this ReadOnlySpan<byte> buffer, Encoding encoding)
     {
         var endpos = buffer.IndexOfTerminator();
-        return Encoding.ASCII.GetString(buffer[..endpos]);
+        return encoding.GetString(buffer[..endpos]);
+    }
+
+    /// <summary>
+    /// Reads null terminated string from byte buffer using a single- or multi-byte encoding
+    /// that terminates strings with a single null byte.
+    /// </summary>
+    /// <param name="buffer">Byte buffer</param>
+    /// <param name="encoding">Single- or multi-byte encoding
+    /// that terminates strings with a single null byte</param>
+    /// <returns>Managed string</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ReadNullTerminatedMultiByteString(this Span<byte> buffer, Encoding encoding)
+    {
+        var endpos = buffer.IndexOfTerminator();
+        return encoding.GetString(buffer[..endpos]);
     }
 
 #elif NET45_OR_GREATER || NETSTANDARD
 
     /// <summary>
-    /// Reads null terminated ASCII string from byte buffer.
+    /// Reads null terminated string from byte buffer using a single- or multi-byte encoding
+    /// that terminates strings with a single null byte.
     /// </summary>
     /// <param name="buffer">Byte buffer</param>
+    /// <param name="encoding">Single- or multi-byte encoding
+    /// that terminates strings with a single null byte</param>
     /// <returns>Managed string</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ReadNullTerminatedAsciiString(this ReadOnlySpan<byte> buffer)
+    public static string ReadNullTerminatedMultiByteString(this ReadOnlySpan<byte> buffer, Encoding encoding)
     {
         var endpos = buffer.IndexOfTerminator();
-        return Encoding.ASCII.GetString(buffer.Slice(0, endpos).ToArray());
+        return encoding.GetString(buffer.Slice(0, endpos).ToArray());
     }
 
 #endif
