@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using LTRData.Extensions.Buffers;
 #if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
+using System.Buffers;
 using LTRData.Extensions.Split;
 #endif
 
@@ -997,7 +998,7 @@ public static class BufferExtensions
         return encoding.GetString(buffer[..endpos]);
     }
 
-#elif NET45_OR_GREATER || NETSTANDARD
+#elif NET46_OR_GREATER || NETSTANDARD
 
     /// <summary>
     /// Reads null terminated string from byte buffer using a single- or multi-byte encoding
@@ -1011,7 +1012,18 @@ public static class BufferExtensions
     public static string ReadNullTerminatedMultiByteString(this ReadOnlySpan<byte> buffer, Encoding encoding)
     {
         var endpos = buffer.IndexOfTerminator();
-        return encoding.GetString(buffer.Slice(0, endpos).ToArray());
+
+        var array = ArrayPool<byte>.Shared.Rent(endpos);
+
+        try
+        {
+            buffer.Slice(0, endpos).CopyTo(array);
+            return encoding.GetString(array, 0, endpos);
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(array);
+        }
     }
 
 #endif
