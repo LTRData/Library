@@ -108,6 +108,7 @@ public static partial class NativeCompareExtensions
         => BinaryCompare(MemoryMarshal.AsBytes(first), MemoryMarshal.AsBytes(second));
 #endif
 
+#if !NET8_0_OR_GREATER
     [return: MarshalAs(UnmanagedType.I1)]
     private delegate bool RtlIsZeroMemoryFunc(in byte buffer, nint length);
 
@@ -119,7 +120,7 @@ public static partial class NativeCompareExtensions
     {
         nint fptr = 0;
 
-#if NETCOREAPP
+#if NETCOREAPP || NET471_OR_GREATER
         try
         {
             fptr = NativeLib.GetProcAddressNoThrow("ntdll", "RtlIsZeroMemory");
@@ -144,37 +145,6 @@ public static partial class NativeCompareExtensions
             }
         };
     }
-
-#if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
-    /// <summary>
-    /// Determines whether all bytes in a buffer are zero. If ntdll.RtlIsZeroMemory is available it is used,
-    /// otherwise it falls back to a native method that compares groups of bytes is an optimized way.
-    /// </summary>
-    /// <param name="buffer"></param>
-    /// <returns>If all bytes are zero, buffer is empty or buffer is null, true is returned, false otherwise.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsBufferZero(this byte[] buffer) => buffer is null || buffer.AsSpan().IsBufferZero();
-
-    /// <summary>
-    /// Determines whether all bytes in a buffer are zero. If ntdll.RtlIsZeroMemory is available it is used,
-    /// otherwise it falls back to a native method that compares groups of bytes is an optimized way.
-    /// </summary>
-    /// <param name="buffer"></param>
-    /// <returns>If all bytes are zero, buffer is empty, true is returned, false otherwise.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsBufferZero(this Span<byte> buffer) =>
-        FuncRtlIsZeroMemory(MemoryMarshal.GetReference(buffer), buffer.Length);
-
-    /// <summary>
-    /// Determines whether all bytes in a buffer are zero. If ntdll.RtlIsZeroMemory is available it is used,
-    /// otherwise it falls back to a managed method that compares groups of bytes is an optimized way.
-    /// </summary>
-    /// <param name="buffer"></param>
-    /// <returns>If all bytes are zero, buffer is empty, true is returned, false otherwise.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsBufferZero(this ReadOnlySpan<byte> buffer) =>
-        FuncRtlIsZeroMemory(MemoryMarshal.GetReference(buffer), buffer.Length);
-#endif
 
     private static unsafe bool InternalIsZeroMemory(in byte buffer, nint length)
     {
@@ -234,6 +204,67 @@ public static partial class NativeCompareExtensions
 
         return true;
     }
+#endif
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Determines whether all bytes in a buffer are zero. If ntdll.RtlIsZeroMemory is available it is used,
+    /// otherwise it falls back to a native method that compares groups of bytes is an optimized way.
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <returns>If all bytes are zero, buffer is empty or buffer is null, true is returned, false otherwise.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBufferZero(this byte[] buffer) => buffer is null || !buffer.AsSpan().ContainsAnyExcept(default(byte));
+
+    /// <summary>
+    /// Determines whether all bytes in a buffer are zero. If ntdll.RtlIsZeroMemory is available it is used,
+    /// otherwise it falls back to a native method that compares groups of bytes is an optimized way.
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <returns>If all bytes are zero, buffer is empty, true is returned, false otherwise.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBufferZero(this Span<byte> buffer) =>
+        buffer.IsEmpty || !buffer.ContainsAnyExcept(default(byte));
+
+    /// <summary>
+    /// Determines whether all bytes in a buffer are zero. If ntdll.RtlIsZeroMemory is available it is used,
+    /// otherwise it falls back to a managed method that compares groups of bytes is an optimized way.
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <returns>If all bytes are zero, buffer is empty, true is returned, false otherwise.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBufferZero(this ReadOnlySpan<byte> buffer) =>
+        buffer.IsEmpty || !buffer.ContainsAnyExcept(default(byte));
+#elif NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
+    /// <summary>
+    /// Determines whether all bytes in a buffer are zero. If ntdll.RtlIsZeroMemory is available it is used,
+    /// otherwise it falls back to a native method that compares groups of bytes is an optimized way.
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <returns>If all bytes are zero, buffer is empty or buffer is null, true is returned, false otherwise.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBufferZero(this byte[] buffer) => buffer is null || buffer.AsSpan().IsBufferZero();
+
+    /// <summary>
+    /// Determines whether all bytes in a buffer are zero. If ntdll.RtlIsZeroMemory is available it is used,
+    /// otherwise it falls back to a native method that compares groups of bytes is an optimized way.
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <returns>If all bytes are zero, buffer is empty, true is returned, false otherwise.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBufferZero(this Span<byte> buffer) =>
+        FuncRtlIsZeroMemory(MemoryMarshal.GetReference(buffer), buffer.Length);
+
+    /// <summary>
+    /// Determines whether all bytes in a buffer are zero. If ntdll.RtlIsZeroMemory is available it is used,
+    /// otherwise it falls back to a managed method that compares groups of bytes is an optimized way.
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <returns>If all bytes are zero, buffer is empty, true is returned, false otherwise.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBufferZero(this ReadOnlySpan<byte> buffer) =>
+        FuncRtlIsZeroMemory(MemoryMarshal.GetReference(buffer), buffer.Length);
+#endif
 
 #if NET46_OR_GREATER || NETSTANDARD || NETCOREAPP
     /// <summary>

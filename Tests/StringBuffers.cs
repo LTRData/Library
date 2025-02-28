@@ -28,5 +28,4 @@ public class StringBuffers
         Assert.Equal(3, str.Length);
         Assert.Equal("ABC", str);
     }
-
 }
