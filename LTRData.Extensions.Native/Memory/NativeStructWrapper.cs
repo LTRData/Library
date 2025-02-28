@@ -1,6 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
 
-#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
+using System.Runtime.InteropServices;
 
 namespace LTRData.Extensions.Native.Memory;
 
@@ -19,7 +19,7 @@ namespace LTRData.Extensions.Native.Memory;
 /// <see cref="SafeBuffer"/>
 /// </summary>
 /// <typeparam name="T">Type of managed object</typeparam>
-internal class NativeStructWrapper<T> : SafeBuffer where T : class
+public class NativeStructWrapper<T> : SafeBuffer where T : class
 {
     /// <summary>
     /// Initializes a new instance by allocating unmanaged memory and marshalling
