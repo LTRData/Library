@@ -3,5 +3,5 @@
   <ItemGroup>
     <ProjectReference Include="..\LTRData.Extensions\LTRData.Extensions.csproj" />
   </ItemGroup>
-
+  
 </Project>
