@@ -1,10 +1,7 @@
 ﻿#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace LTRData.Extensions.Async;
 
@@ -12,7 +9,7 @@ namespace LTRData.Extensions.Async;
 /// Async/await extension for <see cref="IObservable{T}"/> objects.
 /// </summary>
 /// <typeparam name="T">Type of result of asynchronous operation</typeparam>
-public class ObserverResultAwaiter<T> : IObserver<T>, ICriticalNotifyCompletion
+public class ObserverSingleResultAwaiter<T> : IObserver<T>, ICriticalNotifyCompletion
 {
     private Action? continuation = null;
 
@@ -26,7 +23,7 @@ public class ObserverResultAwaiter<T> : IObserver<T>, ICriticalNotifyCompletion
     /// Creates a new instance by subscribing to an <see cref="IObservable{T}"/>
     /// </summary>
     /// <param name="observable">Asynchronous operation that will be awaited by this instance</param>
-    protected internal ObserverResultAwaiter(IObservable<T> observable)
+    protected internal ObserverSingleResultAwaiter(IObservable<T> observable)
     {
         asyncSubscription = observable.Subscribe(this);
     }
@@ -54,12 +51,7 @@ public class ObserverResultAwaiter<T> : IObserver<T>, ICriticalNotifyCompletion
             throw new AggregateException(exception);
         }
 
-        if (result is null)
-        {
-            throw new InvalidOperationException("Task not finished");
-        }
-
-        return result;
+        return result ?? throw new InvalidOperationException("Task not finished");
     }
 
     void IObserver<T>.OnCompleted()
@@ -70,7 +62,12 @@ public class ObserverResultAwaiter<T> : IObserver<T>, ICriticalNotifyCompletion
 
     void ICriticalNotifyCompletion.UnsafeOnCompleted(Action continuation) => this.continuation = continuation;
 
-    void IObserver<T>.OnError(Exception error) => exception = error;
+    void IObserver<T>.OnError(Exception error)
+    {
+        exception = error;
+        asyncSubscription.Dispose();
+        continuation?.Invoke();
+    }
 
     void IObserver<T>.OnNext(T value) => result = value;
 

@@ -233,7 +233,7 @@ public static class AsyncCompatExtensions
     /// <typeparam name="T">Type of result of asynchronous operation</typeparam>
     /// <param name="observable">Observable operation to await</param>
     /// <returns>An object used by async/await pattern</returns>
-    public static ObserverResultAwaiter<T> GetAwaiter<T>(this IObservable<T> observable)
+    public static ObserverSingleResultAwaiter<T> GetAwaiter<T>(this IObservable<T> observable)
         => new(observable);
 
 #endif
