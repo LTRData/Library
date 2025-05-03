@@ -109,6 +109,57 @@ public readonly struct NativeMemory<T>(nint address, int length) where T : unman
 
         return $"{typeof(T).Name} 0x{Address:x}[{Length}]";
     }
+
+    /// <summary>
+    /// Returns a read-only representation of the same memory block as current.
+    /// </summary>
+    /// <returns>An <see cref="ReadOnlyNativeMemory{T}"/> structure.</returns>
+    public ReadOnlyNativeMemory<T> AsReadOnly() => new(Address, Length);
+
+    /// <summary>
+    /// Forms a slice out of the current memory block that begins at a specified index.
+    /// </summary>
+    /// <param name="start">The index at which to begin the slice.</param>
+    /// <returns>A span that consists of all elements of the current memory block from start to the end of the memory block.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">start is less than zero or greater than <see cref="Length" />.</exception>
+    public NativeMemory<T> Slice(int start)
+    {
+#if NET8_0_OR_GREATER
+        ArgumentOutOfRangeException.ThrowIfNegative(start);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(start, Length);
+#else
+        if (start < 0 || start > Length)
+        {
+            throw new ArgumentOutOfRangeException(nameof(start));
+        }
+#endif
+
+        return new(Address + start, Length - start);
+    }
+
+    /// <summary>
+    /// Forms a slice out of the current memory block starting at a specified index for a specified length.
+    /// </summary>
+    /// <param name="start">The index at which to begin the slice.</param>
+    /// <param name="length">The desired length for the slice.</param>
+    /// <returns>A memory block that consists of length elements of the current memory block from start to the end of the memory block.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">start or start + length is less than zero or greater than <see cref="Length" />.</exception>
+    public NativeMemory<T> Slice(int start, int length)
+    {
+#if NET8_0_OR_GREATER
+        ArgumentOutOfRangeException.ThrowIfNegative(start);
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(start, Length);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(length, Length - start);
+#else
+        if (start < 0 || length < 0 || start > Length || length > Length - start)
+        {
+            throw new ArgumentOutOfRangeException(nameof(start));
+        }
+#endif
+
+        return new(Address + start, length);
+    }
 }
 
 /// <summary>
@@ -214,6 +265,51 @@ public readonly struct ReadOnlyNativeMemory<T>(nint address, int length) where T
         }
 
         return $"{typeof(T).Name} 0x{Address:x}[{Length}]";
+    }
+
+    /// <summary>
+    /// Forms a slice out of the current memory block that begins at a specified index.
+    /// </summary>
+    /// <param name="start">The index at which to begin the slice.</param>
+    /// <returns>A span that consists of all elements of the current memory block from start to the end of the memory block.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">start is less than zero or greater than <see cref="Length" />.</exception>
+    public ReadOnlyNativeMemory<T> Slice(int start)
+    {
+#if NET8_0_OR_GREATER
+        ArgumentOutOfRangeException.ThrowIfNegative(start);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(start, Length);
+#else
+        if (start < 0 || start > Length)
+        {
+            throw new ArgumentOutOfRangeException(nameof(start));
+        }
+#endif
+
+        return new(Address + start, Length - start);
+    }
+
+    /// <summary>
+    /// Forms a slice out of the current memory block starting at a specified index for a specified length.
+    /// </summary>
+    /// <param name="start">The index at which to begin the slice.</param>
+    /// <param name="length">The desired length for the slice.</param>
+    /// <returns>A memory block that consists of length elements of the current memory block from start to the end of the memory block.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">start or start + length is less than zero or greater than <see cref="Length" />.</exception>
+    public ReadOnlyNativeMemory<T> Slice(int start, int length)
+    {
+#if NET8_0_OR_GREATER
+        ArgumentOutOfRangeException.ThrowIfNegative(start);
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(start, Length);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(length, Length - start);
+#else
+        if (start < 0 || length < 0 || start > Length || length > Length - start)
+        {
+            throw new ArgumentOutOfRangeException(nameof(start));
+        }
+#endif
+
+        return new(Address + start, length);
     }
 }
 
