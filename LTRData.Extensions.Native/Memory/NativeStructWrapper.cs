@@ -5,6 +5,23 @@ using System.Runtime.InteropServices;
 namespace LTRData.Extensions.Native.Memory;
 
 /// <summary>
+/// Static support class for <see cref="NativeStructWrapper{T}"/>.
+/// </summary>
+public static class NativeStructWrapper
+{
+    /// <summary>
+    /// Creates a <see cref="NativeStructWrapper{T}"/> wrapper for a managed object.
+    /// </summary>
+    /// <typeparam name="T">Type of managed object to wrap</typeparam>
+    /// <param name="obj">Managed object to wrap</param>
+    /// <returns>A <see cref="NativeStructWrapper{T}"/> wrapper for a managed object</returns>
+    public static NativeStructWrapper<T> Wrap<T>(T obj) where T : class
+    {
+        return new NativeStructWrapper<T>(obj);
+    }
+}
+
+/// <summary>
 /// This class allocates unmanaged memory for a native structure and initializes
 /// that memory by marshalling a managed object. It gurantees that the managed
 /// object stays alive and the unmanaged memory block is valid for at least the
