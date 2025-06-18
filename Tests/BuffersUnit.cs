@@ -32,6 +32,23 @@ public class BuffersUnit
     }
 
     [Fact]
+    public void TestSpanSplitAny1()
+    {
+        var str = "  123 ; 456 ,789; 012  ";
+
+        var i = 0;
+
+        foreach (var result in str.AsSpan().TokenEnum(',', ';', StringSplitOptions.TrimEntries))
+        {
+            Trace.WriteLine($"'{result}'");
+
+            i++;
+        }
+
+        Assert.Equal(4, i);
+    }
+
+    [Fact]
     public void TestSpanSplit2()
     {
         var str = "  123 xx 456 yyyy789xx 012  ";

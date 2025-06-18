@@ -27,6 +27,18 @@ public static class SpanSplitExtensions
     /// Returns an enumerator for each delimited token in a span of characters
     /// </summary>
     /// <param name="chars">Character span to search</param>
+    /// <param name="delimiter1">Delimiter alt 1 between each token</param>
+    /// <param name="delimiter2">Delimiter alt 1 between each token</param>
+    /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
+    /// <returns>Reference enumerator</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static StringSplitByCharsEnumerator TokenEnum(this ReadOnlySpan<char> chars, char delimiter1, char delimiter2, StringSplitOptions options = StringSplitOptions.None) =>
+        new(chars, delimiter1, delimiter2, options, reverse: false);
+
+    /// <summary>
+    /// Returns an enumerator for each delimited token in a span of characters
+    /// </summary>
+    /// <param name="chars">Character span to search</param>
     /// <param name="delimiter">Delimiter between each token</param>
     /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
     /// <returns>Reference enumerator</returns>
@@ -44,6 +56,18 @@ public static class SpanSplitExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static StringSplitByCharEnumerator TokenEnumReverse(this ReadOnlySpan<char> chars, char delimiter, StringSplitOptions options = StringSplitOptions.None) =>
         new(chars, delimiter, options, reverse: true);
+
+    /// <summary>
+    /// Returns a reverse enumerator for each delimited token in a span of characters
+    /// </summary>
+    /// <param name="chars">Character span to search</param>
+    /// <param name="delimiter1">Delimiter alt 1 between each token</param>
+    /// <param name="delimiter2">Delimiter alt 2 between each token</param>
+    /// <param name="options"><see cref="StringSplitOptions"/> options to apply to search</param>
+    /// <returns>Reference enumerator</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static StringSplitByCharsEnumerator TokenEnumReverse(this ReadOnlySpan<char> chars, char delimiter1, char delimiter2, StringSplitOptions options = StringSplitOptions.None) =>
+        new(chars, delimiter1, delimiter2, options, reverse: true);
 
     /// <summary>
     /// Returns a reverse enumerator for each delimited token in a span of characters
