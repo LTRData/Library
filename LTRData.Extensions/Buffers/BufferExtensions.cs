@@ -145,6 +145,18 @@ public static class BufferExtensions
     public static Memory<byte> AsMemory(this MemoryStream memoryStream) =>
         memoryStream.GetBuffer().AsMemory(0, checked((int)memoryStream.Length));
 
+    /// <summary>
+    /// Gets a disposable <see cref="MemoryManager{Byte}"/> for a <see cref="SafeBuffer"/>.
+    /// This can be used to get a <see cref="Memory{Byte}"/> that can be sent to asynchronous
+    /// API or delegates. Remember though, that the memory is invalid after <see cref="SafeBuffer"/>
+    /// has been disposed.
+    /// </summary>
+    /// <param name="safeBuffer"></param>
+    /// <param name="ownsBuffer">Set to true to have the <paramref name="safeBuffer"/> disposed when
+    /// the returned memory manager is disposed.</param>
+    public static MemoryManager<byte> GetMemoryManager(this SafeBuffer safeBuffer, bool ownsBuffer)
+        => new SafeBufferMemoryManager<byte>(safeBuffer, ownsBuffer);
+
 #if !NETCOREAPP
     /// <summary>
     /// </summary>

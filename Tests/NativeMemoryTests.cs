@@ -1,7 +1,10 @@
-﻿using LTRData.Extensions.Native.Memory;
+﻿using LTRData.Extensions.Buffers;
+using LTRData.Extensions.Native.Memory;
 using System;
 using System.Collections.Generic;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -53,5 +56,35 @@ public class NativeMemoryTests
 
             Assert.Throws<ArgumentOutOfRangeException>(() => _ = memBlock.Slice(50, -1));
         }
+    }
+
+    [Fact]
+    public unsafe void SafeBufferMemoryManager()
+    {
+        var mapping = MemoryMappedFile.CreateNew(null,
+                                                 400,
+                                                 MemoryMappedFileAccess.ReadWrite,
+                                                 MemoryMappedFileOptions.None,
+                                                 HandleInheritability.None);
+
+        var accessor = mapping.CreateViewAccessor(0, 400, MemoryMappedFileAccess.ReadWrite);
+
+        var memoryManager = accessor.SafeMemoryMappedViewHandle.GetMemoryManager(ownsBuffer: false);
+
+        var memBlock = memoryManager.Memory;
+
+        try
+        {
+            memBlock.Span[200] = 21;
+
+            Assert.Equal(21, accessor.ReadByte(200));
+        }
+        finally
+        {
+            accessor.Dispose();
+            mapping.Dispose();
+        }
+
+        Assert.Throws<ObjectDisposedException>(() => _ = memBlock.Span[200]);
     }
 }
