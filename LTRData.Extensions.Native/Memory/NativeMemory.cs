@@ -324,7 +324,7 @@ internal sealed class UnmanagedMemoryManager<T>(nint address, int count) : Memor
 #else
         if (_disposed)
         {
-            throw new ObjectDisposedException(nameof(UnmanagedMemoryManager<T>));
+            throw new ObjectDisposedException(nameof(UnmanagedMemoryManager<>));
         }
 #endif
 
@@ -338,7 +338,7 @@ internal sealed class UnmanagedMemoryManager<T>(nint address, int count) : Memor
 #else
         if (_disposed)
         {
-            throw new ObjectDisposedException(nameof(UnmanagedMemoryManager<T>));
+            throw new ObjectDisposedException(nameof(UnmanagedMemoryManager<>));
         }
 #endif
 

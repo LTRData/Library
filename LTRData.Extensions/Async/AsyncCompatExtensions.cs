@@ -19,17 +19,17 @@ public static class AsyncCompatExtensions
     /// <summary>
     /// A task that has completed with the integer result of 0.
     /// </summary>
-    public static Task<int> ZeroCompletedTask { get; } = Task.FromResult(0);
+    public static Task<int> ZeroCompletedTask => field ??= Task.FromResult(0);
 
     /// <summary>
     /// A task that has completed with the boolean result of false.
     /// </summary>
-    public static Task<bool> FalseResult { get; } = Task.FromResult(false);
+    public static Task<bool> FalseResult => field ??= Task.FromResult(false);
 
     /// <summary>
     /// A task that has completed with the boolean result of true.
     /// </summary>
-    public static Task<bool> TrueResult { get; } = Task.FromResult(true);
+    public static Task<bool> TrueResult => field ??= Task.FromResult(true);
 
     private static class Immuatables<T>
     {

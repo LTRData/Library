@@ -44,7 +44,7 @@ public static class CommandLineParser
                 switches_finished = true;
                 continue;
             }
-            else if (arg.StartsWith("--", StringComparison.Ordinal) || IOExtensions.IsWindows && arg.StartsWith("/", StringComparison.Ordinal))
+            else if (arg.StartsWith("--", StringComparison.Ordinal) || IOExtensions.IsWindows && arg[0] == '/')
             {
                 var namestart = 1;
                 if (arg[0] == '-')
@@ -69,12 +69,12 @@ public static class CommandLineParser
                 else
                 {
                     name = arg.Substring(namestart);
-                    value = Enumerable.Empty<string>();
+                    value = [];
                 }
 
                 yield return new KeyValuePair<string, IEnumerable<string>>(name, value);
             }
-            else if (arg.StartsWith("-", StringComparison.Ordinal))
+            else if (arg[0] == '-')
             {
                 for (int i = 1, loopTo = arg.Length - 1; i <= loopTo; i++)
                 {
@@ -88,7 +88,7 @@ public static class CommandLineParser
                         break;
                     }
 
-                    value = Enumerable.Empty<string>();
+                    value = [];
                     yield return new KeyValuePair<string, IEnumerable<string>>(name, value);
                 }
             }
