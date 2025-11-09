@@ -76,7 +76,7 @@ public static partial class NativeCompareExtensions
     /// <returns>Result of memcmp comparison.</returns>
     public static int BinaryCompare(this ReadOnlySpan<byte> first, ReadOnlySpan<byte> second)
         => (first.IsEmpty && second.IsEmpty) || (first == second)
-        ? 0 : memcmp(first[0], second[0], first.Length);
+        ? 0 : memcmp(first[0], second[0], Math.Min(first.Length, second.Length));
 
     /// <summary>
     /// Compares two byte spans using C runtime memcmp function.
@@ -86,7 +86,7 @@ public static partial class NativeCompareExtensions
     /// <returns>Result of memcmp comparison.</returns>
     public static int BinaryCompare(this Span<byte> first, ReadOnlySpan<byte> second)
         => (first.IsEmpty && second.IsEmpty) || (first == second)
-        ? 0 : memcmp(first[0], second[0], first.Length);
+        ? 0 : memcmp(first[0], second[0], Math.Min(first.Length, second.Length));
 
     /// <summary>
     /// Compares two spans using C runtime memcmp function.
@@ -130,14 +130,14 @@ public static partial class NativeCompareExtensions
         }
 #endif
 
-        if (fptr == default)
+        if (fptr == 0)
         {
             return null;
         }
 
         var ptr = (delegate* unmanaged[Stdcall]<byte*, nint, byte>)fptr;
 
-        return (in byte buffer, nint length) =>
+        return (in buffer, length) =>
         {
             fixed (byte* bytes = &buffer)
             {
