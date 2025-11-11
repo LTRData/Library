@@ -14,11 +14,11 @@
     <AssemblyOriginatorKeyFile>..\LTRLib40.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <DebugType>portable</DebugType>
-
+    
     <Company>LTR Data</Company>
     <Authors>Olof Lagerkvist</Authors>
     <OutputPath>..\$(Configuration)</OutputPath>
-    <FileVersion>1.0.19</FileVersion>
+    <FileVersion>1.0.20</FileVersion>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <PackageOutputPath>$(LocalNuGetPath)</PackageOutputPath>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
