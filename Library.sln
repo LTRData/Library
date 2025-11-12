@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.7.34031.279
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11205.157 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E051A206-FFEF-4BBD-B831-14FAAD6169AC}"
 	ProjectSection(SolutionItems) = preProject
@@ -14,6 +14,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LTRData.Extensions.Native", "LTRData.Extensions.Native\LTRData.Extensions.Native.csproj", "{A1817419-F14E-4EC3-8288-1447A7E6E49D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{81E84532-F855-4B59-81DE-0C8C46A28EEC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LTRData.Compat.System.Management", "LTRData.Compat.System.Management\LTRData.Compat.System.Management.csproj", "{DF882FC4-E7D7-A690-9377-753C64536D6E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{81E84532-F855-4B59-81DE-0C8C46A28EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81E84532-F855-4B59-81DE-0C8C46A28EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81E84532-F855-4B59-81DE-0C8C46A28EEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF882FC4-E7D7-A690-9377-753C64536D6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF882FC4-E7D7-A690-9377-753C64536D6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF882FC4-E7D7-A690-9377-753C64536D6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF882FC4-E7D7-A690-9377-753C64536D6E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
