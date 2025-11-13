@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 #pragma warning disable IDE0079 // Remove unnecessary suppression
@@ -76,11 +75,27 @@ public class ManagementClass(ManagementScope scope, ManagementPath path, ObjectG
         return list;
     }
 
+    public async Task<ManagementObjectCollection> GetInstancesAsync(EnumerationOptions _)
+    {
+        using var cimSession = await CimSession.CreateAsync(null);
+        var list = new ManagementObjectCollection(await cimSession.EnumerateInstancesAsync(Path.NamespacePath, Path.ClassName));
+        return list;
+    }
+
     public ManagementParameters GetMethodParameters(string methodName)
     {
         using var cimInstance = new CimInstance(Path.ClassName, Path.NamespacePath);
         using var cimSession = CimSession.Create(null);
         using var cim = cimSession.GetInstance(Path.NamespacePath, cimInstance);
+        var parameterDeclarations = cim.CimClass.CimClassMethods.First(m => m.Name == methodName).Parameters;
+        return new(parameterDeclarations);
+    }
+
+    public async Task<ManagementParameters> GetMethodParametersAsync(string methodName)
+    {
+        using var cimInstance = new CimInstance(Path.ClassName, Path.NamespacePath);
+        using var cimSession = await CimSession.CreateAsync(null);
+        using var cim = await cimSession.GetInstanceAsync(Path.NamespacePath, cimInstance);
         var parameterDeclarations = cim.CimClass.CimClassMethods.First(m => m.Name == methodName).Parameters;
         return new(parameterDeclarations);
     }
@@ -93,68 +108,14 @@ public class ManagementClass(ManagementScope scope, ManagementPath path, ObjectG
         return new(result);
     }
 
-#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NETCOREAPP
     public async Task<ManagementParameters> InvokeMethodAsync(string methodName, ManagementBaseObject inParams, InvokeMethodOptions _)
     {
-        using var cimSession = CimSession.Create(null);
+        using var cimSession = await CimSession.CreateAsync(null);
 
         var result = await cimSession.InvokeMethodAsync(Path.NamespacePath, Path.ClassName, methodName, (CimMethodParametersCollection)((ManagementParameters)inParams).Properties);
 
         return new(result);
     }
-#endif
-}
-
-public static class ManagementExtensions
-{
-    internal sealed class ObservableAwaiter<T> : IObserver<T>, ICriticalNotifyCompletion, IDisposable
-    {
-        private IDisposable observer;
-        private Action? continuation;
-        private Exception? error;
-        private T? value;
-
-        public ObservableAwaiter(IObservable<T> observable)
-        {
-            observer = observable.Subscribe(this);
-        }
-
-        public bool IsCompleted => value is not null || error is not null;
-
-        public void OnCompleted() => Dispose();
-
-        public void OnCompleted(Action continuation) => throw new NotImplementedException();
-
-        public void OnError(Exception error) => this.error = error;
-
-        public void OnNext(T value)
-        {
-            this.value = value;
-            continuation?.Invoke();
-        }
-
-        public void UnsafeOnCompleted(Action continuation) => this.continuation = continuation;
-
-        public T GetResult()
-        {
-            if (error is not null)
-            {
-                throw new AggregateException(error);
-            }
-
-            if (value is null)
-            {
-                throw new InvalidOperationException();
-            }
-
-            return value;
-        }
-
-        public void Dispose() => observer.Dispose();
-    }
-
-    internal static ObservableAwaiter<T> GetAwaiter<T>(this IObservable<T> observable)
-        => new(observable);
 }
 
 public class ManagementOptions
@@ -210,7 +171,11 @@ public abstract class ManagementBaseObject : ManagementDisposable
 
     public virtual string? ClassPath { get; }
 
-    public void Refresh() => (this as ManagementObject)?.Get();
+    public CimInstance? Refresh()
+        => (this as ManagementObject)?.Get();
+
+    public async Task<CimInstance?> RefreshAsync()
+        => this is ManagementObject obj ? await obj.RefreshAsync() : null;
 }
 
 public class ManagementParameters : ManagementBaseObject
@@ -269,6 +234,27 @@ public class ManagementObject : ManagementBaseObject
         CimInstance = Get();
     }
 
+    public static async Task<ManagementObject> CreateAsync(ManagementScope scope, ManagementPath path, ObjectGetOptions options)
+    {
+        var cimSession = await CimSession.CreateAsync(null);
+
+        var target = new ManagementObject(cimSession)
+        {
+            Scope = scope,
+            Path = path,
+            Options = options
+        };
+
+        target.CimInstance = await target.GetAsync().ConfigureAwait(false);
+
+        return target;
+    }
+
+    private ManagementObject(CimSession session)
+    {
+        CimSession = session;
+    }
+
     public ManagementObject(CimInstance current)
     {
         CimInstance = current;
@@ -285,7 +271,7 @@ public class ManagementObject : ManagementBaseObject
 
     public CimSession? CimSession { get; }
 
-    public CimInstance CimInstance { get; private set; }
+    public CimInstance CimInstance { get; private set; } = null!;
 
     public ManagementScope? Scope { get; set; }
 
@@ -297,6 +283,9 @@ public class ManagementObject : ManagementBaseObject
 
     public void Delete() => (CimSession ?? throw new InvalidOperationException("CimSession object needed for this operation"))
         .DeleteInstance(CimInstance);
+
+    public async Task<object> DeleteAsync() => await (CimSession ?? throw new InvalidOperationException("CimSession object needed for this operation"))
+        .DeleteInstanceAsync(CimInstance);
 
     public CimInstance Get()
     {
@@ -338,12 +327,61 @@ public class ManagementObject : ManagementBaseObject
         return CimInstance;
     }
 
-    public void Put()
+    public async Task<CimInstance> GetAsync()
+    {
+        if (Path is null || CimSession is null)
+        {
+            throw new InvalidOperationException("This operation requires a CimSession object and a query");
+        }
+
+        CimInstance?.Dispose();
+
+        if (string.IsNullOrWhiteSpace(Path.Query.Condition))
+        {
+            CimInstance = new(Path.ClassName, Path.NamespacePath);
+            CimInstance = await CimSession.GetInstanceAsync(Path.NamespacePath, CimInstance);
+        }
+        else
+        {
+            var query = await CimSession.QueryInstancesAsync(Path.NamespacePath,
+                                                             "WQL",
+                                                             Path.Query.ToString());
+
+            var array = query?.ToList();
+
+            if (array is null || array.Count == 0)
+            {
+                CimInstance = new(Path.ClassName, Path.NamespacePath);
+            }
+            else
+            {
+                foreach (var item in array.Skip(1))
+                {
+                    item.Dispose();
+                }
+
+                CimInstance = array[0];
+            }
+        }
+
+        return CimInstance;
+    }
+
+    public CimInstance Put()
         => (CimSession ?? throw new InvalidOperationException("CimSession object needed for this operation"))
         .ModifyInstance(CimInstance);
 
-    public void Put(PutOptions options)
-        => CimSession?.ModifyInstance(Path?.NamespacePath, CimInstance, options.Options);
+    public async Task<CimInstance> PutAsync()
+        => await (CimSession ?? throw new InvalidOperationException("CimSession object needed for this operation"))
+        .ModifyInstanceAsync(CimInstance);
+
+    public CimInstance Put(PutOptions options)
+        => (CimSession ?? throw new InvalidOperationException("CimSession object needed for this operation"))
+        .ModifyInstance(Path?.NamespacePath, CimInstance, options.Options);
+
+    public async Task<CimInstance> PutAsync(PutOptions options)
+        => await (CimSession ?? throw new InvalidOperationException("CimSession object needed for this operation"))
+        .ModifyInstanceAsync(Path?.NamespacePath, CimInstance, options.Options);
 
     public ManagementParameters GetMethodParameters(string methodName)
     {
@@ -369,7 +407,6 @@ public class ManagementObject : ManagementBaseObject
         return new(result);
     }
 
-#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NETCOREAPP
     public async Task<ManagementParameters> InvokeMethodAsync(string methodName, ManagementBaseObject inParams, InvokeMethodOptions _)
     {
         if (CimSession is null)
@@ -381,7 +418,6 @@ public class ManagementObject : ManagementBaseObject
 
         return new(result);
     }
-#endif
 }
 
 public class InvokeMethodOptions
@@ -407,10 +443,15 @@ public class ManagementObjectCollection : IReadOnlyCollection<ManagementObject>
 
     internal ManagementObjectCollection(IEnumerable<CimInstance> enumerable)
     {
-        Collection = [.. enumerable];
+        Collection = enumerable is List<CimInstance> list ? list : [.. enumerable];
     }
 
-    public void CopyTo(Array array, int index) => (Collection as ICollection).CopyTo(array, index);
+    internal ManagementObjectCollection(List<CimInstance> list)
+    {
+        Collection = list;
+    }
+
+    public void CopyTo(Array array, int index) => ((ICollection)Collection).CopyTo(array, index);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
@@ -440,13 +481,17 @@ public class ManagementObjectCollection : IReadOnlyCollection<ManagementObject>
 public class ManagementObjectSearcher(ManagementScope mgmtScope, SelectQuery selectQuery) : ManagementDisposable
 {
     public EnumerationOptions? Options { get; set; }
+
     public ManagementScope Scope { get; } = mgmtScope;
+
     public SelectQuery SelectQuery { get; } = selectQuery;
 
     public ManagementObjectCollection Get()
     {
         using var cimSession = CimSession.Create(null);
+        
         ManagementObjectCollection list;
+
         if (SelectQuery.Condition is null)
         {
             list = new(cimSession.EnumerateInstances(Scope.Path.NamespacePath, SelectQuery.ClassName));
@@ -454,6 +499,25 @@ public class ManagementObjectSearcher(ManagementScope mgmtScope, SelectQuery sel
         else
         {
             list = new(cimSession.QueryInstances(Scope.Path.NamespacePath, "WQL", SelectQuery.ToString()));
+        }
+
+        return list;
+    }
+
+    public async Task<ManagementObjectCollection> GetAsync()
+    {
+        using var cimSession = await CimSession.CreateAsync(null);
+
+        ManagementObjectCollection list;
+        
+        if (SelectQuery.Condition is null)
+        {
+            var enumerable = await cimSession.EnumerateInstancesAsync(Scope.Path.NamespacePath, SelectQuery.ClassName);
+            list = new(enumerable);
+        }
+        else
+        {
+            list = new(await cimSession.QueryInstancesAsync(Scope.Path.NamespacePath, "WQL", SelectQuery.ToString()));
         }
 
         return list;
@@ -474,7 +538,9 @@ public class SelectQuery
     }
 
     public string? ClassName { get; set; }
+
     public string? Condition { get; set; }
+    
     public string[]? SelectedProperties { get; set; }
 
     public override string ToString()
