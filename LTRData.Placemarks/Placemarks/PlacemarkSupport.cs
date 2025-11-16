@@ -8,7 +8,6 @@
 
 using LTRData.Extensions;
 using LTRData.Geodesy.Positions;
-using LTRData.LTRGeneric;
 using Kml = LTRData.Kml.Simplified.Kml;
 using Coordinates = LTRData.Kml.Simplified.Coordinates;
 using KmlPolygon = LTRData.Kml.Simplified.Polygon;

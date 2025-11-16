@@ -1,4 +1,6 @@
-﻿using LTRData.Xml;
+﻿#if NET48_OR_GREATER || NETSTANDARD || NETCOREAPP
+
+using LTRData.Xml;
 using System.Text.Json;
 using Xunit;
 
@@ -6,7 +8,6 @@ namespace LTRData.Extensions.Tests;
 
 public class TimeZoneSupport
 {
-#if NET48_OR_GREATER || NETSTANDARD || NETCOREAPP
     [Fact]
     public void Json()
     {
@@ -22,5 +23,6 @@ public class TimeZoneSupport
 
         Assert.Equal(dateTime, cldt2.DateTime);
     }
-#endif
 }
+
+#endif

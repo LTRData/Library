@@ -7,7 +7,6 @@
 #if NET461_OR_GREATER || NETSTANDARD || NETCOREAPP
 
 using LTRData.IO;
-using LTRData.LTRGeneric;
 using LTRData.Kml.Simplified;
 using System;
 using System.Collections.Generic;

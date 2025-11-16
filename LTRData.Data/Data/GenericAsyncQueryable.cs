@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LTRData.LTRGeneric;
+namespace LTRData.Data;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 

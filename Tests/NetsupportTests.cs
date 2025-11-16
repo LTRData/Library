@@ -1,12 +1,12 @@
-﻿using LTRData.Net;
+﻿#if NET48_OR_GREATER || NETCOREAPP
+
+using LTRData.Net;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Net.Sockets;
 using Xunit;
 
 namespace LTRData.Extensions.Tests;
-
-#if NET47_OR_GREATER || NETCOREAPP
 
 public class NetsupportTests
 {
@@ -19,7 +19,7 @@ public class NetsupportTests
         };
 
         var inside = IPAddress.Parse("172.16.1.1");
-        
+
         Assert.True(ranges.Encompasses(inside));
 
         var outside = IPAddress.Parse("192.168.0.1");
@@ -36,7 +36,6 @@ public class NetsupportTests
         Assert.Throws<ArgumentException>(() => ranges.CalculateNetwork(IPAddress.Parse("172.16.0.0"), IPAddress.Parse("172.32.255.255")));
     }
 
-#if NET471_OR_GREATER || NETCOREAPP
     [Fact]
     public void QueryStrings()
     {
@@ -58,8 +57,5 @@ public class NetsupportTests
         Assert.Null(q.Get("a"));
         Assert.Equal("d", q.Get("c"));
     }
-#endif
-
 }
-
 #endif
