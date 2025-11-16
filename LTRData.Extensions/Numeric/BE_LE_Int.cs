@@ -3,7 +3,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace LTRData.Extensions.Buffers;
+namespace LTRData.Extensions.Numeric;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 

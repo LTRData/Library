@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net35;net40;net46;net48;netstandard2.0;netstandard2.1;net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
+
+	<Version>1.0.21</Version>
+	<FileVersion>$(Version)</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net6.0'))">
+    <PackageReference Include="SixLabors.ImageSharp" Version="*" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="*" />
+  </ItemGroup>
+
+	<ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net35')) Or $([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0'))">
+        <ProjectReference Include="..\LTRData.MathExpression\LTRData.MathExpression.csproj" />
+  </ItemGroup>
+
+</Project>

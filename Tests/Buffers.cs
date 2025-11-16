@@ -1,5 +1,5 @@
-﻿using LTRData.Extensions.Buffers;
-using LTRData.Extensions.Native;
+﻿using LTRData.Extensions.Native;
+using LTRData.Extensions.Numeric;
 using System.Runtime.CompilerServices;
 using Xunit;
 

@@ -6,15 +6,49 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security;
 using System.Text;
 
 namespace LTRData.Extensions.Formatting;
 
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0057 // Use range operator
+
 /// <summary>
 /// </summary>
 public static class StringFormatting
 {
+    /// <summary>
+    /// Gets the value that corresponds to a name in an Enum type.
+    /// </summary>
+    /// <typeparam name="E">Any Enum Type.</typeparam>
+    /// <param name="name">Name of Enum member.</param>
+    /// <param name="ignorecase"></param>
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+    public static E ParseEnumName<E>(string name, bool ignorecase) where E : struct, Enum
+#if NET5_0_OR_GREATER
+        => Enum.Parse<E>(name, ignorecase);
+#else
+        => (E)Enum.Parse(typeof(E), name, ignorecase);
+#endif
+
+    /// <summary>
+    /// Gets the value that corresponds to a name in an Enum type.
+    /// </summary>
+    /// <typeparam name="E">Any Enum Type.</typeparam>
+    /// <param name="name">Name of Enum member.</param>
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+    public static E ParseEnumName<E>(string name) where E : struct, Enum
+#if NET5_0_OR_GREATER
+        => Enum.Parse<E>(name);
+#else
+        => (E)Enum.Parse(typeof(E), name);
+#endif
 
 #if NET35_OR_GREATER || NETSTANDARD || NETCOREAPP
 
@@ -171,7 +205,9 @@ public static class StringFormatting
         }
 
         return (from word in words
-                select word.Any(char.IsLower) || word.Length < MinWordLength ? word : char.ToUpper(word[0]) + word.Substring(1).ToLower()).Concat();
+                select word.Any(char.IsLower) || word.Length < MinWordLength
+                    ? word
+                    : char.ToUpper(word[0]) + word.Substring(1).ToLower()).Concat();
     }
 
 #endif
@@ -216,7 +252,7 @@ public static class StringFormatting
     /// <param name="strings">String to join</param>
     /// <param name="separator">Separator to insert between each joined element</param>
     /// <returns>Joined string</returns>
-    public static string Join(this IEnumerable<string> strings, string separator) => string.Join(separator, strings.ToArray());
+    public static string Join(this IEnumerable<string> strings, string separator) => string.Join(separator, [.. strings]);
 
     /// <summary>
     /// Encapsulation of <see cref="string.Join(string?, string?[])"/> as an extension method
@@ -272,7 +308,7 @@ public static class StringFormatting
     /// <param name="strings">String to join</param>
     /// <param name="separator">Separator to insert between each joined element</param>
     /// <returns>Joined string</returns>
-    public static string Join(this IEnumerable<string> strings, char separator) => string.Join(separator.ToString(), strings.ToArray());
+    public static string Join(this IEnumerable<string> strings, char separator) => string.Join(separator.ToString(), [.. strings]);
 
     /// <summary>
     /// Encapsulation of <see cref="string.Join(string, string?[])"/> as an extension method

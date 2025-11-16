@@ -2,7 +2,10 @@
 
   <PropertyGroup>
     <RootNamespace>LTRData.Compat.System.Management</RootNamespace>
-	  <TargetFrameworks>net46;net48;netstandard2.0;netstandard2.1;net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
+	<TargetFrameworks>net46;net48;netstandard2.0;netstandard2.1;net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
+
+	<Version>1.0.21</Version>
+	<FileVersion>$(Version)</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

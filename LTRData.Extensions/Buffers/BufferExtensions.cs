@@ -14,6 +14,9 @@ using LTRData.Extensions.Split;
 
 namespace LTRData.Extensions.Buffers;
 
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0057 // Use range operator
+
 /// <summary>
 /// </summary>
 public static class BufferExtensions

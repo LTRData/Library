@@ -1,6 +1,6 @@
 ﻿using LTRData.Extensions.Buffers;
 using LTRData.Extensions.Formatting;
-using System.Runtime.InteropServices;
+
 using Xunit;
 
 namespace LTRData.Extensions.Tests;
@@ -20,47 +20,66 @@ public class Collections
     public void ToHexStringTest()
     {
         var span = "\r\n"u8;
-
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
         var spanHex = span.ToHexString();
         Assert.Equal("0d0a", spanHex);
+#endif
 
         var array = span.ToArray();
         var arrayHex = array.ToHexString();
         Assert.Equal("0d0a", arrayHex);
 
-        var enumerable = (IReadOnlyCollection<byte>)array;
+        var collectionAsEnumerable = array.AsEnumerable();
+        var collectionAsEnumerableHex = collectionAsEnumerable.ToHexString();
+        Assert.Equal("0d0a", collectionAsEnumerableHex);
+
+        var enumerable = array.Take(array.Length);
         var enumerableHex = enumerable.ToHexString();
         Assert.Equal("0d0a", enumerableHex);
     }
 
     [Fact]
-    public void TryFormatHexStringTest()
+    public void ToHexStringWithDelimiterTest()
     {
         var span = "\r\n"u8;
+#if NET45_OR_GREATER || NETSTANDARD || NETCOREAPP
+        var spanHex = span.ToHexString(":".AsSpan());
+        Assert.Equal("0d:0a", spanHex);
+#endif
 
-        Span<char> spanHex = stackalloc char[4];
-        var result = span.TryFormatHexString(default, spanHex, upperCase: false);
-        Assert.True(result);
-        Assert.Equal("0d0a", spanHex.ToString());
+        var array = span.ToArray();
+        var arrayHex = array.ToHexString(":");
+        Assert.Equal("0d:0a", arrayHex);
 
-        Span<char> tooSmallSpanHex = stackalloc char[1];
-        result = span.TryFormatHexString(default, tooSmallSpanHex, upperCase: false);
-        Assert.False(result);
+        var collectionAsEnumerable = array.AsEnumerable();
+        var collectionAsEnumerableHex = collectionAsEnumerable.ToHexString(":");
+        Assert.Equal("0d:0a", collectionAsEnumerableHex);
+
+        var enumerable = array.Take(array.Length);
+        var enumerableHex = enumerable.ToHexString(":");
+        Assert.Equal("0d:0a", enumerableHex);
     }
 
     [Fact]
-    public unsafe void StringRefTest()
+    public void BitmapTests()
     {
-        var test = "ABC\0DEF\0";
+        var buffer = new byte[512];
 
-        var span1 = test.AsMemory(0, 3);
+        buffer.AsSpan().Fill(0xff);
 
-        ref readonly var strref = ref MemoryMarshal.GetReference(test.AsSpan());
-        ref readonly var spanref = ref span1.MakeNullTerminated();
+        Assert.True(buffer.GetBit(9));
+        Assert.True(buffer.GetBit(10));
 
-        fixed (void* ptr1 = &strref, ptr2 = &spanref)
-        {
-            Assert.Equal((nint)ptr1, (nint)ptr2);
-        }
+        buffer.AsSpan().Clear();
+
+        Assert.False(buffer.GetBit(9));
+        Assert.False(buffer.GetBit(10));
+
+        buffer.SetBit(9);
+
+        Assert.True(buffer.GetBit(9));
+        Assert.False(buffer.GetBit(10));
+
+        Assert.Equal(2, buffer[1]);
     }
 }

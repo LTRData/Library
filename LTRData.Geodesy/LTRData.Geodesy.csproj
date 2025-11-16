@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<RootNamespace>LTRData.Geodesy</RootNamespace>
+	<TargetFrameworks>net35;net40;net46;net48;netstandard2.0;netstandard2.1;net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
+	<Guid>41ec09fd-a85a-4309-9caf-1b7dfbc472ea</Guid>
+
+	<Version>1.0.21</Version>
+	<FileVersion>$(Version)</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+	<Company>http://blog.sallarp.com and http://ltr-data.se"</Company>
+  </PropertyGroup>
+
+  <ItemGroup Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0')) And $([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net46'))">
+	<PackageReference Include="System.Memory" Version="4.5.*" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net461')) Or '$(TargetFramework)' == 'netstandard2.0'">
+	<PackageReference Include="Microsoft.Bcl.HashCode" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Compile Include="..\LTRData.Extensions\Reflection\CompilerServices.cs" Link="Reflection\CompilerServices.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Folder Include="Reflection\" />
+  </ItemGroup>
+
+</Project>

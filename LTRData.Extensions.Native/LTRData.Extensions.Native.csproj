@@ -1,4 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<Version>1.0.22</Version>
+	<FileVersion>$(Version)</FileVersion>
+  </PropertyGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\LTRData.Extensions\LTRData.Extensions.csproj" />

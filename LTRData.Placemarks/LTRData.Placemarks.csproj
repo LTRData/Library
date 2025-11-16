@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net35;net40;net46;net48;netstandard2.0;netstandard2.1;net8.0;net9.0;net10.0</TargetFrameworks>
+    <Guid>8fc7f6f9-1108-4e7f-936c-f5aea11e386b</Guid>
+
+    <Version>1.0.21</Version>
+    <FileVersion>$(Version)</FileVersion>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\LTRData.Data\LTRData.Data.csproj" />
+		<ProjectReference Include="..\LTRData.Geodesy\LTRData.Geodesy.csproj" />
+		<ProjectReference Include="..\LTRData.Xml\LTRData.Xml.csproj" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net35'))">
+		<Reference Include="System.Data.Entity" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net35'))" />
+		<Reference Include="WindowsBase" />
+		<Reference Include="PresentationCore" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0'))">
+		<PackageReference Include="NetTopologySuite" Version="2.4.*" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0')) And !$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netcoreapp3.1'))">
+		<PackageReference Include="System.Memory" Version="4.6.*" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0')) And !$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))">
+		<PackageReference Include="System.Linq.AsyncEnumerable" Version="*" />
+	</ItemGroup>
+
+</Project>

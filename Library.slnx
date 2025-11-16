@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="LTRData.Compat.System.Management/LTRData.Compat.System.Management.csproj" />
+  <Project Path="LTRData.Extensions.Native/LTRData.Extensions.Native.csproj" />
+  <Project Path="LTRData.Extensions/LTRData.Extensions.csproj" />
+  <Project Path="LTRData.Data/LTRData.Data.csproj" />
+  <Project Path="LTRData.Geodesy/LTRData.Geodesy.csproj" />
+  <Project Path="LTRData.Graphics/LTRData.Graphics.csproj" />
+  <Project Path="LTRData.MathExpression/LTRData.MathExpression.csproj" />
+  <Project Path="LTRData.Net/LTRData.Net.csproj" />
+  <Project Path="LTRData.PerformanceCounters/LTRData.PerformanceCounters.csproj" />
+  <Project Path="LTRData.Placemarks/LTRData.Placemarks.csproj" />
+  <Project Path="LTRData.PolyGeometry/LTRData.PolyGeometry.csproj" />
+  <Project Path="LTRData.Xml/LTRData.Xml.csproj" />
+  <Project Path="Tests/Tests.csproj" />
+</Solution>

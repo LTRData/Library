@@ -2,38 +2,39 @@
 
   <PropertyGroup>
 
-    <TargetFrameworks>net35;net40;net46;net48;netstandard2.0;netstandard2.1;net6.0;net8.0;net9.0</TargetFrameworks>
-    <LangVersion>Latest</LangVersion>
+	<RootNamespace>LTRData</RootNamespace>
 
-    <PackageProjectUrl>https://github.com/LTRData/Library</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryType>git</RepositoryType>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Nullable>enable</Nullable>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\LTRLib40.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>false</DelaySign>
-    <DebugType>portable</DebugType>
-    
-    <Company>LTR Data</Company>
-    <Authors>Olof Lagerkvist</Authors>
-    <OutputPath>..\$(Configuration)</OutputPath>
-    <FileVersion>1.0.20</FileVersion>
-    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
-    <PackageOutputPath>$(LocalNuGetPath)</PackageOutputPath>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Copyright>2011 - 2025, Olof Lagerkvist, LTR Data</Copyright>
-    <PackageVersion>$(FileVersion)</PackageVersion>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+	<TargetFrameworks>net35;net40;net46;net48;netstandard2.0;netstandard2.1;net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
+	<LangVersion>Latest</LangVersion>
 
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<PackageProjectUrl>https://github.com/LTRData/Library</PackageProjectUrl>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<RepositoryType>git</RepositoryType>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<Nullable>enable</Nullable>
+	<SignAssembly>false</SignAssembly>
+	<AssemblyOriginatorKeyFile>..\LTRLib40.snk</AssemblyOriginatorKeyFile>
+	<DelaySign>false</DelaySign>
+	<DebugType>portable</DebugType>
+
+	<Company>LTR Data</Company>
+	<Authors>Olof Lagerkvist</Authors>
+	<OutputPath>..\$(Configuration)</OutputPath>
+	<GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
+	<PackageOutputPath>$(LocalNuGetPath)</PackageOutputPath>
+	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	<IncludeSymbols>true</IncludeSymbols>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	<Copyright>2011 - 2025, Olof Lagerkvist, LTR Data</Copyright>
+	<PackageVersion>$(FileVersion)</PackageVersion>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\README.md" Link="README.md" Pack="true" PackagePath="\" />
+	<None Include="..\README.md" Link="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

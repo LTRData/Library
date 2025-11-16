@@ -6,6 +6,9 @@ using System.Runtime.CompilerServices;
 
 namespace LTRData.Extensions.Split;
 
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0057 // Use range operator
+
 /// <summary>
 /// Extension methods for splitting <see cref="ReadOnlySpan{Char}"/> or <see cref="Span{Char}"/> in allocation-free iterations,
 /// or splitting <see cref="ReadOnlyMemory{Char}"/> or <see cref="Memory{Char}"/> without allocating arrays.

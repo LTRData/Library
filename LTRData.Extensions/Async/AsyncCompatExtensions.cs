@@ -33,11 +33,11 @@ public static class AsyncCompatExtensions
 
     private static class Immuatables<T>
     {
-        public static readonly Task<T?> DefaultCompletedTask = Task.FromResult<T?>(default);
+        public static Task<T?> DefaultCompletedTask => field ??= Task.FromResult<T?>(default);
 
-        public static readonly Task<T[]> EmptyArrayCompletedTask = Task.FromResult(Array.Empty<T>());
+        public static Task<T[]> EmptyArrayCompletedTask => field ??= Task.FromResult(Array.Empty<T>());
 
-        public static readonly Task<IEnumerable<T>> EmptyEnumerationCompletedTask = Task.FromResult(Enumerable.Empty<T>());
+        public static Task<IEnumerable<T>> EmptyEnumerationCompletedTask => field ??= Task.FromResult(Enumerable.Empty<T>());
     }
 
     /// <summary>

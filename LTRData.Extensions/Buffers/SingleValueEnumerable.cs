@@ -21,21 +21,13 @@ public static class SingleValueEnumerable
 /// An allocation-free enumerable for a single item
 /// </summary>
 /// <typeparam name="T">Type of item</typeparam>
-public readonly struct SingleValueEnumerable<T> : IEnumerable<T?>
+/// <param name="value">Value to enumerate once</param>
+public readonly struct SingleValueEnumerable<T>(T value) : IEnumerable<T?>
 {
     /// <summary>
     /// Value to enumerate once
     /// </summary>
-    public T? Value { get; }
-
-    /// <summary>
-    /// Initializes a new enumerable with an item
-    /// </summary>
-    /// <param name="value"></param>
-    public SingleValueEnumerable(T value)
-    {
-        Value = value;
-    }
+    public T? Value { get; } = value;
 
     /// <summary>
     /// Returns enumerator for this enumerable

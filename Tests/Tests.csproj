@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48;net6.0;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net48;net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <NoWarn>CS1591</NoWarn>
@@ -37,6 +37,9 @@
   <ItemGroup>
     <ProjectReference Include="..\LTRData.Extensions.Native\LTRData.Extensions.Native.csproj" />
     <ProjectReference Include="..\LTRData.Extensions\LTRData.Extensions.csproj" />
+    <ProjectReference Include="..\LTRData.MathExpression\LTRData.MathExpression.csproj" />
+    <ProjectReference Include="..\LTRData.Net\LTRData.Net.csproj" />
+    <ProjectReference Include="..\LTRData.Placemarks\LTRData.Placemarks.csproj" />
   </ItemGroup>
 
 </Project>
