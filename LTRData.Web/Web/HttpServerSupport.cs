@@ -8,6 +8,7 @@
 #if NET46_OR_GREATER
 
 using LTRData.Extensions.Buffers;
+using LTRData.Extensions.IO;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -179,15 +180,6 @@ public static class HttpServerSupport
 
             Context.ApplicationInstance.CompleteRequest();
             return;
-        }
-    }
-
-    private sealed class CloseSafeMemoryStream : MemoryStream
-    {
-        protected override void Dispose(bool disposing)
-        {
-            Position = 0L;
-            base.Dispose(false);
         }
     }
 

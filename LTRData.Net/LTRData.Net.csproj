@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+	<ProjectReference Include="..\LTRData.Data\LTRData.Data.csproj" />
 	<ProjectReference Include="..\LTRData.Xml\LTRData.Xml.csproj" />
   </ItemGroup>
 
