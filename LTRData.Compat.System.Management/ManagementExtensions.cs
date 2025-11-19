@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0057 // Use range operator
@@ -17,6 +18,11 @@ internal static class ManagementExtensions
         private Action? continuation;
         private Exception? error;
         private T? value;
+#if NET9_0_OR_GREATER
+        private readonly Lock sync = new();
+#else
+        private readonly object sync = new();
+#endif
 
         public ObservableSingleResultAwaiter(IObservable<T> observable)
         {
@@ -27,23 +33,43 @@ internal static class ManagementExtensions
 
         public void OnCompleted() => Dispose();
 
-        public void OnCompleted(Action continuation) => throw new NotImplementedException();
+        void INotifyCompletion.OnCompleted(Action continuation) => throw new NotImplementedException();
 
         public void OnError(Exception error)
         {
-            Dispose();
-            this.error = error;
-            continuation?.Invoke();
+            lock (sync)
+            {
+                this.error = error;
+                Dispose();
+                continuation?.Invoke();
+                continuation = null;
+            }
         }
 
         public void OnNext(T value) 
         {
-            Dispose();
-            this.value = value;
-            continuation?.Invoke();
+            lock (sync)
+            {
+                this.value = value;
+                Dispose();
+                continuation?.Invoke();
+                continuation = null;
+            }
         }
 
-        public void UnsafeOnCompleted(Action continuation) => this.continuation = continuation;
+        public void UnsafeOnCompleted(Action continuation)
+        {
+            lock (sync)
+            {
+                if (IsCompleted)
+                {
+                    continuation.Invoke();
+                    return;
+                }
+
+                this.continuation = continuation;
+            }
+        }
 
         public T GetResult()
         {
@@ -73,6 +99,11 @@ internal static class ManagementExtensions
         private Action? continuation;
         private Exception? error;
         private List<T>? values;
+#if NET9_0_OR_GREATER
+        private readonly Lock sync = new();
+#else
+        private readonly object sync = new();
+#endif
 
         public ObservableMultipleResultsAwaiter(IObservable<T> observable)
         {
@@ -83,26 +114,49 @@ internal static class ManagementExtensions
 
         public void OnCompleted()
         {
-            Dispose();
-            continuation?.Invoke();
+            lock (sync)
+            {
+                Dispose();
+                continuation?.Invoke();
+                continuation = null;
+            }
         }
 
-        public void OnCompleted(Action continuation) => throw new NotImplementedException();
+        void INotifyCompletion.OnCompleted(Action continuation) => throw new NotImplementedException();
 
         public void OnError(Exception error)
         {
-            Dispose();
-            this.error = error;
-            continuation?.Invoke();
+            lock (sync)
+            {
+                this.error = error;
+                Dispose();
+                continuation?.Invoke();
+                continuation = null;
+            }
         }
 
         public void OnNext(T value)
         {
-            values ??= new(1);
-            values.Add(value);
+            lock (sync)
+            {
+                values ??= new(1);
+                values.Add(value);
+            }
         }
 
-        public void UnsafeOnCompleted(Action continuation) => this.continuation = continuation;
+        public void UnsafeOnCompleted(Action continuation)
+        {
+            lock (sync)
+            {
+                if (IsCompleted)
+                {
+                    continuation.Invoke();
+                    return;
+                }
+
+                this.continuation = continuation;
+            }
+        }
 
         public List<T> GetResult()
         {
