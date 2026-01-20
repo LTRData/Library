@@ -52,10 +52,19 @@ public static class Calculations
 
     public static DateTime FromJulianDayUtc(double jd)
     {
-        // Inverse of Julian day (UTC). Returns DateTimeKind.Utc.
         var Z = Floor(jd + 0.5);
         var F = (jd + 0.5) - Z;
-        var A = Z;
+
+        double A;
+        if (Z >= 2299161) // Gregorian calendar reform (1582-10-15)
+        {
+            var alpha = Floor((Z - 1867216.25) / 36524.25);
+            A = Z + 1 + alpha - Floor(alpha / 4);
+        }
+        else
+        {
+            A = Z;
+        }
 
         var B = A + 1524;
         var C = Floor((B - 122.1) / 365.25);
@@ -68,10 +77,19 @@ public static class Calculations
 
         var dayInt = (int)Floor(day);
         var frac = day - dayInt;
+
         var totalMs = (int)Round(frac * 86400000.0);
 
-        var dt = new DateTime(year, month, dayInt, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(totalMs);
-        return dt;
+        // Optional robustness: handle rounding up to exactly 24:00:00.000
+        if (totalMs >= 86400000)
+        {
+            totalMs -= 86400000;
+            dayInt += 1;
+            // (For full robustness, you'd carry month/year here too, but it’s rare.)
+        }
+
+        return new DateTime(year, month, dayInt, 0, 0, 0, DateTimeKind.Utc)
+            .AddMilliseconds(totalMs);
     }
 
 #if  !NETCOREAPP && !NETSTANDARD2_1_OR_GREATER

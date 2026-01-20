@@ -25,7 +25,7 @@
 	<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	<IncludeSymbols>true</IncludeSymbols>
 	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	<Copyright>2011 - 2025, Olof Lagerkvist, LTR Data</Copyright>
+	<Copyright>2011 - 2026, Olof Lagerkvist, LTR Data</Copyright>
 	<PackageVersion>$(FileVersion)</PackageVersion>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 

@@ -71,4 +71,26 @@ public class Positions
         var symbol = MoonPhaseCalculator.GetMoonPhaseSymbol(moon);
         Assert.Equal("🌘", symbol);
     }
+
+    [Fact]
+    public void SolarTime()
+    {
+        var dateTime = new DateTime(2025, 7, 18, 7, 0, 0, DateTimeKind.Utc);
+
+        var day = dateTime.Date;
+
+        var events = new SolarDayEvents(dateTime, new WGS84Position(57.71259, 12.93351));
+
+        Assert.Equal(day, events.SunriseUtc!.Value.Date);
+
+        Assert.Equal(day, events.SunsetUtc!.Value.Date);
+
+        Assert.True(dateTime > events.SunriseUtc);
+
+        Assert.True(dateTime < events.SolarNoonUtc);
+
+        Assert.True(dateTime < events.SunsetUtc);
+
+        Assert.True(events.SunriseUtc < events.SunsetUtc);
+    }
 }
