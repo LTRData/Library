@@ -127,7 +127,7 @@ public abstract class Position
         double retVal = degrees;
         retVal += minutes / 60d;
 
-        if (retVal > 90)
+        if (retVal > 180)
         {
             return double.MinValue;
         }
@@ -146,7 +146,7 @@ public abstract class Position
         retVal += minutes / 60d;
         retVal += seconds / 3600d;
 
-        if (retVal > 90)
+        if (retVal > 180)
         {
             return double.MinValue;
         }
