@@ -3,6 +3,7 @@
   <PropertyGroup>
 	<Version>1.0.22</Version>
 	<FileVersion>$(Version)</FileVersion>
+	<RootNamespace>LTRData.Extensions.Native</RootNamespace>
   </PropertyGroup>
   
   <ItemGroup>
