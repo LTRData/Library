@@ -7,8 +7,13 @@ namespace LTRData.Geodesy.Conversion;
 
 public readonly record struct LunarPosition(double Azimuth, double Elevation);
 
+public readonly record struct LunarPhase(LunarPosition Position, DateTime PreviousFullMoonUtc, DateTime NextFullMoonUtc);
+
 public static class MoonPhaseCalculator
 {
+    private const double epoch = 2451550.1;         // 2000-01-01 14:24 UT (approx) - same reference as GetMoonPhase()
+    private const double synodic = 29.53058867;     // Synodic month length - same constant as GetMoonPhase()
+
     /// <summary>
     /// Calculates moon phase (0 - 1) for a specified day
     /// </summary>
@@ -20,8 +25,8 @@ public static class MoonPhaseCalculator
         var julianDate = GetJulianDate(date);
 
         // Number of days since the epoch 2000-01-01
-        var daysSinceNew = julianDate - 2451550.1;
-        var newMoons = daysSinceNew / 29.53058867;
+        var daysSinceNew = julianDate - epoch;
+        var newMoons = daysSinceNew / synodic;
         var fraction = newMoons - Math.Floor(newMoons);
 
         return fraction;
@@ -97,7 +102,7 @@ public static class MoonPhaseCalculator
     /// <param name="datetime">date and time</param>
     /// <param name="position">Position</param>
     /// <returns>Azimuth and elevation, in degrees, where moon is found in the sky</returns>
-    public static LunarPosition GetMoonPosition(DateTime datetime, WGS84Position position)
+    public static LunarPhase GetMoonPosition(DateTime datetime, WGS84Position position)
     {
         datetime = datetime.ToUniversalTime();
 
@@ -115,7 +120,63 @@ public static class MoonPhaseCalculator
         // Convert to horizontal coordinates
         var lunarPosition = EquatorialToHorizontal(ra, dec, lst, position.Latitude);
 
-        return lunarPosition;
+        // Previous and next full moon instants (UTC) based on the same synodic month model as GetMoonPhase()
+        // x = number of synodic months since epoch
+        var x0 = (jd - epoch) / synodic;
+
+        var n = Math.Floor(x0);
+        var f = x0 - n; // [0, 1)
+
+        // Full moon at x = integer + 0.5.
+        // If we're already past 0.5 in this lunation, the previous full moon is n + 0.5; otherwise it's (n - 1) + 0.5.
+        var prevX = (f >= 0.5) ? (n + 0.5) : (n - 0.5);
+        var nextX = prevX + 1.0;
+
+        var prevJd = epoch + synodic * prevX;
+        var nextJd = epoch + synodic * nextX;
+
+        var prevFull = JulianDateToDateTimeUtc(prevJd);
+        var nextFull = JulianDateToDateTimeUtc(nextJd);
+
+        return new(lunarPosition, prevFull, nextFull);
+    }
+
+    private static DateTime JulianDateToDateTimeUtc(double jd)
+    {
+        // Meeus-style conversion JD -> Gregorian calendar date/time
+        var J = jd + 0.5;
+        var Z = (int)Math.Floor(J);
+        var F = J - Z;
+
+        int A;
+        if (Z < 2299161)
+        {
+            A = Z;
+        }
+        else
+        {
+            var alpha = (int)Math.Floor((Z - 1867216.25) / 36524.25);
+            A = Z + 1 + alpha - (alpha / 4);
+        }
+
+        var B = A + 1524;
+        var C = (int)Math.Floor((B - 122.1) / 365.25);
+        var D = (int)Math.Floor(365.25 * C);
+        var E = (int)Math.Floor((B - D) / 30.6001);
+
+        var dayDecimal = B - D - Math.Floor(30.6001 * E) + F;
+        var day = (int)Math.Floor(dayDecimal);
+
+        var month = (E < 14) ? (E - 1) : (E - 13);
+        var year = (month > 2) ? (C - 4716) : (C - 4715);
+
+        var fracDay = dayDecimal - day;
+        var totalMilliseconds = fracDay * 86400.0 * 1000.0;
+
+        // Round to nearest millisecond to avoid tiny floating errors
+        var millis = (long)Math.Round(totalMilliseconds, MidpointRounding.AwayFromZero);
+
+        return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(millis);
     }
 
     /// <summary>
