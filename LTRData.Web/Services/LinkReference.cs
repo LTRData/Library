@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace LTRData.Net;
+namespace LTRData.Services;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 

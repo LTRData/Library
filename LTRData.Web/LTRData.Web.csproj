@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net40;net46;net48;netstandard2.0;netstandard2.1;net8.0;net9.0;net10.0</TargetFrameworks>
 
-	<Version>1.0.22</Version>
+	<Version>1.0.23</Version>
 	<FileVersion>$(Version)</FileVersion>
   </PropertyGroup>
 
@@ -30,7 +30,8 @@
   <ItemGroup>
     <ProjectReference Include="..\LTRData.Data\LTRData.Data.csproj" />
     <ProjectReference Include="..\LTRData.Extensions\LTRData.Extensions.csproj" />
-    <ProjectReference Include="..\LTRData.Net\LTRData.Net.csproj" />
+	<ProjectReference Include="..\LTRData.Net\LTRData.Net.csproj" />
+	<ProjectReference Include="..\LTRData.Xml\LTRData.Xml.csproj" />
   </ItemGroup>
 
 </Project>

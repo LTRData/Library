@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<Version>1.0.22</Version>
+	<Version>1.0.23</Version>
 	<FileVersion>$(Version)</FileVersion>
   </PropertyGroup>
 
@@ -24,8 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	<ProjectReference Include="..\LTRData.Data\LTRData.Data.csproj" />
-	<ProjectReference Include="..\LTRData.Xml\LTRData.Xml.csproj" />
+	<ProjectReference Include="..\LTRData.Extensions\LTRData.Extensions.csproj" />
   </ItemGroup>
 
   <!--<ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0')) And !$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">

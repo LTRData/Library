@@ -75,11 +75,13 @@ public static class MoonPhaseCalculator
     {
         var year = date.Year;
         var month = date.Month;
+        
         if (month <= 2)
         {
             year--;
             month += 12;
         }
+
         var day = date.Day;
 
         var A = year / 100;
