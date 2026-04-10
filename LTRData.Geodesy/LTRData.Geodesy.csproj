@@ -4,6 +4,7 @@
   <PropertyGroup>
 	<RootNamespace>LTRData.Geodesy</RootNamespace>
 	<Guid>41ec09fd-a85a-4309-9caf-1b7dfbc472ea</Guid>
+	<PackageLicenseExpression>CC-BY-NC-SA-3.0</PackageLicenseExpression>
 
 	<Version>1.0.25</Version>
 	<FileVersion>$(Version)</FileVersion>
