@@ -3,8 +3,9 @@
 
   <PropertyGroup>
     <Guid>8fc7f6f9-1108-4e7f-936c-f5aea11e386b</Guid>
+	<PackageLicenseExpression>CC-BY-NC-SA-3.0</PackageLicenseExpression>
 
-    <Version>1.0.22</Version>
+	<Version>1.0.22</Version>
     <FileVersion>$(Version)</FileVersion>
   </PropertyGroup>
 
