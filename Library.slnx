@@ -4,9 +4,9 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="LTRData.Compat.System.Management/LTRData.Compat.System.Management.csproj" />
+  <Project Path="LTRData.Data/LTRData.Data.csproj" />
   <Project Path="LTRData.Extensions.Native/LTRData.Extensions.Native.csproj" />
   <Project Path="LTRData.Extensions/LTRData.Extensions.csproj" />
-  <Project Path="LTRData.Data/LTRData.Data.csproj" />
   <Project Path="LTRData.Geodesy/LTRData.Geodesy.csproj" />
   <Project Path="LTRData.Graphics/LTRData.Graphics.csproj" />
   <Project Path="LTRData.MathExpression/LTRData.MathExpression.csproj" />
@@ -15,6 +15,7 @@
   <Project Path="LTRData.Placemarks/LTRData.Placemarks.csproj" />
   <Project Path="LTRData.PolyGeometry/LTRData.PolyGeometry.csproj" />
   <Project Path="LTRData.Web/LTRData.Web.csproj" />
+  <Project Path="LTRData.WebServerUtils/LTRData.WebServerUtils.csproj" Id="ed07f4d2-6c0c-4191-ab9c-1f50ab45662b" />
   <Project Path="LTRData.Xml/LTRData.Xml.csproj" />
   <Project Path="Tests/Tests.csproj" />
 </Solution>
