@@ -5,11 +5,6 @@
 	<FileVersion>$(Version)</FileVersion>
   </PropertyGroup>
 
-  <ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net6.0'))">
-    <PackageReference Include="SixLabors.ImageSharp" Version="*" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="*" />
-  </ItemGroup>
-
 	<ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net35')) Or $([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0'))">
         <ProjectReference Include="..\LTRData.MathExpression\LTRData.MathExpression.csproj" />
   </ItemGroup>
