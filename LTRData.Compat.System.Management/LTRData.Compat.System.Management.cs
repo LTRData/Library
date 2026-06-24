@@ -70,14 +70,14 @@ public class ManagementClass(ManagementScope scope, ManagementPath path, ObjectG
 
     public ManagementObjectCollection GetInstances(EnumerationOptions _)
     {
-        using var cimSession = CimSession.Create(null);
+        using var cimSession = CreateCimSession();
         var list = new ManagementObjectCollection(cimSession.EnumerateInstances(Path.NamespacePath, Path.ClassName));
         return list;
     }
 
     public async Task<ManagementObjectCollection> GetInstancesAsync(EnumerationOptions _)
     {
-        using var cimSession = await CimSession.CreateAsync(null);
+        using var cimSession = await CreateCimSessionAsync();
         var list = new ManagementObjectCollection(await cimSession.EnumerateInstancesAsync(Path.NamespacePath, Path.ClassName));
         return list;
     }
@@ -85,7 +85,7 @@ public class ManagementClass(ManagementScope scope, ManagementPath path, ObjectG
     public ManagementParameters GetMethodParameters(string methodName)
     {
         using var cimInstance = new CimInstance(Path.ClassName, Path.NamespacePath);
-        using var cimSession = CimSession.Create(null);
+        using var cimSession = CreateCimSession();
         using var cim = cimSession.GetInstance(Path.NamespacePath, cimInstance);
         var parameterDeclarations = cim.CimClass.CimClassMethods.First(m => m.Name == methodName).Parameters;
         return new(parameterDeclarations);
@@ -94,7 +94,7 @@ public class ManagementClass(ManagementScope scope, ManagementPath path, ObjectG
     public async Task<ManagementParameters> GetMethodParametersAsync(string methodName)
     {
         using var cimInstance = new CimInstance(Path.ClassName, Path.NamespacePath);
-        using var cimSession = await CimSession.CreateAsync(null);
+        using var cimSession = await CreateCimSessionAsync();
         using var cim = await cimSession.GetInstanceAsync(Path.NamespacePath, cimInstance);
         var parameterDeclarations = cim.CimClass.CimClassMethods.First(m => m.Name == methodName).Parameters;
         return new(parameterDeclarations);
@@ -102,7 +102,7 @@ public class ManagementClass(ManagementScope scope, ManagementPath path, ObjectG
 
     public ManagementParameters InvokeMethod(string methodName, ManagementBaseObject inParams, InvokeMethodOptions _)
     {
-        using var cimSession = CimSession.Create(null);
+        using var cimSession = CreateCimSession();
         var result = cimSession.InvokeMethod(Path.NamespacePath, Path.ClassName, methodName, (CimMethodParametersCollection)((ManagementParameters)inParams).Properties);
 
         return new(result);
@@ -110,7 +110,7 @@ public class ManagementClass(ManagementScope scope, ManagementPath path, ObjectG
 
     public async Task<ManagementParameters> InvokeMethodAsync(string methodName, ManagementBaseObject inParams, InvokeMethodOptions _)
     {
-        using var cimSession = await CimSession.CreateAsync(null);
+        using var cimSession = await CreateCimSessionAsync();
 
         var result = await cimSession.InvokeMethodAsync(Path.NamespacePath, Path.ClassName, methodName, (CimMethodParametersCollection)((ManagementParameters)inParams).Properties);
 
@@ -141,7 +141,13 @@ public class ManagementScope
 
 public abstract class ManagementDisposable : IDisposable
 {
+    protected static CimAsyncResult<CimSession> CreateCimSessionAsync() => CimSession.CreateAsync(null, CimSessionOptions);
+
+    protected static CimSession CreateCimSession() => CimSession.Create(null, CimSessionOptions);
+
     public bool IsDisposed { get; private set; }
+
+    public static CimSessionOptions CimSessionOptions => field ??= new();
 
     protected virtual void Dispose(bool disposing)
     {
@@ -225,7 +231,7 @@ public class ManagementObject : ManagementBaseObject
 
     public ManagementObject(ManagementScope scope, ManagementPath path, ObjectGetOptions options)
     {
-        CimSession = CimSession.Create(null);
+        CimSession = CreateCimSession();
 
         Scope = scope;
         Path = path;
@@ -236,7 +242,7 @@ public class ManagementObject : ManagementBaseObject
 
     public static async Task<ManagementObject> CreateAsync(ManagementScope scope, ManagementPath path, ObjectGetOptions options)
     {
-        var cimSession = await CimSession.CreateAsync(null);
+        var cimSession = await CreateCimSessionAsync();
 
         var target = new ManagementObject(cimSession)
         {
@@ -488,7 +494,7 @@ public class ManagementObjectSearcher(ManagementScope mgmtScope, SelectQuery sel
 
     public ManagementObjectCollection Get()
     {
-        using var cimSession = CimSession.Create(null);
+        using var cimSession = CreateCimSession();
         
         ManagementObjectCollection list;
 
@@ -506,10 +512,10 @@ public class ManagementObjectSearcher(ManagementScope mgmtScope, SelectQuery sel
 
     public async Task<ManagementObjectCollection> GetAsync()
     {
-        using var cimSession = await CimSession.CreateAsync(null);
+        using var cimSession = await CreateCimSessionAsync();
 
         ManagementObjectCollection list;
-        
+
         if (SelectQuery.Condition is null)
         {
             var enumerable = await cimSession.EnumerateInstancesAsync(Scope.Path.NamespacePath, SelectQuery.ClassName);
