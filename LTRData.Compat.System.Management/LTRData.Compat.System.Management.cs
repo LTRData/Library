@@ -181,7 +181,7 @@ public abstract class ManagementBaseObject : ManagementDisposable
         => (this as ManagementObject)?.Get();
 
     public async Task<CimInstance?> RefreshAsync()
-        => this is ManagementObject obj ? await obj.RefreshAsync() : null;
+        => this is ManagementObject obj ? await obj.GetAsync() : null;
 }
 
 public class ManagementParameters : ManagementBaseObject
