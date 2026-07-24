@@ -68,17 +68,17 @@ public class ManagementClass(ManagementScope scope, ManagementPath path, ObjectG
 
     public ManagementObject CreateInstance() => new(Scope, Path, Options);
 
-    public ManagementObjectCollection GetInstances(EnumerationOptions _)
+    public ManagementObjectCollection GetInstances(CimOperationOptions options)
     {
         using var cimSession = CreateCimSession();
-        var list = new ManagementObjectCollection(cimSession.EnumerateInstances(Path.NamespacePath, Path.ClassName));
+        var list = new ManagementObjectCollection(cimSession.EnumerateInstances(Path.NamespacePath, Path.ClassName, options));
         return list;
     }
 
-    public async Task<ManagementObjectCollection> GetInstancesAsync(EnumerationOptions _)
+    public async Task<ManagementObjectCollection> GetInstancesAsync(CimOperationOptions options)
     {
         using var cimSession = await CreateCimSessionAsync();
-        var list = new ManagementObjectCollection(await cimSession.EnumerateInstancesAsync(Path.NamespacePath, Path.ClassName));
+        var list = new ManagementObjectCollection(await cimSession.EnumerateInstancesAsync(Path.NamespacePath, Path.ClassName, options));
         return list;
     }
 
@@ -100,21 +100,21 @@ public class ManagementClass(ManagementScope scope, ManagementPath path, ObjectG
         return new(parameterDeclarations);
     }
 
-    public ManagementParameters InvokeMethod(string methodName, ManagementBaseObject inParams, InvokeMethodOptions _)
+    public ManagementParameters InvokeMethod(string methodName, ManagementBaseObject inParams, CimOperationOptions options)
     {
         using var cimSession = CreateCimSession();
-        var result = cimSession.InvokeMethod(Path.NamespacePath, Path.ClassName, methodName, (CimMethodParametersCollection)((ManagementParameters)inParams).Properties);
+        var result = cimSession.InvokeMethod(Path.NamespacePath, Path.ClassName, methodName, (CimMethodParametersCollection)((ManagementParameters)inParams).Properties, options);
 
         return new(result);
     }
 
-    public async Task<ManagementParameters> InvokeMethodAsync(string methodName, ManagementBaseObject inParams, InvokeMethodOptions _)
+    public async Task<ManagementParameters> InvokeMethodAsync(string methodName, ManagementBaseObject inParams, CimOperationOptions options)
     {
         using var cimSession = await CreateCimSessionAsync();
 
-        var result = await cimSession.InvokeMethodAsync(Path.NamespacePath, Path.ClassName, methodName, (CimMethodParametersCollection)((ManagementParameters)inParams).Properties);
+        var result = await cimSession.InvokeMethodAsync(Path.NamespacePath, Path.ClassName, methodName, (CimMethodParametersCollection)((ManagementParameters)inParams).Properties, options);
 
-        return new(result);
+        return new((CimMethodResult)result[0]);
     }
 }
 
@@ -401,36 +401,32 @@ public class ManagementObject : ManagementBaseObject
 
     public new CimKeyedCollection<CimProperty> Properties => CimInstance.CimInstanceProperties;
 
-    public ManagementParameters InvokeMethod(string methodName, ManagementBaseObject inParams, InvokeMethodOptions _)
+    public ManagementParameters InvokeMethod(string methodName, ManagementBaseObject inParams, CimOperationOptions options)
     {
         if (CimSession is null)
         {
             throw new InvalidOperationException("CimSession object needed for this operation");
         }
 
-        var result = CimSession.InvokeMethod(CimInstance, methodName, (CimMethodParametersCollection)((ManagementParameters)inParams)?.Properties!);
+        var result = CimSession.InvokeMethod(CimInstance.CimSystemProperties.Namespace, CimInstance, methodName, (CimMethodParametersCollection)((ManagementParameters)inParams)?.Properties!, options);
 
         return new(result);
     }
 
-    public async Task<ManagementParameters> InvokeMethodAsync(string methodName, ManagementBaseObject inParams, InvokeMethodOptions _)
+    public async Task<ManagementParameters> InvokeMethodAsync(string methodName, ManagementBaseObject inParams, CimOperationOptions options)
     {
         if (CimSession is null)
         {
             throw new InvalidOperationException("CimSession object needed for this operation");
         }
 
-        var result = await CimSession.InvokeMethodAsync(CimInstance, methodName, (CimMethodParametersCollection)((ManagementParameters)inParams)?.Properties!);
+        var result = await CimSession.InvokeMethodAsync(CimInstance.CimSystemProperties.Namespace, CimInstance, methodName, (CimMethodParametersCollection)((ManagementParameters)inParams)?.Properties!, options);
 
-        return new(result);
+        return new((CimMethodResult)result[0]);
     }
 }
 
-public class InvokeMethodOptions
-{
-}
-
-public class EnumerationOptions
+public class EnumerationOptions : CimOperationOptions
 {
     public bool EnsureLocatable { get; set; }
 }
