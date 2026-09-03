@@ -37,6 +37,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LTRData.Extensions.Native\LTRData.Extensions.Native.csproj" />
     <ProjectReference Include="..\LTRData.Extensions\LTRData.Extensions.csproj" />
+    <ProjectReference Include="..\LTRData.FunctionPlotting\LTRData.FunctionPlotting.csproj" />
     <ProjectReference Include="..\LTRData.MathExpression\LTRData.MathExpression.csproj" />
     <ProjectReference Include="..\LTRData.Net\LTRData.Net.csproj" />
     <ProjectReference Include="..\LTRData.Placemarks\LTRData.Placemarks.csproj" />

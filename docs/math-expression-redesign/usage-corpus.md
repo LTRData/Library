@@ -122,4 +122,3 @@ renders it as an image.
 Expression-diagram design is therefore a new requirement, not a renderer port. If another
 historical repository is identified, it should be reviewed as additional evidence and
 classified rather than adopted automatically.
-

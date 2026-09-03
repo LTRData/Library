@@ -7,6 +7,7 @@
   <Project Path="LTRData.Data/LTRData.Data.csproj" />
   <Project Path="LTRData.Extensions.Native/LTRData.Extensions.Native.csproj" />
   <Project Path="LTRData.Extensions/LTRData.Extensions.csproj" />
+  <Project Path="LTRData.FunctionPlotting/LTRData.FunctionPlotting.csproj" />
   <Project Path="LTRData.Geodesy/LTRData.Geodesy.csproj" />
   <Project Path="LTRData.Graphics/LTRData.Graphics.csproj" />
   <Project Path="LTRData.MathExpression/LTRData.MathExpression.csproj" />

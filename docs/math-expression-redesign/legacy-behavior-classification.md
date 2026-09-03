@@ -85,4 +85,3 @@ New tests use explicit naming/categories:
   existing parser only.
 - A legacy characterization failure is evidence to revisit documentation; it must not be
   “fixed” by changing the new parser to reproduce the old result.
-

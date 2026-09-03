@@ -163,4 +163,3 @@ The initial modern language omits:
 - assignments, comparisons, booleans, conditionals, and statements.
 
 These can be reconsidered as language features only with a use case and explicit semantics.
-

@@ -81,4 +81,3 @@ After this branch is reviewed and the language decisions are accepted:
 2. add one SkiaSharp edge package containing plot and diagram renderers plus PNG encoding;
 3. integrate both PNG paths into `ltr-data.se` with input/resource limits and Linux tests;
 4. only then evaluate derivative, integral, adaptive sampling, and Windows migration.
-
