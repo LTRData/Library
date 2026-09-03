@@ -76,7 +76,7 @@ double result = expression.Evaluate(valuesBySlot);
 Custom symbols are explicit:
 
 ```csharp
-MathSymbolCatalog symbols = MathSymbolCatalog.CreateBuilder()
+MathSymbolCatalog symbols = MathSymbolCatalog.Standard.ToBuilder()
     .AddConstant("g", 9.80665)
     .AddFunction("square", x => x * x)
     .Build();
@@ -170,4 +170,3 @@ The existing public classes remain untouched in the experimental slice. Later mi
   targets migrate first.
 
 No types named `ScriptControl`, `Surface`, or `Refresh` are added to the modern API.
-
