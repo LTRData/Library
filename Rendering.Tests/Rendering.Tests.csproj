@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <!-- Test projects can use different test-host versions; keep their files separate. -->
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <NoWarn>CS1591</NoWarn>
