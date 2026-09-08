@@ -123,11 +123,11 @@ public static class CartesianTransform
         }
 
         return new CanvasPoint(
-            (x - viewport.XRange.Minimum) * viewport.Canvas.Width /
-                viewport.XRange.Length,
+            (x - viewport.XRange.Minimum) / viewport.XRange.Length *
+                viewport.Canvas.Width,
             viewport.Canvas.Height -
-                (y - viewport.YRange.Minimum) * viewport.Canvas.Height /
-                viewport.YRange.Length);
+                (y - viewport.YRange.Minimum) / viewport.YRange.Length *
+                viewport.Canvas.Height);
     }
 
     public static CanvasPoint ToData(double canvasX, double canvasY,
@@ -139,10 +139,10 @@ public static class CartesianTransform
         }
 
         return new CanvasPoint(
-            canvasX * viewport.XRange.Length / viewport.Canvas.Width +
+            canvasX / viewport.Canvas.Width * viewport.XRange.Length +
                 viewport.XRange.Minimum,
-            (viewport.Canvas.Height - canvasY) * viewport.YRange.Length /
-                viewport.Canvas.Height + viewport.YRange.Minimum);
+            (viewport.Canvas.Height - canvasY) / viewport.Canvas.Height *
+                viewport.YRange.Length + viewport.YRange.Minimum);
     }
 }
 
@@ -218,66 +218,61 @@ public static class CurveGeometryBuilder
     private static bool TryClip(NumericRange xRange, NumericRange yRange,
         ref double x0, ref double y0, ref double x1, ref double y1)
     {
-        var deltaX = x1 - x0;
-        var deltaY = y1 - y0;
-        var start = 0d;
-        var end = 1d;
+        if (!NumericRange.IsFinite(x0) || !NumericRange.IsFinite(y0) ||
+            !NumericRange.IsFinite(x1) || !NumericRange.IsFinite(y1)) return false;
 
-        if (!ClipTest(-deltaX, x0 - xRange.Minimum, ref start, ref end) ||
-            !ClipTest(deltaX, xRange.Maximum - x0, ref start, ref end) ||
-            !ClipTest(-deltaY, y0 - yRange.Minimum, ref start, ref end) ||
-            !ClipTest(deltaY, yRange.Maximum - y0, ref start, ref end))
+        // Cohen-Sutherland clipping sets the intersected boundary coordinate exactly.
+        // This matters when the visible part is tiny relative to finite endpoint values:
+        // reconstructing both coordinates from a rounded interpolation fraction can
+        // collapse the segment, and subtracting opposite large values can overflow.
+        for (var attempt = 0; attempt < 8; attempt++)
         {
-            return false;
+            var first = OutCode(x0, y0, xRange, yRange);
+            var second = OutCode(x1, y1, xRange, yRange);
+            if ((first | second) == 0) return true;
+            if ((first & second) != 0) return false;
+            var outside = first != 0 ? first : second;
+            double x, y;
+            if ((outside & 12) != 0)
+            {
+                y = (outside & 8) != 0 ? yRange.Maximum : yRange.Minimum;
+                x = Interpolate(x0, x1, Fraction(y, y0, y1));
+            }
+            else
+            {
+                x = (outside & 2) != 0 ? xRange.Maximum : xRange.Minimum;
+                y = Interpolate(y0, y1, Fraction(x, x0, x1));
+            }
+            if (outside == first) { x0 = x; y0 = y; }
+            else { x1 = x; y1 = y; }
         }
-
-        var originalX = x0;
-        var originalY = y0;
-
-        x1 = originalX + end * deltaX;
-        y1 = originalY + end * deltaY;
-        x0 = originalX + start * deltaX;
-        y0 = originalY + start * deltaY;
-
-        return true;
+        return false;
     }
 
-    private static bool ClipTest(double direction, double distance,
-        ref double start, ref double end)
+    private static int OutCode(double x, double y, NumericRange xRange, NumericRange yRange) =>
+        (x < xRange.Minimum ? 1 : x > xRange.Maximum ? 2 : 0) |
+        (y < yRange.Minimum ? 4 : y > yRange.Maximum ? 8 : 0);
+
+    private static double Fraction(double value, double start, double end)
     {
-        if (direction == 0d)
-        {
-            return distance >= 0d;
-        }
-
-        var ratio = distance / direction;
-
-        if (direction < 0d)
-        {
-            if (ratio > end)
-            {
-                return false;
-            }
-
-            if (ratio > start)
-            {
-                start = ratio;
-            }
-        }
+        var delta = end - start;
+        var distance = value - start;
+        double result;
+        if (NumericRange.IsFinite(delta) && NumericRange.IsFinite(distance)) result = distance / delta;
         else
         {
-            if (ratio < start)
-            {
-                return false;
-            }
-
-            if (ratio < end)
-            {
-                end = ratio;
-            }
+            var scale = Math.Max(Math.Abs(start), Math.Abs(end));
+            result = (value / scale - start / scale) / (end / scale - start / scale);
         }
+        return Math.Max(0, Math.Min(1, result));
+    }
 
-        return true;
+    private static double Interpolate(double start, double end, double fraction)
+    {
+        var delta = end - start;
+        return NumericRange.IsFinite(delta)
+            ? start + fraction * delta
+            : (1 - fraction) * start + fraction * end;
     }
 
     private static bool NearlyEqual(CanvasPoint left, CanvasPoint right)
