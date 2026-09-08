@@ -1,5 +1,8 @@
 # Architecture, dependency boundaries, and proposed public APIs
 
+This is the approved design proposal. See [the implemented rendering slice](rendering-slice.md)
+for the concrete renderer APIs, sample output and current deployment requirements.
+
 ## Intended dependency graph
 
 ```mermaid

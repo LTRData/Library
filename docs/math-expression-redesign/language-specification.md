@@ -147,9 +147,11 @@ variable matching the requested name. It fails explicitly when other variables r
 The exact source and the syntax tree are distinct from a future canonical formatter.
 `Expression.ToString()` output is not formula identity.
 
-Parenthesized syntax is preserved, allowing a future source-oriented diagram. Binding
-removes syntactic parentheses, allowing a semantic operation diagram. Formatting and
-diagram rendering are not implemented in this experimental slice.
+Parenthesized syntax is preserved. The diagram projection can retain parenthesis nodes
+or omit them because tree edges already express grouping. Binding removes syntactic
+parentheses; a separate bound semantic projection remains future work. Canonical
+formatting remains deferred. See [the rendering slice](rendering-slice.md) for the
+implemented syntax diagrams and SkiaSharp rendering.
 
 ## 10. Intentional omissions
 

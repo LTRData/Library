@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <Version>0.1.0-preview.1</Version>
+    <FileVersion>0.1.0</FileVersion>
+    <PackageVersion>$(Version)</PackageVersion>
+    <Description>SkiaSharp renderers for function plots and mathematical expression diagrams.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp" Version="4.151.2" />
+    <ProjectReference Include="..\LTRData.MathExpression\LTRData.MathExpression.csproj" />
+    <ProjectReference Include="..\LTRData.FunctionPlotting\LTRData.FunctionPlotting.csproj" />
+  </ItemGroup>
+</Project>
