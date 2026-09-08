@@ -130,7 +130,7 @@ public static class FunctionSampler
         return new SampleSeries(samples);
     }
 
-    private static FunctionSampleStatus Classify(double value)
+    internal static FunctionSampleStatus Classify(double value)
     {
         if (double.IsNaN(value))
         {

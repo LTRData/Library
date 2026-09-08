@@ -131,10 +131,14 @@ Review and validate this package chain locally before publishing to NuGet server
 
 ## Still deferred
 
-Derivative/integral calculation, recurrence, adaptive sampling and finite-asymptote
-detection, Windows migration, semantic diagrams, and optional compilation remain
+At this slice's original checkpoint, derivative/integral calculation, recurrence,
+adaptive sampling and finite-asymptote detection, Windows migration, semantic diagrams, and optional compilation remained
 separate work. Fixed-count sampling can miss narrow features or connect across an
 asymptote between finite samples; PNG output does not change that contract.
+
+The subsequent [consumer migration](consumer-migration.md) implements netexpr,
+Windows GraphViewer and sample calculus. FreeBSD native deployment work is now
+postponed, with Linux or Windows Server selected for temporary website hosting.
 
 The user preference for `ArgumentNullException.ThrowIfNull` on supporting targets
 is used in the new code. A broader optimization pass over the original prototype

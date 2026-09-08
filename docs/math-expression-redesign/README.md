@@ -17,6 +17,7 @@ classified before it becomes a test or a public contract:
 - [Modern expression language specification](language-specification.md)
 - [Architecture, package boundaries, and proposed APIs](architecture.md)
 - [Implemented rendering slice, samples, deployment and review](rendering-slice.md)
+- [netexpr and Windows GraphViewer migration](consumer-migration.md)
 - [Build and review the repositories through a shared local NuGet feed](../local-package-workflow.md)
 
 ## Original core slice
@@ -35,8 +36,9 @@ The branch validates only these boundaries:
 
 That original slice did not implement rendering. The subsequent accepted rendering
 slice adds portable diagrams/layout, one SkiaSharp edge package and the companion
-website PNG integration. System.Drawing migration, derivative/integral calculation,
-recurrence, adaptive sampling and LINQ-expression compilation remain deferred.
+website PNG integration. The consumer migration now adds numerical sample calculus
+and moves netexpr and Windows GraphViewer to the modern APIs. Recurrence, adaptive
+sampling and LINQ-expression compilation remain deferred.
 
 The existing `MathExpressionParser`, `IMathExpressionParser`, `MathFunctions`, and
 `ScriptControl` remain temporarily so the experimental API can be reviewed without a
@@ -53,7 +55,9 @@ broad consumer migration. They do not define the new language.
   a concrete dependency or independent-consumption reason emerges.
 - The SkiaSharp edge package is justified because it isolates an external native
   rendering dependency and different deployment requirements.
-- System.Drawing compatibility remains in `LTRLib.Windows` initially.
+- Legacy System.Drawing compatibility remains in `LTRLib.Windows`. The migrated
+  GraphViewer owns a small System.Drawing renderer for portable plot geometry;
+  another adapter package is unnecessary for this single consumer.
 - The modern expression language is invariant-culture, source-preserving, and
   case-insensitive for names.
 - Power is right-associative and binds more strongly than unary sign, so `2^3^2` is
@@ -79,6 +83,8 @@ broad consumer migration. They do not define the new language.
 The architecture and object model were accepted. The first rendering slice is now
 implemented: diagram content/layout inside the math package,
 `LTRData.Graphics.SkiaSharp`, and both PNG paths on the companion website branch.
-Review the [API, sample images and deployment notes](rendering-slice.md) and the
-website review host before evaluating derivative, integral, adaptive sampling and
-Windows migration.
+The subsequent [consumer migration](consumer-migration.md) covers netexpr,
+GraphViewer, sample differentiation and integration, and package-based validation.
+Review Windows overlays, resize, printing/export and the documented numerical
+semantics. FreeBSD native SkiaSharp work is postponed; the website will temporarily
+run on Linux or Windows Server.

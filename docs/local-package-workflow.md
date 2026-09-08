@@ -72,9 +72,12 @@ If a build explicitly disables it, follow that build with `dotnet pack --no-buil
 for each producer project, using the same configuration and framework properties.
 The output still uses `LocalNuGetPath`.
 
-The graph packages are `LTRData.MathExpression` 1.1.0-preview.1,
+The initial website slice uses `LTRData.MathExpression` 1.1.0-preview.1,
 `LTRData.FunctionPlotting` 0.1.0, and `LTRData.Graphics.SkiaSharp`
-0.1.0-preview.1. Their other Library dependencies must also be in the feed.
+0.1.0-preview.1. The subsequent Windows consumer slice requires
+`LTRData.FunctionPlotting` 0.2.0-preview.1 for sample calculus. Keep earlier package
+versions available for branches that still reference them. Their other Library
+dependencies must also be in the feed.
 `ltrwebdb` produces `LTR.WebDb.Entity` and `webdbcore`, currently at 1.0.3.
 The website's renderer and database references remain ordinary package references.
 
@@ -82,6 +85,13 @@ The website's renderer and database references remain ordinary package reference
 same configured feed, its UI and HTTP checks exercise the packaged parser,
 sampling, layout, renderers, and native assets. See the companion website's
 `docs/math-rendering-review.md` for commands.
+
+For netexpr and Windows GraphViewer the chain is shorter: build
+`LTRData.Extensions`, `LTRData.MathExpression`, and `LTRData.FunctionPlotting` in
+Library, then build `netexpr/netexpr.vbproj` in MathTools or
+`GraphViewer/GraphViewer.vbproj` in WindowsTools. No database or SkiaSharp packages
+are needed. Each consumer branch has a focused review executable and CI workflow;
+see [consumer migration](math-expression-redesign/consumer-migration.md).
 
 ## Verify the packages you actually built
 
