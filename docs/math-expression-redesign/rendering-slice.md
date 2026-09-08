@@ -100,15 +100,15 @@ The review host deliberately does not start the full site's database or visit lo
 Normal deployment configuration is still required to run the full site.
 The site pins `ArsenalRecon.PasswordTable` to `[3.12.340]`, now available from
 public NuGet, to retain EF Core 9 compatibility on both targets. The previous
-.NET 10 package conflict is resolved. XML serialization assembly work remains
-deferred.
+.NET 10 package conflict is resolved. Entity XML serialization assembly generation
+is addressed in the subsequent [release checkpoint](release-checkpoint.md).
 
 ## Packaging and review
 
-The expression package now uses `1.1.0-preview.1`; the new renderer uses
-`0.1.0-preview.1`. This gives the consumer an explicit prerelease dependency instead
-of resolving the already published expression package without these APIs. No NuGet
-release is performed by this work. Function plotting retains its prototype `0.1.0`.
+The final review uses `LTRData.MathExpression` 1.1.0,
+`LTRData.FunctionPlotting` 1.2.0 and `LTRData.Graphics.SkiaSharp` 1.1.0.
+Consumers explicitly reference the stable versions containing the modern APIs.
+No NuGet release is performed by this work.
 
 Both companion website hosts consume packages across repository boundaries.
 Build `Library`, then `ltrwebdb`, with package output directed to the shared

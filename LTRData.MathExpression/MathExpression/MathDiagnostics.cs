@@ -10,8 +10,18 @@ public sealed class MathDiagnostic
 {
     public MathDiagnostic(string code, string message, SourceSpan span)
     {
-        Code = code ?? throw new ArgumentNullException(nameof(code));
-        Message = message ?? throw new ArgumentNullException(nameof(message));
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(code);
+#else
+        if (code is null) throw new ArgumentNullException(nameof(code));
+#endif
+        Code = code;
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(message);
+#else
+        if (message is null) throw new ArgumentNullException(nameof(message));
+#endif
+        Message = message;
         Span = span;
     }
 
@@ -29,7 +39,12 @@ public sealed class MathParseResult
     internal MathParseResult(string sourceText, MathSyntax? root,
         IEnumerable<MathDiagnostic> diagnostics)
     {
-        SourceText = sourceText ?? throw new ArgumentNullException(nameof(sourceText));
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(sourceText);
+#else
+        if (sourceText is null) throw new ArgumentNullException(nameof(sourceText));
+#endif
+        SourceText = sourceText;
         Root = root;
         Diagnostics = new List<MathDiagnostic>(diagnostics).AsReadOnly();
     }

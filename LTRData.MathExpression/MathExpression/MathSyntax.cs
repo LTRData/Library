@@ -10,6 +10,10 @@ public struct SourceSpan : IEquatable<SourceSpan>
 {
     public SourceSpan(int start, int length)
     {
+#if NET8_0_OR_GREATER
+        ArgumentOutOfRangeException.ThrowIfNegative(start);
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
+#else
         if (start < 0)
         {
             throw new ArgumentOutOfRangeException(nameof(start));
@@ -19,6 +23,7 @@ public struct SourceSpan : IEquatable<SourceSpan>
         {
             throw new ArgumentOutOfRangeException(nameof(length));
         }
+#endif
 
         Start = start;
         Length = length;
@@ -103,7 +108,12 @@ public sealed class NumberSyntax : MathSyntax
         : base(span)
     {
         Value = value;
-        Lexeme = lexeme ?? throw new ArgumentNullException(nameof(lexeme));
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(lexeme);
+#else
+        if (lexeme is null) throw new ArgumentNullException(nameof(lexeme));
+#endif
+        Lexeme = lexeme;
     }
 
     public override MathSyntaxKind Kind => MathSyntaxKind.Number;
@@ -118,7 +128,12 @@ public sealed class NameSyntax : MathSyntax
     public NameSyntax(string name, SourceSpan span)
         : base(span)
     {
-        Name = name ?? throw new ArgumentNullException(nameof(name));
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(name);
+#else
+        if (name is null) throw new ArgumentNullException(nameof(name));
+#endif
+        Name = name;
     }
 
     public override MathSyntaxKind Kind => MathSyntaxKind.Name;
@@ -131,7 +146,12 @@ public sealed class ParenthesizedSyntax : MathSyntax
     public ParenthesizedSyntax(MathSyntax expression, SourceSpan span)
         : base(span)
     {
-        Expression = expression ?? throw new ArgumentNullException(nameof(expression));
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(expression);
+#else
+        if (expression is null) throw new ArgumentNullException(nameof(expression));
+#endif
+        Expression = expression;
     }
 
     public override MathSyntaxKind Kind => MathSyntaxKind.Parenthesized;
@@ -147,7 +167,12 @@ public sealed class PrefixSyntax : MathSyntax
     {
         Operator = @operator;
         OperatorSpan = operatorSpan;
-        Operand = operand ?? throw new ArgumentNullException(nameof(operand));
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(operand);
+#else
+        if (operand is null) throw new ArgumentNullException(nameof(operand));
+#endif
+        Operand = operand;
     }
 
     public override MathSyntaxKind Kind => MathSyntaxKind.Prefix;
@@ -165,7 +190,12 @@ public sealed class PostfixSyntax : MathSyntax
         SourceSpan operatorSpan, SourceSpan span)
         : base(span)
     {
-        Operand = operand ?? throw new ArgumentNullException(nameof(operand));
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(operand);
+#else
+        if (operand is null) throw new ArgumentNullException(nameof(operand));
+#endif
+        Operand = operand;
         Operator = @operator;
         OperatorSpan = operatorSpan;
     }
@@ -185,10 +215,20 @@ public sealed class BinarySyntax : MathSyntax
         SourceSpan operatorSpan, MathSyntax right, bool isImplicit, SourceSpan span)
         : base(span)
     {
-        Left = left ?? throw new ArgumentNullException(nameof(left));
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(left);
+#else
+        if (left is null) throw new ArgumentNullException(nameof(left));
+#endif
+        Left = left;
         Operator = @operator;
         OperatorSpan = operatorSpan;
-        Right = right ?? throw new ArgumentNullException(nameof(right));
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(right);
+#else
+        if (right is null) throw new ArgumentNullException(nameof(right));
+#endif
+        Right = right;
         IsImplicit = isImplicit;
     }
 
@@ -211,13 +251,22 @@ public sealed class CallSyntax : MathSyntax
         IEnumerable<MathSyntax> arguments, SourceSpan span)
         : base(span)
     {
-        Name = name ?? throw new ArgumentNullException(nameof(name));
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(name);
+#else
+        if (name is null) throw new ArgumentNullException(nameof(name));
+#endif
+        Name = name;
         NameSpan = nameSpan;
 
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(arguments);
+#else
         if (arguments is null)
         {
             throw new ArgumentNullException(nameof(arguments));
         }
+#endif
 
         Arguments = new List<MathSyntax>(arguments).AsReadOnly();
     }

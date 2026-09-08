@@ -19,6 +19,7 @@ classified before it becomes a test or a public contract:
 - [Implemented rendering slice, samples, deployment and review](rendering-slice.md)
 - [netexpr and Windows GraphViewer migration](consumer-migration.md)
 - [Build and review the repositories through a shared local NuGet feed](../local-package-workflow.md)
+- [Stable package and final review checkpoint](release-checkpoint.md)
 
 ## Original core slice
 
@@ -41,8 +42,8 @@ and moves netexpr and Windows GraphViewer to the modern APIs. Recurrence, adapti
 sampling and LINQ-expression compilation remain deferred.
 
 The existing `MathExpressionParser`, `IMathExpressionParser`, `MathFunctions`, and
-`ScriptControl` remain temporarily so the experimental API can be reviewed without a
-broad consumer migration. They do not define the new language.
+`ScriptControl` remain temporarily for other legacy consumers. The migrated
+applications use the modern APIs; the legacy types do not define the new language.
 
 ## Decisions made for the experiment
 
@@ -85,6 +86,9 @@ implemented: diagram content/layout inside the math package,
 `LTRData.Graphics.SkiaSharp`, and both PNG paths on the companion website branch.
 The subsequent [consumer migration](consumer-migration.md) covers netexpr,
 GraphViewer, sample differentiation and integration, and package-based validation.
-Review Windows overlays, resize, printing/export and the documented numerical
-semantics. FreeBSD native SkiaSharp work is postponed; the website will temporarily
-run on Linux or Windows Server.
+The application owner has built and tested all consuming applications and reported
+that they work well. The final review prepares stable package versions, uses
+framework-supported argument throw helpers, and fixes entity serializer generation
+in the companion database repository. See the [release checkpoint](release-checkpoint.md).
+FreeBSD native SkiaSharp work is postponed; the website will temporarily run on
+Linux or Windows Server.

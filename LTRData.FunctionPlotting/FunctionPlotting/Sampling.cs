@@ -54,10 +54,14 @@ public sealed class SampleSeries
 
     public SampleSeries(IEnumerable<FunctionSample> samples)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(samples);
+#else
         if (samples is null)
         {
             throw new ArgumentNullException(nameof(samples));
         }
+#endif
 
         this.samples = new List<FunctionSample>(samples).AsReadOnly();
     }
@@ -79,10 +83,14 @@ public static class FunctionSampler
     public static SampleSeries Sample(ScalarFunction function, NumericRange domain,
         int sampleCount)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(function);
+#else
         if (function is null)
         {
             throw new ArgumentNullException(nameof(function));
         }
+#endif
 
         if (!domain.IsValid)
         {

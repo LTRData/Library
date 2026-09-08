@@ -72,13 +72,11 @@ If a build explicitly disables it, follow that build with `dotnet pack --no-buil
 for each producer project, using the same configuration and framework properties.
 The output still uses `LocalNuGetPath`.
 
-The initial website slice uses `LTRData.MathExpression` 1.1.0-preview.1,
-`LTRData.FunctionPlotting` 0.1.0, and `LTRData.Graphics.SkiaSharp`
-0.1.0-preview.1. The subsequent Windows consumer slice requires
-`LTRData.FunctionPlotting` 0.2.0-preview.1 for sample calculus. Keep earlier package
-versions available for branches that still reference them. Their other Library
-dependencies must also be in the feed.
-`ltrwebdb` produces `LTR.WebDb.Entity` and `webdbcore`, currently at 1.0.3.
+The current review uses `LTRData.MathExpression` 1.1.0,
+`LTRData.FunctionPlotting` 1.2.0 and `LTRData.Graphics.SkiaSharp` 1.1.0.
+Keep earlier package versions available for branches that still reference them.
+Their other Library dependencies must also be in the feed.
+`ltrwebdb` produces `LTR.WebDb.Entity` and `webdbcore`, currently at 1.0.4.
 The website's renderer and database references remain ordinary package references.
 
 `GraphViewer.Review` also consumes the renderer package. After restoring from the
@@ -127,8 +125,10 @@ Check `obj/project.assets.json` for package entries, selected framework assets,
 versions, and transitive dependencies. The restored package's `.nupkg.metadata`
 records its source. The consumer should reference packages throughout this chain.
 
-XML serialization assembly work remains deferred. Local packing and validation
-do not publish to NuGet servers; publication remains a later release step.
+The entity package includes its generated XML serializer DLL for each target.
+The ltrwebdb review checks these assets after package consumption and publication
+to a local directory. Local packing and validation do not publish to NuGet servers;
+publication remains a later release step.
 
 ## Verified graph website chain
 
@@ -146,8 +146,10 @@ dependencies were restored from an offline mirror of NuGet.org packages.
 `coreweb` built for both targets and `GraphViewer.Review` built for .NET 10 with
 zero warnings or errors. The review host's HTTP checks passed against the packaged
 assemblies, including both native PNG paths, dimensions, diagnostics, formula
-limits, cache reuse, gaps and the concurrency limit. Database package generation
-retained its existing XML serializer warnings; that work remains deferred.
+limits, cache reuse, gaps and the concurrency limit. That initial run retained the
+database's XML serializer warnings. The subsequent
+[release checkpoint](math-expression-redesign/release-checkpoint.md) fixes generation
+and verifies all 28 generated entity serializers from the package.
 
 References: [NuGet configuration](https://learn.microsoft.com/en-us/nuget/reference/nuget-config-file),
 [package source mapping](https://learn.microsoft.com/en-us/nuget/consume-packages/package-source-mapping),

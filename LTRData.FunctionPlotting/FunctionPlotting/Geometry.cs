@@ -117,10 +117,14 @@ public static class CartesianTransform
 {
     public static CanvasPoint ToCanvas(double x, double y, PlotViewport viewport)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(viewport);
+#else
         if (viewport is null)
         {
             throw new ArgumentNullException(nameof(viewport));
         }
+#endif
 
         return new CanvasPoint(
             (x - viewport.XRange.Minimum) / viewport.XRange.Length *
@@ -133,10 +137,14 @@ public static class CartesianTransform
     public static CanvasPoint ToData(double canvasX, double canvasY,
         PlotViewport viewport)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(viewport);
+#else
         if (viewport is null)
         {
             throw new ArgumentNullException(nameof(viewport));
         }
+#endif
 
         return new CanvasPoint(
             canvasX / viewport.Canvas.Width * viewport.XRange.Length +
@@ -150,15 +158,23 @@ public static class CurveGeometryBuilder
 {
     public static CurveGeometry Build(SampleSeries series, PlotViewport viewport)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(series);
+#else
         if (series is null)
         {
             throw new ArgumentNullException(nameof(series));
         }
+#endif
 
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(viewport);
+#else
         if (viewport is null)
         {
             throw new ArgumentNullException(nameof(viewport));
         }
+#endif
 
         var pointLists = new List<List<CanvasPoint>>();
         List<CanvasPoint>? current = null;

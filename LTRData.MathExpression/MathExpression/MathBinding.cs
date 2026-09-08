@@ -40,15 +40,23 @@ public static class MathBinder
     public static MathBindingResult Bind(MathSyntax syntax,
         MathSymbolCatalog symbolCatalog)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(syntax);
+#else
         if (syntax is null)
         {
             throw new ArgumentNullException(nameof(syntax));
         }
+#endif
 
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(symbolCatalog);
+#else
         if (symbolCatalog is null)
         {
             throw new ArgumentNullException(nameof(symbolCatalog));
         }
+#endif
 
         var binder = new Binder(symbolCatalog);
         var root = binder.Bind(syntax);
@@ -165,10 +173,14 @@ public sealed class BoundMathExpression
 
     public double Evaluate(params double[] values)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(values);
+#else
         if (values is null)
         {
             throw new ArgumentNullException(nameof(values));
         }
+#endif
 
         if (values.Length != Variables.Count)
         {
@@ -182,10 +194,14 @@ public sealed class BoundMathExpression
 
     public double Evaluate(IDictionary<string, double> values)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(values);
+#else
         if (values is null)
         {
             throw new ArgumentNullException(nameof(values));
         }
+#endif
 
         var valuesBySlot = new double[Variables.Count];
 
@@ -203,10 +219,14 @@ public sealed class BoundMathExpression
 
     public UnaryMathFunction BindUnary(string variableName)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(variableName);
+#else
         if (variableName is null)
         {
             throw new ArgumentNullException(nameof(variableName));
         }
+#endif
 
         if (Variables.Count == 0)
         {

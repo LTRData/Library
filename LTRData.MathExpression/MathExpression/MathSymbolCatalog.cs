@@ -127,10 +127,14 @@ public sealed class MathSymbolCatalogBuilder
 
     public MathSymbolCatalogBuilder AddFunction(string name, Func<double, double> function)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(function);
+#else
         if (function is null)
         {
             throw new ArgumentNullException(nameof(function));
         }
+#endif
 
         AddFunction(name, new MathFunctionDefinition(function));
         return this;
@@ -139,10 +143,14 @@ public sealed class MathSymbolCatalogBuilder
     public MathSymbolCatalogBuilder AddFunction(string name,
         Func<double, double, double> function)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(function);
+#else
         if (function is null)
         {
             throw new ArgumentNullException(nameof(function));
         }
+#endif
 
         AddFunction(name, new MathFunctionDefinition(function));
         return this;

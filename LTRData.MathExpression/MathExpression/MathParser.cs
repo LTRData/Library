@@ -12,10 +12,14 @@ public sealed class MathParser
 
     public MathParseResult Parse(string sourceText)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(sourceText);
+#else
         if (sourceText is null)
         {
             throw new ArgumentNullException(nameof(sourceText));
         }
+#endif
 
         var diagnostics = new List<MathDiagnostic>();
         var lexer = new MathLexer(sourceText, diagnostics);

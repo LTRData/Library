@@ -48,7 +48,7 @@ is required by this application. Other legacy consumers can still use them.
 
 ## Numerical calculus
 
-`LTRData.FunctionPlotting` 0.2.0-preview.1 adds `SampleCalculus`, independent of
+`LTRData.FunctionPlotting` 1.2.0 includes `SampleCalculus`, independent of
 both the expression parser and graphics. Its inputs are ordered data-coordinate
 samples with finite, strictly increasing X coordinates and finite spacing.
 
@@ -75,7 +75,7 @@ are intentionally not reproduced.
 Build `LTRData.Extensions`, `LTRData.MathExpression` and `LTRData.FunctionPlotting`
 in Release with `LocalNuGetPath` set, then restore consumers from that shared feed.
 netexpr needs the first two packages; GraphViewer needs all three, with Extensions
-arriving transitively. MathExpression remains at 1.1.0-preview.1. Use a fresh cache
+arriving transitively. MathExpression uses 1.1.0. Use a fresh cache
 and package source mapping for a reproducible check of unpublished builds, as in
 the [local package workflow](../local-package-workflow.md).
 
@@ -90,5 +90,7 @@ Manual Windows review should cover actual print preview/printer selection, DPI
 scaling, saved preferences and the visual appearance of curves at chosen ranges.
 Compiling the old framework targets does not claim execution on an old Windows
 installation. The website can be hosted on Linux or Windows Server for now;
-FreeBSD native SkiaSharp work, XML serialization assemblies, adaptive sampling and
-the broad final optimization pass remain deferred.
+FreeBSD native SkiaSharp work and adaptive sampling remain deferred. The application
+owner has now built and tested all consumers successfully. Framework-supported
+argument throw helpers and entity XML serialization are addressed by the
+[release checkpoint](release-checkpoint.md).
