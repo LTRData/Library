@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<Version>1.0.23</Version>
-	<FileVersion>$(Version)</FileVersion>
+	<Version>1.1.0</Version>
+	<FileVersion>1.1.0</FileVersion>
+	<PackageVersion>$(Version)</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

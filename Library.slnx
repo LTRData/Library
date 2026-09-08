@@ -7,8 +7,10 @@
   <Project Path="LTRData.Data/LTRData.Data.csproj" />
   <Project Path="LTRData.Extensions.Native/LTRData.Extensions.Native.csproj" />
   <Project Path="LTRData.Extensions/LTRData.Extensions.csproj" />
+  <Project Path="LTRData.FunctionPlotting/LTRData.FunctionPlotting.csproj" />
   <Project Path="LTRData.Geodesy/LTRData.Geodesy.csproj" />
   <Project Path="LTRData.Graphics/LTRData.Graphics.csproj" />
+  <Project Path="LTRData.Graphics.SkiaSharp/LTRData.Graphics.SkiaSharp.csproj" />
   <Project Path="LTRData.MathExpression/LTRData.MathExpression.csproj" />
   <Project Path="LTRData.Net/LTRData.Net.csproj" />
   <Project Path="LTRData.PerformanceCounters/LTRData.PerformanceCounters.csproj" />
@@ -18,4 +20,5 @@
   <Project Path="LTRData.WebServerUtils/LTRData.WebServerUtils.csproj" Id="ed07f4d2-6c0c-4191-ab9c-1f50ab45662b" />
   <Project Path="LTRData.Xml/LTRData.Xml.csproj" />
   <Project Path="Tests/Tests.csproj" />
+  <Project Path="Rendering.Tests/Rendering.Tests.csproj" />
 </Solution>

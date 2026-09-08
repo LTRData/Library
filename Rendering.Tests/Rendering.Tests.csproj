@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <!-- Test projects can use different test-host versions; keep their files separate. -->
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" PrivateAssets="all" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="4.151.2" />
+    <ProjectReference Include="..\LTRData.Graphics.SkiaSharp\LTRData.Graphics.SkiaSharp.csproj" />
+  </ItemGroup>
+</Project>
