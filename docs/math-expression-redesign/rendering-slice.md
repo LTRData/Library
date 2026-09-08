@@ -82,8 +82,9 @@ Local verification: 63 focused core tests and four native renderer tests pass on
 also builds for .NET Framework 3.5 with zero warnings. The review host builds with
 zero warnings. Other target/runtime combinations remain covered by repository CI
 and target-host checks; a local FreeBSD run is not claimed. The companion full
-website also builds on .NET 9/Linux using `webdbcore` and `LTR.WebDb.Entity` from
-the `LTRData/ltrwebdb` source checkout, including its database XML serializers.
+website also builds for .NET 9 and .NET 10 on Linux, using `webdbcore` and
+`LTR.WebDb.Entity` from the `LTRData/ltrwebdb` source checkout, including its
+database XML serializers.
 
 - The focused expression/plotting suite includes the existing legacy tests, modern
   normative tests, the 18 compatible legacy expression examples, layout tests, and
@@ -101,12 +102,13 @@ the `LTRData/ltrwebdb` source checkout, including its database XML serializers.
 The review host deliberately does not start the full site's database or visit logging.
 The full site supports `WebDbSourcePath` as an alternative to its private `webdbcore`
 package/feed; normal deployment configuration is still required to run the site.
-Its .NET 9 build reports a password-package version fallback warning and a database
-XML serializer assembly-reference warning. Full-site .NET 10 restore is blocked by
-an existing dependency conflict: the available `ArsenalRecon.PasswordTable` package
-requires EF Core 10 on that target, while the site and MySQL provider use EF Core 9.
-The standalone .NET 10 rendering review host is unaffected. See the companion
-website's `docs/math-rendering-review.md` for source-build commands and details.
+The site pins `ArsenalRecon.PasswordTable` to `[3.12.340]`, now available from
+public NuGet, to retain EF Core 9 compatibility on both targets. Both full-site
+restores succeed without warnings; builds report zero errors and one existing
+database XML serializer assembly-reference warning each. The resolved graphs were
+verified to use PasswordTable 3.12.340, EF Core 9.0.19 throughout, and Pomelo 9.0.0.
+The previous .NET 10 package conflict is resolved. See the companion website's
+`docs/math-rendering-review.md` for source-build commands and details.
 
 ## Packaging and review
 
