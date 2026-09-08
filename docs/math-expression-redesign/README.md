@@ -17,6 +17,7 @@ classified before it becomes a test or a public contract:
 - [Modern expression language specification](language-specification.md)
 - [Architecture, package boundaries, and proposed APIs](architecture.md)
 - [Implemented rendering slice, samples, deployment and review](rendering-slice.md)
+- [Build and review the repositories through a shared local NuGet feed](../local-package-workflow.md)
 
 ## Original core slice
 

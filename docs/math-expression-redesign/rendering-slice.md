@@ -81,10 +81,7 @@ Local verification: 63 focused core tests and four native renderer tests pass on
 .NET 10/Linux, and the review host's HTTP checks pass. The portable math project
 also builds for .NET Framework 3.5 with zero warnings. The review host builds with
 zero warnings. Other target/runtime combinations remain covered by repository CI
-and target-host checks; a local FreeBSD run is not claimed. The companion full
-website also builds for .NET 9 and .NET 10 on Linux, using `webdbcore` and
-`LTR.WebDb.Entity` from the `LTRData/ltrwebdb` source checkout, including its
-database XML serializers.
+and target-host checks; a local FreeBSD run is not claimed.
 
 - The focused expression/plotting suite includes the existing legacy tests, modern
   normative tests, the 18 compatible legacy expression examples, layout tests, and
@@ -100,15 +97,11 @@ database XML serializers.
   HTML encoding, and the concurrent-render limit.
 
 The review host deliberately does not start the full site's database or visit logging.
-The full site supports `WebDbSourcePath` as an alternative to its private `webdbcore`
-package/feed; normal deployment configuration is still required to run the site.
+Normal deployment configuration is still required to run the full site.
 The site pins `ArsenalRecon.PasswordTable` to `[3.12.340]`, now available from
-public NuGet, to retain EF Core 9 compatibility on both targets. Both full-site
-restores succeed without warnings; builds report zero errors and one existing
-database XML serializer assembly-reference warning each. The resolved graphs were
-verified to use PasswordTable 3.12.340, EF Core 9.0.19 throughout, and Pomelo 9.0.0.
-The previous .NET 10 package conflict is resolved. See the companion website's
-`docs/math-rendering-review.md` for source-build commands and details.
+public NuGet, to retain EF Core 9 compatibility on both targets. The previous
+.NET 10 package conflict is resolved. XML serialization assembly work remains
+deferred.
 
 ## Packaging and review
 
@@ -117,12 +110,24 @@ The expression package now uses `1.1.0-preview.1`; the new renderer uses
 of resolving the already published expression package without these APIs. No NuGet
 release is performed by this work. Function plotting retains its prototype `0.1.0`.
 
-The companion website supports `LibrarySourcePath` for reviewing these projects
-directly. Its review host defaults to a sibling `Library` checkout. See the website's
-`docs/math-rendering-review.md` for the one-command UI and HTTP verification paths.
+Both companion website hosts consume packages across repository boundaries.
+Build `Library`, then `ltrwebdb`, with package output directed to the shared
+`LocalNuGetPath` directory. Restore the website through a local `NuGet.Config`
+containing that directory. Project references remain within each producer
+repository; NuGet resolves framework assets, versions and transitive dependencies
+between repositories. See the [local package workflow](../local-package-workflow.md)
+for commands and package-origin checks, and the website's
+`docs/math-rendering-review.md` for the UI and HTTP verification paths.
 
-After review, package the math, plotting, and renderer projects into your normal
-feed, or continue using an explicit source reference during development.
+The package workflow was validated on Linux with all 13 required producer
+packages containing both .NET 9 and .NET 10 assets. Both full-site targets and the
+.NET 10 review host built with zero warnings or errors. A fresh cache, source
+mappings, package metadata and resolved framework assets confirmed local package
+consumption. The review host's HTTP and native PNG checks passed against those
+packages. The database stack resolved PasswordTable 3.12.340, EF Core 9.0.19 and
+Pomelo 9.0.0 on both targets.
+
+Review and validate this package chain locally before publishing to NuGet servers.
 
 ## Still deferred
 
