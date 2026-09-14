@@ -126,3 +126,10 @@ explain how netexpr and GraphViewer use the newer APIs here.
 Geodesy includes work derived from Björn Sållarp's
 [MightyLittleGeodesy](https://github.com/bjornsallarp/MightyLittleGeodesy), extended
 by Olof Lagerkvist. Existing source headers retain authorship and license notices.
+
+## License and third-party notices
+
+LTRData Library is distributed under the [MIT License](LICENSE). See
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for embedded third-party source,
+attribution requirements, and additional context for dependency-license findings
+reported by automated scanners such as FOSSA.
