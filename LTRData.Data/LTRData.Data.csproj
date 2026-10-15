@@ -45,16 +45,13 @@
 		<Reference Include="System.ComponentModel.DataAnnotations" />
 	</ItemGroup>
 
-	<ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0')) And !$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net35'))">
+	<ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0')) And !$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net35')) And !$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
 		<PackageReference Include="System.ComponentModel.Annotations" Version="*" />
 	</ItemGroup>
 
 	<ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0')) And !$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
 		<PackageReference Include="Microsoft.Bcl.HashCode" Version="*" />
 		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="*" />
-	</ItemGroup>
-
-	<ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0'))">
 		<PackageReference Include="System.ValueTuple" Version="*" />
 	</ItemGroup>
 

@@ -15,6 +15,9 @@
 
   <ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0'))">
 	<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.*" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.0')) And !$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
 	<PackageReference Include="System.ValueTuple" Version="*" />
   </ItemGroup>
 

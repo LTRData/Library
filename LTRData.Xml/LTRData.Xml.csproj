@@ -10,6 +10,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
 
+	<ItemGroup Condition="'$(TargetFramework)' == 'net11.0'">
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="11.0.0-rc.2.26504.105" />
+	</ItemGroup>
+
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.*" />
 	</ItemGroup>
