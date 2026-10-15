@@ -11,7 +11,7 @@ namespace LTRData.Rendering.Tests;
 
 public class SkiaRenderingTests
 {
-    [Fact]
+    [NotOnFreeBsdFact]
     public void PlotPngContainsTheCurveAndEncoderLeavesInputsOpen()
     {
         var viewport = new PlotViewport(new NumericRange(-1, 1), new NumericRange(-1, 1), new CanvasSize(200, 100));
@@ -31,7 +31,7 @@ public class SkiaRenderingTests
         Assert.Equal(SKColors.White, bitmap.GetPixel(100, 10));
     }
 
-    [Fact]
+    [NotOnFreeBsdFact]
     public void InvalidSampleCreatesAVisibleGap()
     {
         var viewport = new PlotViewport(new NumericRange(-1, 1), new NumericRange(-1, 1), new CanvasSize(200, 100));
@@ -45,7 +45,7 @@ public class SkiaRenderingTests
         Assert.NotEqual(SKColors.White, bitmap.GetPixel(20, 50));
     }
 
-    [Fact]
+    [NotOnFreeBsdFact]
     public void DiagramUsesMeasuredFontAndProducesNonemptyPng()
     {
         var diagram = ExpressionDiagram.FromSyntax(MathParser.Default.Parse("sin(x) + x^2").Root!);
@@ -70,7 +70,7 @@ public class SkiaRenderingTests
         Assert.True(darkPixels > 30, "Labels must contain visible glyphs, not just node outlines.");
     }
 
-    [Fact]
+    [NotOnFreeBsdFact]
     public void OffscreenAxesAreOmitted()
     {
         using var surface = SKSurface.Create(new SKImageInfo(100, 100));
