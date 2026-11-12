@@ -47,14 +47,14 @@ Most library projects inherit these build targets from
 
 - .NET Framework 3.5, 4.0, 4.6 and 4.8.
 - .NET Standard 2.0 and 2.1.
-- .NET 8, 9 and 10.
+- .NET 8, 9, 10 and 11.
 
 The exceptions are:
 
 | Package | Targets |
 | --- | --- |
-| LTRData.Compat.System.Management | .NET Framework 4.6/4.8, .NET Standard 2.0/2.1, .NET 8/9/10 |
-| LTRData.WebServerUtils | .NET Framework 4.0/4.6/4.8, .NET Standard 2.0/2.1, .NET 8/9/10 |
+| LTRData.Compat.System.Management | .NET Framework 4.6/4.8, .NET Standard 2.0/2.1, .NET 8/9/10/11 |
+| LTRData.WebServerUtils | .NET Framework 4.0/4.6/4.8, .NET Standard 2.0/2.1, .NET 8/9/10/11 |
 | LTRData.Graphics.SkiaSharp | .NET 8/9/10 |
 
 These are compilation targets, not a guarantee that every API is available on
@@ -67,7 +67,7 @@ vary by target; consult the linked project files and the API you intend to use.
   remains deferred. See the [rendering and deployment notes](https://github.com/LTRData/Library/blob/master/docs/math-expression-redesign/rendering-slice.md).
 - WebServerUtils uses System.Web on .NET Framework and ASP.NET Core dependencies
   on modern targets, including the Microsoft.AspNetCore.App shared framework for
-  .NET 8/9/10. LTRData.Web is kept separate from these server runtime references.
+  .NET 8/9/10/11. LTRData.Web is kept separate from these server runtime references.
 - Native helpers, CIM operations and temperature readings depend on the relevant
   operating-system libraries, services or hardware interfaces. A .NET Standard
   target alone does not establish platform availability.
@@ -91,7 +91,7 @@ earlier experimental checkpoints; the modern APIs are now part of this repositor
 
 ## Building and testing
 
-Use the .NET 10 SDK, as in the [CI workflow](https://github.com/LTRData/Library/blob/master/.github/workflows/build-test.yml).
+Use the .NET 11 SDK, as in the [CI workflow](https://github.com/LTRData/Library/blob/master/.github/workflows/build-test.yml).
 Building all targets also requires the corresponding reference assemblies;
 running tests requires the runtime for the selected target.
 
@@ -101,17 +101,59 @@ From the repository root:
 dotnet restore Library.slnx
 dotnet build Library.slnx -c Release --no-restore
 dotnet test Library.slnx -c Release --no-build --no-restore -f net10.0
+dotnet test Library.slnx -c Release --no-build --no-restore -f net11.0
 ```
 
 CI is configured to build on Windows, Ubuntu and macOS. It runs the configured
-test targets on Windows and .NET 10 tests on Ubuntu/macOS. The main test project
-targets .NET Framework 4.8 and .NET 8/9/10; Rendering.Tests targets .NET 8/9/10 and
+test targets on Windows and .NET 10 and 11 tests on Ubuntu/macOS. The main test
+project targets .NET Framework 4.8 and .NET 8/9/10/11; Rendering.Tests targets .NET 8/9/10 and
 exercises native SkiaSharp rendering.
 
 Release builds generate NuGet packages. Set LocalNuGetPath to a local feed
 directory when building packages for other repositories, and build the required
 dependency packages as well. The [local package workflow](https://github.com/LTRData/Library/blob/master/docs/local-package-workflow.md)
 explains output configuration, consumer restore, and package-origin verification.
+
+## Publishing packages to NuGet.org
+
+Publishing is an explicit, tag-triggered operation, separate from regular CI.
+On the `master` branch, create and push an annotated publication tag:
+
+```sh
+git checkout master
+git pull --ff-only
+git tag -a publish/2026.11.12.1 -m "NuGet publication 2026.11.12.1"
+git push origin publish/2026.11.12.1
+```
+
+The [publishing workflow](.github/workflows/publish-nuget.yml) accepts `publish/*`
+tags pointing to a commit reachable from `master`. It restores, builds, runs
+Windows tests, collects both `.nupkg` and `.snupkg` files, and only then publishes
+using NuGet.org Trusted Publishing. The `nuget-publish` GitHub environment may
+require approval before the publishing job starts. Ordinary pushes and pull
+requests never publish packages.
+
+**Publication tags identify batches, not package versions.** Each project keeps
+its own `Version`/`FileVersion`/`PackageVersion` from MSBuild; the workflow never
+overrides those values. Existing package versions are skipped by
+`dotnet nuget push --skip-duplicate`. Bump the individual project versions when
+their contents need to change, since published NuGet package versions cannot be
+replaced.
+
+Required one-time setup:
+
+- A NuGet.org Trusted Publishing policy for `LTRData/Library` and workflow
+  filename `publish-nuget.yml`, with GitHub environment `nuget-publish` if the
+  policy is environment-restricted.
+- A GitHub Actions repository variable `NUGET_USER` containing the NuGet.org
+  **account username** that owns the trusted publishing policy (not an email,
+  API key, or GitHub username).
+- A GitHub Actions `nuget-publish` environment; restrict allowed deployments
+  to the intended `publish/*` tags and optionally require approval.
+
+The workflow requests a short-lived NuGet credential only after build and test
+completion, and publishes the exact generated packages rather than rebuilding
+with a different version or SDK.
 
 ## Related code and provenance
 
