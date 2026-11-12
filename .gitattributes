@@ -1,0 +1,2 @@
+# Normalize text line endings so LF/CRLF differences do not appear as edits.
+* text=auto
