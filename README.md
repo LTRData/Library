@@ -106,7 +106,7 @@ dotnet test Library.slnx -c Release --no-build --no-restore -f net11.0
 
 CI is configured to build on Windows, Ubuntu and macOS. It runs the configured
 test targets on Windows and .NET 10 and 11 tests on Ubuntu/macOS. The main test
-project targets .NET Framework 4.8 and .NET 8/9/10/11; Rendering.Tests targets .NET 8/9/10 and
+project targets .NET Framework 4.8 and .NET 8/9/10/11; Rendering.Tests targets .NET 8/9/10/11 and
 exercises native SkiaSharp rendering.
 
 Release builds generate NuGet packages. Set LocalNuGetPath to a local feed
