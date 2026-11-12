@@ -55,7 +55,7 @@ The exceptions are:
 | --- | --- |
 | LTRData.Compat.System.Management | .NET Framework 4.6/4.8, .NET Standard 2.0/2.1, .NET 8/9/10/11 |
 | LTRData.WebServerUtils | .NET Framework 4.0/4.6/4.8, .NET Standard 2.0/2.1, .NET 8/9/10/11 |
-| LTRData.Graphics.SkiaSharp | .NET 8/9/10 |
+| LTRData.Graphics.SkiaSharp | .NET 8/9/10/11 |
 
 These are compilation targets, not a guarantee that every API is available on
 every framework or operating system. Conditional compilation and dependencies
