@@ -6,7 +6,7 @@ namespace LTRData.MathExpression;
 
 #pragma warning disable CS1591
 
-public struct SourceSpan : IEquatable<SourceSpan>
+public readonly struct SourceSpan : IEquatable<SourceSpan>
 {
     public SourceSpan(int start, int length)
     {

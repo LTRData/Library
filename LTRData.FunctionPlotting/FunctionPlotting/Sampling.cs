@@ -17,20 +17,13 @@ public enum FunctionSampleStatus
     EvaluationError
 }
 
-public struct FunctionSample : IEquatable<FunctionSample>
+public readonly struct FunctionSample(double x, double y, FunctionSampleStatus status) : IEquatable<FunctionSample>
 {
-    public FunctionSample(double x, double y, FunctionSampleStatus status)
-    {
-        X = x;
-        Y = y;
-        Status = status;
-    }
+    public double X { get; } = x;
 
-    public double X { get; }
+    public double Y { get; } = y;
 
-    public double Y { get; }
-
-    public FunctionSampleStatus Status { get; }
+    public FunctionSampleStatus Status { get; } = status;
 
     public bool Equals(FunctionSample other) =>
         X.Equals(other.X) && Y.Equals(other.Y) && Status == other.Status;

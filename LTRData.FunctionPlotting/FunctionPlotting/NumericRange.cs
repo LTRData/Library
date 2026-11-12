@@ -4,7 +4,7 @@ namespace LTRData.FunctionPlotting;
 
 #pragma warning disable CS1591
 
-public struct NumericRange : IEquatable<NumericRange>
+public readonly struct NumericRange : IEquatable<NumericRange>
 {
     public NumericRange(double minimum, double maximum)
     {

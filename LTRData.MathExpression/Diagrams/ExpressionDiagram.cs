@@ -94,7 +94,7 @@ public sealed class ExpressionDiagram
 
             var id = syntaxNodes.Count;
             syntaxNodes.Add(current);
-            children.Add(new List<ExpressionDiagramChild>());
+            children.Add([]);
             if (next.Parent >= 0)
                 children[next.Parent].Add(new ExpressionDiagramChild(id, next.Role));
 
@@ -151,16 +151,10 @@ public sealed class ExpressionDiagram
         _ => throw new ArgumentOutOfRangeException(nameof(op))
     };
 
-    private sealed class PendingNode
+    private sealed class PendingNode(MathSyntax syntax, int parent, string role)
     {
-        public PendingNode(MathSyntax syntax, int parent, string role)
-        {
-            Syntax = syntax;
-            Parent = parent;
-            Role = role;
-        }
-        public MathSyntax Syntax { get; }
-        public int Parent { get; }
-        public string Role { get; }
+        public MathSyntax Syntax { get; } = syntax;
+        public int Parent { get; } = parent;
+        public string Role { get; } = role;
     }
 }

@@ -139,7 +139,7 @@ internal static class ManagementExtensions
         {
             lock (sync)
             {
-                values ??= new(1);
+                values ??= [with(1)];
                 values.Add(value);
             }
         }

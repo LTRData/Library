@@ -6,7 +6,7 @@ namespace LTRData.FunctionPlotting;
 
 #pragma warning disable CS1591
 
-public struct CanvasSize : IEquatable<CanvasSize>
+public readonly struct CanvasSize : IEquatable<CanvasSize>
 {
     public CanvasSize(double width, double height)
     {
@@ -73,17 +73,11 @@ public sealed class PlotViewport
     public CanvasSize Canvas { get; }
 }
 
-public struct CanvasPoint : IEquatable<CanvasPoint>
+public readonly struct CanvasPoint(double x, double y) : IEquatable<CanvasPoint>
 {
-    public CanvasPoint(double x, double y)
-    {
-        X = x;
-        Y = y;
-    }
+    public double X { get; } = x;
 
-    public double X { get; }
-
-    public double Y { get; }
+    public double Y { get; } = y;
 
     public bool Equals(CanvasPoint other) => X.Equals(other.X) && Y.Equals(other.Y);
 
@@ -208,7 +202,7 @@ public static class CurveGeometryBuilder
 
             if (current is null || !NearlyEqual(current[current.Count - 1], start))
             {
-                current = new List<CanvasPoint> { start };
+                current = [start];
                 pointLists.Add(current);
             }
 

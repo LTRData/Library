@@ -17,13 +17,13 @@ public sealed class MathSymbolCatalog
     {
         this.constants = new Dictionary<string, double>(constants,
             StringComparer.OrdinalIgnoreCase);
-        this.functions = new Dictionary<string, Dictionary<int, MathFunctionDefinition>>(
-            StringComparer.OrdinalIgnoreCase);
+        this.functions = [with(
+            StringComparer.OrdinalIgnoreCase)];
 
         foreach (var entry in functions)
         {
             this.functions.Add(entry.Key,
-                new Dictionary<int, MathFunctionDefinition>(entry.Value));
+                [with(entry.Value)]);
         }
     }
 
@@ -87,10 +87,10 @@ public sealed class MathSymbolCatalog
 public sealed class MathSymbolCatalogBuilder
 {
     private readonly Dictionary<string, double> constants =
-        new(StringComparer.OrdinalIgnoreCase);
+        [with(StringComparer.OrdinalIgnoreCase)];
 
     private readonly Dictionary<string, Dictionary<int, MathFunctionDefinition>> functions =
-        new(StringComparer.OrdinalIgnoreCase);
+        [with(StringComparer.OrdinalIgnoreCase)];
 
     public MathSymbolCatalogBuilder()
     {
@@ -107,7 +107,7 @@ public sealed class MathSymbolCatalogBuilder
         foreach (var function in functions)
         {
             this.functions.Add(function.Key,
-                new Dictionary<int, MathFunctionDefinition>(function.Value));
+                [with(function.Value)]);
         }
     }
 
@@ -164,7 +164,7 @@ public sealed class MathSymbolCatalogBuilder
 
         if (!functions.TryGetValue(name, out var overloads))
         {
-            overloads = new Dictionary<int, MathFunctionDefinition>();
+            overloads = [];
             functions.Add(name, overloads);
         }
 

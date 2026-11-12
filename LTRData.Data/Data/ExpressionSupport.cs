@@ -211,7 +211,7 @@ public static class ExpressionSupport
     }
 
     public static Dictionary<IEnumerable<MemberInfo>, string> CreateMemberToFieldDictionary()
-        => new(new SequenceEqualityComparer<MemberInfo>(new ExpressionMemberEqualityComparer()));
+        => [with(new SequenceEqualityComparer<MemberInfo>(new ExpressionMemberEqualityComparer()))];
 
     private static readonly Dictionary<Type, Dictionary<IEnumerable<MemberInfo>, string>> dataFieldMappings = [];
 
@@ -407,11 +407,11 @@ public static class ExpressionSupport
         }
     }
 
-    public static Dictionary<string, Func<T, object?>> GetPropertyGetters<T>() where T : new() => new(PropertiesAssigners<T>.Getters);
+    public static Dictionary<string, Func<T, object?>> GetPropertyGetters<T>() where T : new() => [with(PropertiesAssigners<T>.Getters)];
 
-    public static Dictionary<string, Action<T, object?>> GetPropertySetters<T>() where T : new() => new(PropertiesAssigners<T>.Setters);
+    public static Dictionary<string, Action<T, object?>> GetPropertySetters<T>() where T : new() => [with(PropertiesAssigners<T>.Setters)];
 
-    public static Dictionary<string, Type> GetPropertyTypes<T>() where T : new() => new(PropertiesAssigners<T>.Types);
+    public static Dictionary<string, Type> GetPropertyTypes<T>() where T : new() => [with(PropertiesAssigners<T>.Types)];
 #endif
 
 }

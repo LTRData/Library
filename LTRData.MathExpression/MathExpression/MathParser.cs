@@ -37,17 +37,11 @@ public sealed class MathParser
             diagnostics);
     }
 
-    private sealed class SyntaxParser
+    private sealed class SyntaxParser(List<MathParser.MathToken> tokens, List<MathDiagnostic> diagnostics)
     {
-        private readonly List<MathToken> tokens;
-        private readonly List<MathDiagnostic> diagnostics;
+        private readonly List<MathToken> tokens = tokens;
+        private readonly List<MathDiagnostic> diagnostics = diagnostics;
         private int position;
-
-        public SyntaxParser(List<MathToken> tokens, List<MathDiagnostic> diagnostics)
-        {
-            this.tokens = tokens;
-            this.diagnostics = diagnostics;
-        }
 
         private MathToken Current => tokens[position];
 
@@ -284,17 +278,11 @@ public sealed class MathParser
     {
     }
 
-    private sealed class MathLexer
+    private sealed class MathLexer(string sourceText, List<MathDiagnostic> diagnostics)
     {
-        private readonly string sourceText;
-        private readonly List<MathDiagnostic> diagnostics;
+        private readonly string sourceText = sourceText;
+        private readonly List<MathDiagnostic> diagnostics = diagnostics;
         private int position;
-
-        public MathLexer(string sourceText, List<MathDiagnostic> diagnostics)
-        {
-            this.sourceText = sourceText;
-            this.diagnostics = diagnostics;
-        }
 
         public List<MathToken> Lex()
         {
@@ -479,22 +467,14 @@ public sealed class MathParser
         ImplicitMultiply
     }
 
-    private struct MathToken
+    private readonly struct MathToken(MathParser.MathTokenKind kind, string text, SourceSpan span, double number)
     {
-        public MathToken(MathTokenKind kind, string text, SourceSpan span, double number)
-        {
-            Kind = kind;
-            Text = text;
-            Span = span;
-            Number = number;
-        }
+        public MathTokenKind Kind { get; } = kind;
 
-        public MathTokenKind Kind { get; }
+        public string Text { get; } = text;
 
-        public string Text { get; }
+        public SourceSpan Span { get; } = span;
 
-        public SourceSpan Span { get; }
-
-        public double Number { get; }
+        public double Number { get; } = number;
     }
 }

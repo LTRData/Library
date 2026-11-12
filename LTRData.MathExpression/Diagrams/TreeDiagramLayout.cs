@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 namespace LTRData.MathExpression.Diagrams;
 
 /// <summary>A finite positive measured node or diagram size, in continuous canvas units.</summary>
-public struct DiagramSize
+public readonly struct DiagramSize
 {
     /// <summary>Creates a validated measured size.</summary>
     public DiagramSize(double width, double height)
@@ -23,14 +23,12 @@ public struct DiagramSize
 }
 
 /// <summary>A point in a diagram's continuous coordinate space.</summary>
-public struct DiagramPoint
+/// <remarks>Creates a point.</remarks>
+public readonly struct DiagramPoint(double x, double y)
 {
-    /// <summary>Creates a point.</summary>
-    public DiagramPoint(double x, double y) { X = x; Y = y; }
     /// <summary>Horizontal coordinate.</summary>
-    public double X { get; }
-    /// <summary>Vertical coordinate, increasing downward.</summary>
-    public double Y { get; }
+    public double X { get; } = x;     /// <summary>Vertical coordinate, increasing downward.</summary>
+    public double Y { get; } = y;
 }
 
 /// <summary>The rectangle reserved for a measured node.</summary>

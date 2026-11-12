@@ -101,7 +101,7 @@ public static class SizeFormatting
         return $"{size} byte";
     }
 #else
-    private static readonly Dictionary<int, string> PrecisionFormatStrings = new();
+    private static readonly Dictionary<int, string> PrecisionFormatStrings = [];
 
     /// <summary>
     /// Formats byte sizes with MB, GB etc suffixes

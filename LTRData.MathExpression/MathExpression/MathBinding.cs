@@ -70,18 +70,13 @@ public static class MathBinder
             new BoundMathExpression(root, binder.Variables), binder.Diagnostics);
     }
 
-    private sealed class Binder
+    private sealed class Binder(MathSymbolCatalog symbolCatalog)
     {
-        private readonly MathSymbolCatalog symbolCatalog;
+        private readonly MathSymbolCatalog symbolCatalog = symbolCatalog;
         private readonly Dictionary<string, MathVariable> variablesByName =
-            new(StringComparer.OrdinalIgnoreCase);
-        private readonly List<MathVariable> variables = new();
-        private readonly List<MathDiagnostic> diagnostics = new();
-
-        public Binder(MathSymbolCatalog symbolCatalog)
-        {
-            this.symbolCatalog = symbolCatalog;
-        }
+            [with(StringComparer.OrdinalIgnoreCase)];
+        private readonly List<MathVariable> variables = [];
+        private readonly List<MathDiagnostic> diagnostics = [];
 
         public List<MathVariable> Variables => variables;
 
@@ -281,7 +276,7 @@ public sealed class UnaryMathFunction
         root.Evaluate(MathEvaluationContext.ForUnary(variableSlot, value));
 }
 
-internal struct MathEvaluationContext
+internal readonly struct MathEvaluationContext
 {
     private readonly double[]? values;
     private readonly int unarySlot;
@@ -321,41 +316,25 @@ internal abstract class BoundNode
     public abstract double Evaluate(MathEvaluationContext context);
 }
 
-internal sealed class BoundConstantNode : BoundNode
+internal sealed class BoundConstantNode(double value) : BoundNode
 {
-    private readonly double value;
-
-    public BoundConstantNode(double value)
-    {
-        this.value = value;
-    }
+    private readonly double value = value;
 
     public override double Evaluate(MathEvaluationContext context) => value;
 }
 
-internal sealed class BoundVariableNode : BoundNode
+internal sealed class BoundVariableNode(int slot) : BoundNode
 {
-    private readonly int slot;
-
-    public BoundVariableNode(int slot)
-    {
-        this.slot = slot;
-    }
+    private readonly int slot = slot;
 
     public override double Evaluate(MathEvaluationContext context) =>
         context.GetVariable(slot);
 }
 
-internal sealed class BoundPrefixNode : BoundNode
+internal sealed class BoundPrefixNode(MathPrefixOperator @operator, BoundNode operand) : BoundNode
 {
-    private readonly MathPrefixOperator @operator;
-    private readonly BoundNode operand;
-
-    public BoundPrefixNode(MathPrefixOperator @operator, BoundNode operand)
-    {
-        this.@operator = @operator;
-        this.operand = operand;
-    }
+    private readonly MathPrefixOperator @operator = @operator;
+    private readonly BoundNode operand = operand;
 
     public override double Evaluate(MathEvaluationContext context)
     {
@@ -365,28 +344,20 @@ internal sealed class BoundPrefixNode : BoundNode
     }
 }
 
-internal sealed class BoundPostfixNode : BoundNode
+internal sealed class BoundPostfixNode(MathPostfixOperator @operator, BoundNode operand) : BoundNode
 {
-    private readonly MathPostfixOperator @operator;
-    private readonly BoundNode operand;
-
-    public BoundPostfixNode(MathPostfixOperator @operator, BoundNode operand)
-    {
-        this.@operator = @operator;
-        this.operand = operand;
-    }
+    private readonly MathPostfixOperator @operator = @operator;
+    private readonly BoundNode operand = operand;
 
     public override double Evaluate(MathEvaluationContext context)
     {
         var value = operand.Evaluate(context);
 
-        switch (@operator)
+        return @operator switch
         {
-            case MathPostfixOperator.Factorial:
-                return Factorial(value);
-            default:
-                throw new NotSupportedException($"Unsupported postfix operator '{@operator}'.");
-        }
+            MathPostfixOperator.Factorial => Factorial(value),
+            _ => throw new NotSupportedException($"Unsupported postfix operator '{@operator}'."),
+        };
     }
 
     private static double Factorial(double value)
@@ -413,67 +384,44 @@ internal sealed class BoundPostfixNode : BoundNode
     }
 }
 
-internal sealed class BoundBinaryNode : BoundNode
+internal sealed class BoundBinaryNode(MathBinaryOperator @operator, BoundNode left, BoundNode right) : BoundNode
 {
-    private readonly MathBinaryOperator @operator;
-    private readonly BoundNode left;
-    private readonly BoundNode right;
-
-    public BoundBinaryNode(MathBinaryOperator @operator, BoundNode left, BoundNode right)
-    {
-        this.@operator = @operator;
-        this.left = left;
-        this.right = right;
-    }
+    private readonly MathBinaryOperator @operator = @operator;
+    private readonly BoundNode left = left;
+    private readonly BoundNode right = right;
 
     public override double Evaluate(MathEvaluationContext context)
     {
         var leftValue = left.Evaluate(context);
         var rightValue = right.Evaluate(context);
 
-        switch (@operator)
+        return @operator switch
         {
-            case MathBinaryOperator.Add:
-                return leftValue + rightValue;
-            case MathBinaryOperator.Subtract:
-                return leftValue - rightValue;
-            case MathBinaryOperator.Multiply:
-                return leftValue * rightValue;
-            case MathBinaryOperator.Divide:
-                return leftValue / rightValue;
-            case MathBinaryOperator.Remainder:
-                return leftValue % rightValue;
-            case MathBinaryOperator.Power:
-                return Math.Pow(leftValue, rightValue);
-            default:
-                throw new NotSupportedException($"Unsupported binary operator '{@operator}'.");
-        }
+            MathBinaryOperator.Add => leftValue + rightValue,
+            MathBinaryOperator.Subtract => leftValue - rightValue,
+            MathBinaryOperator.Multiply => leftValue * rightValue,
+            MathBinaryOperator.Divide => leftValue / rightValue,
+            MathBinaryOperator.Remainder => leftValue % rightValue,
+            MathBinaryOperator.Power => Math.Pow(leftValue, rightValue),
+            _ => throw new NotSupportedException($"Unsupported binary operator '{@operator}'."),
+        };
     }
 }
 
-internal sealed class BoundCallNode : BoundNode
+internal sealed class BoundCallNode(MathFunctionDefinition function, BoundNode[] arguments) : BoundNode
 {
-    private readonly MathFunctionDefinition function;
-    private readonly BoundNode[] arguments;
-
-    public BoundCallNode(MathFunctionDefinition function, BoundNode[] arguments)
-    {
-        this.function = function;
-        this.arguments = arguments;
-    }
+    private readonly MathFunctionDefinition function = function;
+    private readonly BoundNode[] arguments = arguments;
 
     public override double Evaluate(MathEvaluationContext context)
     {
-        switch (function.Arity)
+        return function.Arity switch
         {
-            case 1:
-                return function.Invoke(arguments[0].Evaluate(context));
-            case 2:
-                return function.Invoke(arguments[0].Evaluate(context),
-                    arguments[1].Evaluate(context));
-            default:
-                throw new NotSupportedException(
-                    $"Unsupported function arity {function.Arity}.");
-        }
+            1 => function.Invoke(arguments[0].Evaluate(context)),
+            2 => function.Invoke(arguments[0].Evaluate(context),
+                                arguments[1].Evaluate(context)),
+            _ => throw new NotSupportedException(
+                                $"Unsupported function arity {function.Arity}."),
+        };
     }
 }
