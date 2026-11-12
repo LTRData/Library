@@ -1,0 +1,147 @@
+name: Publish NuGet (tag)
+
+on:
+  push:
+    tags:
+      - 'publish/*'
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_NOLOGO: true
+
+jobs:
+  build-and-test:
+    name: Build, test, and pack
+    runs-on: windows-2025
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Check release tag ancestry
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF_NAME -notlike 'publish/*') {
+            throw "This workflow only accepts publish/* tags."
+          }
+          git merge-base --is-ancestor HEAD origin/master
+          if ($LASTEXITCODE -ne 0) {
+            throw "The publication tag must point to a commit reachable from master."
+          }
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+            11.0.x
+
+      - name: Restore
+        run: dotnet restore Library.slnx
+
+      # Release builds already generate independently versioned packages.
+      # Never override Version, FileVersion, or PackageVersion with the tag.
+      - name: Build and collect NuGet packages
+        shell: pwsh
+        run: |
+          $packageDir = Join-Path $env:GITHUB_WORKSPACE 'artifacts/nuget'
+          New-Item -ItemType Directory -Force -Path $packageDir | Out-Null
+          dotnet build Library.slnx -c Release --no-restore "-p:LocalNuGetPath=$packageDir"
+          if ($LASTEXITCODE -ne 0) { throw 'Release build failed.' }
+
+          $packages = @(Get-ChildItem -LiteralPath $packageDir -File -Filter '*.nupkg')
+          $symbols = @(Get-ChildItem -LiteralPath $packageDir -File -Filter '*.snupkg')
+          if ($packages.Count -eq 0) { throw 'No NuGet packages were produced.' }
+          if ($symbols.Count -ne $packages.Count) {
+            throw 'Expected a matching symbol package for every NuGet package.'
+          }
+          foreach ($package in $packages) {
+            if ($package.Name -notlike 'LTRData.*.nupkg') {
+              throw "Unexpected package name: $($package.Name)"
+            }
+            $symbolName = [IO.Path]::ChangeExtension($package.Name, '.snupkg')
+            if (-not (Test-Path -LiteralPath (Join-Path $packageDir $symbolName))) {
+              throw "Missing symbol package: $symbolName"
+            }
+          }
+          $packages | Sort-Object Name | ForEach-Object { Write-Host "Packaged: $($_.Name)" }
+
+      - name: Test
+        timeout-minutes: 30
+        run: dotnet test Library.slnx -c Release --no-build --no-restore --logger "console;verbosity=detailed" --blame-hang --blame-hang-timeout 2m --blame-hang-dump-type full
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: |
+            artifacts/nuget/*.nupkg
+            artifacts/nuget/*.snupkg
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish packages to NuGet.org
+    needs: build-and-test
+    runs-on: windows-2025
+    timeout-minutes: 30
+    environment: nuget-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '11.0.x'
+
+      - name: Download tested packages
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+          path: artifacts/nuget
+
+      - name: Validate package list and NuGet account
+        shell: pwsh
+        env:
+          NUGET_USER: ${{ vars.NUGET_USER }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:NUGET_USER)) {
+            throw 'Set the NUGET_USER repository variable to the NuGet.org account username.'
+          }
+          $packages = @(Get-ChildItem 'artifacts/nuget' -File -Filter '*.nupkg')
+          if ($packages.Count -eq 0) { throw 'No packages were downloaded.' }
+          foreach ($package in $packages) {
+            if ($package.Name -notlike 'LTRData.*.nupkg') {
+              throw "Unexpected package name: $($package.Name)"
+            }
+          }
+
+      # Request the one-hour credential only after building, testing, and approval.
+      - name: NuGet login (Trusted Publishing)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      # NuGet automatically pushes the paired .snupkg alongside each .nupkg.
+      - name: Publish packages and symbols
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: |
+          $packages = @(Get-ChildItem 'artifacts/nuget' -File -Filter '*.nupkg' | Sort-Object Name)
+          foreach ($package in $packages) {
+            Write-Host "Publishing $($package.Name)"
+            dotnet nuget push $package.FullName --source https://api.nuget.org/v3/index.json --api-key $env:NUGET_API_KEY --skip-duplicate
+            if ($LASTEXITCODE -ne 0) {
+              throw "NuGet publication failed for $($package.Name)"
+            }
+          }
